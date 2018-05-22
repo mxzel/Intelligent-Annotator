@@ -1,0 +1,284 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>learn</title>
+    <script src="./vue.js"></script>
+
+    <style type="text/css">
+.red-class{
+    color: grey;
+  
+}
+.blue-class{
+    color:#ff0000;
+}
+#index{
+ position:relative; 
+width:80%;
+height:770px;
+border:solid #483d8b;
+margin-top:100px;
+margin-left:200px;
+background-color:#f0f8ff;
+ 
+}
+#index1{
+    width:80%;
+    height: 80px;
+    border:dotted 1px grey;
+    margin-left: 10px;
+    margin-top: 10px;
+    padding-top: 30px;
+    padding-left: 10px;
+    background-color: #f0ffff;
+   /* background: url(background3.jpg) ;*/
+
+
+}
+
+#root{
+    border-left:dotted 1px grey;
+    border-right:dotted 1px grey;
+    border-bottom:dotted 1px grey;
+    width:80%;
+    height:26px;
+    margin-left: 10px;
+    margin-top: 0px;
+    padding-left:10px;
+    padding-top: 3px;
+    background-color: #E0ffff;
+   /*  background: url(background1.jpg) ;*/
+
+
+}
+#index2{
+    width:80%;
+    height: 80px;
+    border:dotted 1px grey;
+    margin-left: 10px;
+    margin-top: 10px;
+    padding-top: 30px;
+    padding-left: 10px;
+    background-color: #f0ffff;
+    /* background: url(background3.jpg) ;*/
+
+
+}
+#root2{
+   border-left:dotted 1px grey;
+    border-right:dotted 1px grey;
+    border-bottom:dotted 1px grey;
+    width:80%;
+    height:26px;
+    margin-left: 10px;
+    margin-top: 0px;
+    padding-left:10px;
+    padding-top: 3px;
+    background-color: #E0ffff;
+   /* background: url(background1.jpg) ;*/
+
+}
+#index3{
+    width:80%;
+    height: 80px;
+    border:dotted 1px grey;
+    margin-left: 10px;
+    margin-top: 10px;
+    padding-top: 30px;
+    padding-left: 10px;
+    background-color: #f0ffff;
+    /* background: url(background3.jpg) ;*/
+
+
+}
+#root3{
+    border-left:dotted 1px grey;
+    border-right:dotted 1px grey;
+    border-bottom:dotted 1px grey;
+    width:80%;
+    height:26px;
+    margin-left: 10px;
+    margin-top: 0px;
+    padding-left:10px;
+    padding-top: 3px;
+    background-color: #E0ffff;
+ /*   background: url(background1.jpg) ;*/
+
+}
+#index4{
+    width:80%;
+    height: 80px;
+    border:dotted 1px grey;
+    margin-left: 10px;
+    margin-top: 10px;
+    padding-top: 30px;
+    padding-left: 10px;
+    background-color: #f0ffff;
+     b/*ackground: url(background3.jpg) ;*/
+
+
+}
+#root4{
+   border-left:dotted 1px grey;
+    border-right:dotted 1px grey;
+    border-bottom:dotted 1px grey;
+    width:80%;
+    height:26px;
+    margin-left: 10px;
+    margin-top: 0px;
+    padding-left:10px;
+    padding-top: 3px;
+    background-color: #E0ffff;
+   /* background: url(background1.jpg) ;*/
+
+}
+#index5{
+    width:80%;
+    height: 80px;
+    border:dotted 1px grey;
+    margin-left: 10px;
+    margin-top: 10px;
+    padding-top: 30px;
+    padding-left: 10px;
+    background-color: #f0ffff;
+ /*    background: url(background3.jpg) ;*/
+
+}
+#root5{
+    border-left:dotted 1px grey;
+    border-right:dotted 1px grey;
+    border-bottom:dotted 1px grey;
+    width:80%;
+    height:26px;
+    margin-left: 10px;
+    margin-top: 0px;
+    padding-left:10px;
+    padding-top: 3px;
+    background-color: #E0ffff;
+/*    background: url(background1.jpg) ;*/
+
+}
+#last{
+    width: 245px;
+    height:750px;
+    border:dotted 1px;
+    position:absolute;
+    left:1230px;
+    top:10px;
+    
+}
+#block1{
+    padding-left: 20px;
+    padding-top: 30px;
+    border:dotted ;
+    width: 190px;
+    height:67px;
+    margin-top: 10px;
+    margin-left:15px;
+}
+</style>
+</head>
+<body>
+<div id="index" >
+<div id="index1" style="font-family:Arial,Helvetica,sans-serif;font-size:20px; "> today is a beautiful day
+</div>
+<div id="root">
+<button :class="clicked? 'blue-class':'red-class'"@click="clicked = !clicked"  ><b><em><a href="C:\Users\大苹果\Desktop\html1\test1.html">+</a></em></b></button> 
+<button :class="clicked2? 'blue-class':'red-class'"@click="clicked2 = !clicked2" ><strong><em>parents</em></strong></button>
+<button :class="clicked3? 'blue-class':'red-class'"@click="clicked3 = !clicked3"><strong><em>parents</em></strong></button> 
+<button :class="clicked4? 'blue-class':'red-class'"@click="clicked4 = !clicked4" ><strong><em>parents</em></strong></button>
+</div>
+
+
+<div id="index2" style="font-family:Arial,Helvetica,sans-serif;font-size:20px; "> today is a beautiful day
+</div>
+<div id="root2">
+<button :class="clicked? 'blue-class':'red-class'"@click="clicked = !clicked"><strong><em>parents</em></strong></button> 
+<button :class="clicked2? 'blue-class':'red-class'"@click="clicked2 = !clicked2" ><strong><em>parents</em></strong></button>
+<button :class="clicked3? 'blue-class':'red-class'"@click="clicked3 = !clicked3"><strong><em>parents</em></strong></button> 
+<button :class="clicked4? 'blue-class':'red-class'"@click="clicked4 = !clicked4" ><strong><em>parents</em></strong></button>
+</div>
+
+<div id="index3" style="font-family:Arial,Helvetica,sans-serif;font-size:20px; "> today is a beautiful day
+</div>
+<div id="root3">
+<button :class="clicked? 'blue-class':'red-class'"@click="clicked = !clicked"><strong><em>parents</em></strong></button> 
+<button :class="clicked2? 'blue-class':'red-class'"@click="clicked2 = !clicked2" ><strong><em>parents</em></strong></button>
+<button :class="clicked3? 'blue-class':'red-class'"@click="clicked3 = !clicked3"><strong><em>parents</em></strong></button> 
+<button :class="clicked4? 'blue-class':'red-class'"@click="clicked4 = !clicked4" ><strong><em>parents</em></strong></button>
+</div>
+
+<div id="index4" style="font-family:Arial,Helvetica,sans-serif;font-size:20px; "> today is a beautiful day
+</div>
+<div id="root4">
+<button :class="clicked? 'blue-class':'red-class'"@click="clicked = !clicked"><strong><em>parents</em></strong></button> 
+<button :class="clicked2? 'blue-class':'red-class'"@click="clicked2 = !clicked2" ><strong><em>parents</em></strong></button>
+<button :class="clicked3? 'blue-class':'red-class'"@click="clicked3 = !clicked3"><strong><em>parents</em></strong></button> 
+<button :class="clicked4? 'blue-class':'red-class'"@click="clicked4 = !clicked4" ><strong><em>parents</em></strong></button>
+</div>
+
+<div id="index5" style="font-family:Arial,Helvetica,sans-serif;font-size:20px; "> today is a beautiful day
+</div>
+<div id="root5">
+<button :class="clicked? 'blue-class':'red-class'"@click="clicked = !clicked"><strong><em>parents</em></strong></button> 
+<button :class="clicked2? 'blue-class':'red-class'"@click="clicked2 = !clicked2" ><strong><em>parents</em></strong></button>
+<button :class="clicked3? 'blue-class':'red-class'"@click="clicked3 = !clicked3"><strong><em>parents</em></strong></button> 
+<button :class="clicked4? 'blue-class':'red-class'"@click="clicked4 = !clicked4" ><strong><em>parents</em></strong></button>
+</div>
+<div id="last" style="width:245px; height:750px; background:url(background.jpg);">
+<div id="block1">
+<button><strong><em>import</em></strong></button><!-- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -->
+<button style="margin-left: 50px;" ><strong><em>export</em></strong></button>
+</div>
+</div>
+</div>
+<script >
+new Vue({
+el:"#root",
+data:{
+        clicked: false,
+        clicked2:false,
+        clicked3:false,
+        clicked4:false,
+}
+})
+new Vue({
+el:"#root2",
+data:{
+        clicked: false,
+        clicked2:false,
+        clicked3:false,
+        clicked4:false,
+}
+})
+new Vue({
+el:"#root3",
+data:{
+        clicked: false,
+        clicked2:false,
+        clicked3:false,
+        clicked4:false,
+}
+})
+new Vue({
+el:"#root4",
+data:{
+        clicked: false,
+        clicked2:false,
+        clicked3:false,
+        clicked4:false,
+}
+})
+new Vue({
+el:"#root5",
+data:{
+        clicked: false,
+        clicked2:false,
+        clicked3:false,
+        clicked4:false,
+}
+})
+</script>
+</body>
+</html>

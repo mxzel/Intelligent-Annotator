@@ -280,10 +280,10 @@ def test_labeled_db():
     db.delete()
 
     # 向数据表中添加两条记录
-    db.insert(unlabeled_id=1, data_content="特朗普是奥巴马的儿子", labeled_time="2016-01-01", entity1="奥巴马", entity2="特朗普",
-              predicted_relation="儿子", labeled_relation="爸爸")
-    db.insert(unlabeled_id=2, data_content="金正恩又名金三胖", labeled_time="2014-06-06", entity1="金正恩", entity2="金三胖",
-              predicted_relation="又名", labeled_relation="又名")
+    db.insert(unlabeled_id=1, data_content="特朗普是奥巴马的儿子", labeled_time="2016-01-01", entity1="奥巴马",
+              entity2="特朗普", predicted_relation="儿子", labeled_relation="爸爸")
+    db.insert(unlabeled_id=2, data_content="金正恩又名金三胖", labeled_time="2014-06-06", entity1="金正恩",
+              entity2="金三胖", predicted_relation="又名", labeled_relation="又名")
     records = db.select()
     print(records)
 

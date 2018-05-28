@@ -132,7 +132,6 @@ class DB_Manager(object):
 
 
 class Labeled_DB_Manager(DB_Manager):
-
     table_name = "labeled_data"
 
     labeled_id = "labeled_id"
@@ -191,7 +190,6 @@ class Labeled_DB_Manager(DB_Manager):
 
 
 class Unlabeled_DB_Manager(DB_Manager):
-
     table_name = "unlabeled_data"
 
     unlabeled_id = "unlabeled_id"
@@ -235,8 +233,13 @@ def test_unlabeled_db():
     """
     db = Unlabeled_DB_Manager()
 
-    # 创建数据表，首次运行时请开启此项
-    # db.create()
+    # 创建数据表
+    try:
+        db.create()
+    except psycopg2.ProgrammingError:
+        print('数据库已存在')
+    else:
+        print('数据库创建成功')
 
     # 删除数据表中的所有记录
     db.delete()
@@ -265,15 +268,22 @@ def test_labeled_db():
     """
     db = Labeled_DB_Manager()
 
-    # 创建数据表，首次运行时请开启此项
-    # db.create()
+    # 创建数据表
+    try:
+        db.create()
+    except psycopg2.ProgrammingError:
+        print('数据库已存在')
+    else:
+        print('数据库创建成功')
 
     # 删除数据表中的所有记录
     db.delete()
 
     # 向数据表中添加两条记录
-    db.insert(unlabeled_id=1, data_content="特朗普是奥巴马的儿子", labeled_time="2016-01-01", entity1="奥巴马", entity2="特朗普", predicted_relation="儿子", labeled_relation="爸爸")
-    db.insert(unlabeled_id=2, data_content="金正恩又名金三胖", labeled_time="2014-06-06", entity1="金正恩", entity2="金三胖", predicted_relation="又名", labeled_relation="又名")
+    db.insert(unlabeled_id=1, data_content="特朗普是奥巴马的儿子", labeled_time="2016-01-01", entity1="奥巴马", entity2="特朗普",
+              predicted_relation="儿子", labeled_relation="爸爸")
+    db.insert(unlabeled_id=2, data_content="金正恩又名金三胖", labeled_time="2014-06-06", entity1="金正恩", entity2="金三胖",
+              predicted_relation="又名", labeled_relation="又名")
     records = db.select()
     print(records)
 
@@ -290,4 +300,5 @@ def test_labeled_db():
 
 if __name__ == '__main__':
     test_unlabeled_db()
-    # test_labeled_db()
+    print()
+    test_labeled_db()

@@ -1,8 +1,8 @@
 import json
 from datetime import datetime
 # data = [{'a': 1, 'b': 2, 'c': 3}]
-# json_string = json.dumps(data)
-# json_string = json.dumps(data, sort_keys=True, indent=4, separators=(',', ': '))
+# json_string = json.dumps(data, ensure_ascii=False)
+# json_string = json.dumps(data, sort_keys=True, indent=4, separators=(',', ': '), ensure_ascii=False)
 # print(json_string)
 # text = json.loads(json_string)
 # print(text)
@@ -74,7 +74,7 @@ class DB_interface:
                 "code": 200,
                 "message": "创建失败，数据库中已含有同名项目！"
             }
-        json_string = json.dumps(ret_data)
+        json_string = json.dumps(ret_data, ensure_ascii=False)
         return json_string
 
     def upload_file(self, json_string: json = '', file_name: str = '',
@@ -153,7 +153,7 @@ class DB_interface:
                 "code": -1,
                 "message": u"文件上传失败，项目中已包含同名文件！"
             }
-        json_string = json.dumps(ret_data)
+        json_string = json.dumps(ret_data, ensure_ascii=False)
         return json_string
 
     def fetch_unlabeled_data(self, json_string: json = '', project_id: int = -1, num: int = -1):
@@ -219,7 +219,7 @@ class DB_interface:
                 "code": -1,
                 "message": "取出数据失败，未知错误！",
             }
-            return json.dumps(ret_dict)
+            return json.dumps(ret_dict, ensure_ascii=False)
 
         # 如果数据已经全部标注完
         if len(rows) == 0:
@@ -252,7 +252,7 @@ class DB_interface:
             }
 
         # TODO: 对数据进行预标注，将预标注后的数据包装成 dict
-        return json.dumps(ret_dict)
+        return json.dumps(ret_dict, ensure_ascii=False)
 
     def commit_labeled_data(self, json_string: json = '', labeled_data: list = None, file_id: int = None):
         """
@@ -319,14 +319,14 @@ class DB_interface:
                     "message": "提交失败，未知错误！",
                     "data": labeled_data
                 }
-                return json.dumps(ret_dict)
+                return json.dumps(ret_dict, ensure_ascii=False)
 
         ret_dict = {
             "status": True,
             "code": 200,
             "message": "已标注数据提交成功"
         }
-        return json.dumps(ret_dict)
+        return json.dumps(ret_dict, ensure_ascii=False)
 
     def export_project(self, json_string: json = '', project_id: int = -1):
         """
@@ -370,7 +370,7 @@ class DB_interface:
         #         "code": -1,
         #         "message": "导出失败，原因未知"
         #     }
-        #     return json.dumps(ret_dict)
+        #     return json.dumps(ret_dict, ensure_ascii=False)
 
         ret_dict = {
             "status": True,
@@ -383,7 +383,7 @@ class DB_interface:
             "code": 200,
             "message": "工程导出成功"
         }
-        return json.dumps(ret_dict)
+        return json.dumps(ret_dict, ensure_ascii=False)
 
 
 def test_create_project(project_name="test_project"):
@@ -393,7 +393,7 @@ def test_create_project(project_name="test_project"):
     data = {
         "project_name": project_name
     }
-    json_string = json.dumps(data)
+    json_string = json.dumps(data, ensure_ascii=False)
     # print(json_string)
     ret_info = interface.create_project(json_string=json_string)
     print(ret_info)

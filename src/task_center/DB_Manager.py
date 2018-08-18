@@ -17,7 +17,6 @@ class DB_Manager(object):
         连接数据库
         :return: None
         """
-        para = "dbname=" + self._dbname, 'user='
         para = "dbname=" + self._dbname \
                + " user=" + self._user \
                + " password=" + self._password
@@ -93,8 +92,8 @@ class DB_Manager(object):
         :return: None
         """
         self._connect()
-        sql = "DELETE FROM " + self.table_name
-        sql = sql + " WHERE " + condition + ";" if not condition == '' else sql + ";"
+        sql = "delect from " + self.table_name
+        sql = sql + " where " + condition + ";" if not condition == '' else sql + ";"
         self._execute(sql)
         self.commit()
         self._close_connection()
@@ -107,7 +106,7 @@ class DB_Manager(object):
         :return: None
         """
         self._connect()
-        sql = "UPDATE " + self.table_name + " SET " + ret + " WHERE " + condition + ";"
+        sql = "update " + self.table_name + " set " + ret + " where " + condition + ";"
         self._execute(sql)
         self.commit()
         self._close_connection()
@@ -123,14 +122,16 @@ class DB_Manager(object):
         """
         self._connect()
         if additional_tables == '':
-            sql = "SELECT " + columns + " FROM " + self.table_name
+            sql = "select " + columns + " from " + self.table_name
         else:
-            sql = "SELECT " + columns + " FROM " + self.table_name + ", " + additional_tables
-        sql = sql + " WHERE " + condition + ";" if not condition == '' else sql + ";"
+            sql = "select " + columns + " from " + self.table_name + ", " + additional_tables
+        sql = sql + " where " + condition + ";" if not condition == '' else sql + ";"
+        # sql = "select * from file_info;"
         print(sql)
-        self._execute(sql)
+        ret = self._execute(sql)
+        ret = [] if ret is None else [ret]
         self.commit()
-        ret = self.fetchall()
+        ret.extend(self.fetchall())
         print(ret)
         self._close_connection()
         num = ret.__len__() if num > ret.__len__() else num
@@ -497,6 +498,8 @@ if __name__ == '__main__':
     # test_project_info_db()
     # test_file_info_db()
     print()
+    db = Labeled_DB_Manager()
+    db.select()
     # test_unlabeled_db()
     print()
     # test_labeled_db()

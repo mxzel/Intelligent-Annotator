@@ -182,6 +182,7 @@ class DB_interface:
                         {
                             "id": 1,
                             "text": "aaa",
+                            # TODO: 将e1e2添加到 text 中
                             "predicted_relation": "friend",
                             "predicted_e1": "马云",
                             "predicted_e2": "马化腾",
@@ -454,11 +455,6 @@ def test_export_project(project_id=-1):
 def init():
     interface = DB_interface()
 
-    # interface.project_info_db.create()
-    # interface.file_info_db.create()
-    # interface.unlabeled_db.create()
-    # interface.labeled_db.create()
-
     interface.labeled_db.drop()
     interface.unlabeled_db.drop()
     interface.file_info_db.drop()
@@ -469,44 +465,11 @@ def init():
     interface.unlabeled_db.create()
     interface.labeled_db.create()
 
-    # print('创建项目')
-    # ret_info = interface.create_project(project_name="__test__")
-    # print(ret_info)
-    # project_id = json.loads(ret_info)["project_id"]
-    #
-    # print('\n上传文件')
-    # ret_info = interface.upload_file(file_name='__test_file__', project_id=project_id,
-    #                                  file_contents=['Today is a good day1', 'Today is a good day1'])
-    # file_id = json.loads(ret_info)["file_id"]
-    # print(ret_info)
-    #
-    # print('\n获取未标注数据')
-    # ret_info = interface.fetch_unlabeled_data(project_id=project_id, num=-1)
-    # print(ret_info)
-    # unlabeled_data = json.loads(ret_info)["data"][0]
-    # labeled_data = {
-    #     "id": unlabeled_data["id"],
-    #     "text": "<e1>Today</e1> is a good <e2>day1</e2>",
-    #     "predicted_relation": "is",
-    #     "predicted_e1": "Today",
-    #     "predicted_e2": "day1",
-    #     "labeled_relation": "is",
-    #     "labeled_e1": "Today",
-    #     "labeled_e2": "day1",
-    #     "additional_info": ["a", "good"]
-    # }
-    #
-    # print('\n提交已标注数据')
-    # ret_info = interface.commit_labeled_data(labeled_data=[labeled_data, ], file_id=file_id)
-    # print(ret_info)
-
-    # print(ret)
-
 
 if __name__ == '__main__':
     init()
-    project_id = test_create_project()
-    file_id = test_upload_file(project_id=project_id, file_name='test_file')
-    unlabeled_data = test_fetch_unlabeled_data(project_id=project_id, num=-1)
-    test_commit_labaled_data(unlabeled_data=unlabeled_data[1], file_id=file_id)
-    test_export_project(project_id=project_id)
+    # project_id = test_create_project()
+    # file_id = test_upload_file(project_id=project_id, file_name='test_file')
+    # unlabeled_data = test_fetch_unlabeled_data(project_id=project_id, num=-1)
+    # test_commit_labaled_data(unlabeled_data=unlabeled_data[1], file_id=file_id)
+    # test_export_project(project_id=project_id)

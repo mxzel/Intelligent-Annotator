@@ -540,6 +540,10 @@ def test_export_project(project_id=-1):
 
 
 def init():
+    """
+    用作初始化数据库中的数据
+    :return:
+    """
     ProjectInfo.objects.all().delete()
     FileInfo.objects.all().delete()
     BaseTags.objects.all().delete()

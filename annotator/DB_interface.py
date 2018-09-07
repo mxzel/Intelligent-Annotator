@@ -4,6 +4,8 @@ from datetime import datetime
 from django.db import IntegrityError
 
 from annotator.models import *
+
+
 # data = [{'a': 1, 'b': 2, 'c': 3}]
 # json_string = json.dumps(data, ensure_ascii=False)
 # json_string = json.dumps(data, sort_keys=True, indent=4, separators=(',', ': '), ensure_ascii=False)
@@ -11,23 +13,13 @@ from annotator.models import *
 # text = json.loads(json_string)
 # print(text)
 
-from annotator.DB_Manager import Labeled_DB_Manager, \
-    Unlabeled_DB_Manager, Project_info_DB_Manager, File_info_DB_Manager
-
-"""
-try:
-    ProjectInfo(project_name='1234').save()
-except IntegrityError:
-    print(
-"""
-
 
 class DB_interface:
 
     def svm(self, content):
         return content
 
-    def create_project(self, json_string: json = '', project_name: str = ''):
+    def create_project(self, json_string: json = '', project_name: str = '', project_tags: list = []):
         """
         新建一个工程
 
@@ -38,11 +30,8 @@ class DB_interface:
             4. 如果有，告知前端项目创建失败，原因是已经含有了相同名字的项目；
             否则在项目信息表中新建条目，告知前端项目创建成功，并返回项目 pid
 
-        :param json_string: 工程名字
-            {
-                "project_name": "test_project"
-            }
         :param project_name: 工程名字
+        :param project_tags: 项目预设 tags
 
         :return: pid(json)
             {
@@ -57,7 +46,7 @@ class DB_interface:
             data = json.loads(json_string)
             project_name = data["project_name"]
         try:
-            project = ProjectInfo(project_name=project_name)
+            project = ProjectInfo(project_name=project_name, project_tags=project_tags)
             project.save()
             ret_data = {
                 "status": True,
@@ -75,6 +64,131 @@ class DB_interface:
 
         json_string = json.dumps(ret_data, ensure_ascii=False)
         print(json_string)
+        return json_string
+
+    def modify_project_name(self, project_id: int, new_name: str):
+        """
+        修改项目名字
+        :param project_id: 项目id号
+        :param new_name: 项目的新名字
+        :return: json
+        """
+        try:
+            project = ProjectInfo.objects.get(pk=project_id)
+            project.project_name = new_name
+            project.save()
+            ret_data = {
+                "status": True,
+                "code": 200,
+                "message": u"项目名称修改成功"
+            }
+        except IntegrityError as e:
+            ret_data = {
+                "status": False,
+                "code": -1,
+                "message": str(e)
+            }
+        json_string = json.dumps(ret_data, ensure_ascii=False)
+        return json_string
+
+    def add_tag_to_project(self, project_id: int, tag: str):
+        try:
+            project = ProjectInfo.objects.get(pk=project_id)
+            project.project_tags.append(tag)
+            project.save()
+            ret_data = {
+                "status": True,
+                "code": 200,
+                "message": u"添加成功"
+            }
+        except IntegrityError as e:
+            ret_data = {
+                "status": False,
+                "code": -1,
+                "message": str(e)
+            }
+        json_string = json.dumps(ret_data, ensure_ascii=False)
+        return json_string
+
+    def add_tags_to_project(self, project_id: int, tags: list):
+        try:
+            project = ProjectInfo.objects.get(pk=project_id)
+            project.project_tags.extend(tags)
+            project.save()
+            ret_data = {
+                "status": True,
+                "code": 200,
+                "message": u"添加成功"
+            }
+        except IntegrityError as e:
+            ret_data = {
+                "status": False,
+                "code": -1,
+                "message": str(e)
+            }
+        json_string = json.dumps(ret_data, ensure_ascii=False)
+        return json_string
+
+    def delete_tag_from_project(self, project_id: int, tag: str):
+        try:
+            project = ProjectInfo.objects.get(pk=project_id)
+            project.project_tags.remove(tag)
+            project.save()
+            ret_data = {
+                "status": True,
+                "code": 200,
+                "message": u"删除成功"
+            }
+        except IntegrityError as e:
+            ret_data = {
+                "status": False,
+                "code": -1,
+                "message": str(e)
+            }
+        json_string = json.dumps(ret_data, ensure_ascii=False)
+        return json_string
+
+    def delete_project(self, project_id: int):
+        """
+        删除项目
+        :param project_id: 项目id号
+        :return: json
+        """
+        try:
+            ProjectInfo.objects.get(pk=project_id).delete()
+            ret_data = {
+                "status": True,
+                "code": 200,
+                "message": u"项目删除成功"
+            }
+        except IntegrityError as e:
+            ret_data = {
+                "status": False,
+                "code": -1,
+                "message": str(e)
+            }
+        json_string = json.dumps(ret_data, ensure_ascii=False)
+        return json_string
+
+    def get_base_tags(self):
+        """
+        获得基础标签
+        :return:
+        """
+        try:
+            base_tags = list(BaseTags.objects.all())
+            ret_data = {
+                "status": True,
+                "code": 200,
+                "base_tags": base_tags,
+            }
+        except IntegrityError as e:
+            ret_data = {
+                "status": False,
+                "code": -1,
+                "message": str(e)
+            }
+        json_string = json.dumps(ret_data, ensure_ascii=False)
         return json_string
 
     def upload_file(self, json_string: json = '', file_name: str = '',
@@ -114,6 +228,19 @@ class DB_interface:
             file_name = data["file_name"]
             file_contents = data["file_contents"]
             project_id = data["project_id"]
+
+        # 检查文件格式
+        if len(file_contents[0]) > 200:
+            ret_data = {
+                "status": False,
+                "file_id": -1,
+                "code": -1,
+                "message": "文件格式错误"
+            }
+            json_string = json.dumps(ret_data, ensure_ascii=False)
+            return json_string
+
+        # 文件格式正确，尝试写入数据库
         try:
             project = ProjectInfo.objects.get(pk=project_id)
             file_info = FileInfo(file_name=file_name, project_id=project)
@@ -220,7 +347,8 @@ class DB_interface:
         print(ret_dict)
         return json.dumps(ret_dict, ensure_ascii=False)
 
-    def commit_labeled_data(self, json_string: json = '', labeled_data: list = None, file_id: int = None, project_id: int=None):
+    def commit_labeled_data(self, json_string: json = '', labeled_data: list = None, file_id: int = None,
+                            project_id: int = None):
         """
         将已标注的数据提交到数据库
 
@@ -263,8 +391,15 @@ class DB_interface:
             labeled_data = labeled_data["data"]
         try:
             for meta_data in labeled_data:
-                content_origin = meta_data["text"].replace("<e1>", "").replace("</e1>", "").replace("<e2>", "").replace("</e2>", "")
-                data = LabeledData(data_content=content_origin, file_id=FileInfo.objects.get(pk=file_id), project_id=ProjectInfo.objects.get(pk=project_id), labeled_time=datetime.now(), labeled_content=meta_data["text"], predicted_relation=meta_data["predicted_relation"], predicted_e1=meta_data["predicted_e1"], predicted_e2=meta_data["predicted_e2"], labeled_relation=meta_data["labeled_relation"], labeled_e1=meta_data["labeled_e1"], labeled_e2=meta_data["labeled_e2"], additional_info=meta_data["additional_info"])
+                content_origin = meta_data["text"].replace("<e1>", "").replace("</e1>", "").replace("<e2>", "").replace(
+                    "</e2>", "")
+                data = LabeledData(data_content=content_origin, file_id=FileInfo.objects.get(pk=file_id),
+                                   project_id=ProjectInfo.objects.get(pk=project_id), labeled_time=datetime.now(),
+                                   labeled_content=meta_data["text"],
+                                   predicted_relation=meta_data["predicted_relation"],
+                                   predicted_e1=meta_data["predicted_e1"], predicted_e2=meta_data["predicted_e2"],
+                                   labeled_relation=meta_data["labeled_relation"], labeled_e1=meta_data["labeled_e1"],
+                                   labeled_e2=meta_data["labeled_e2"], additional_info=meta_data["additional_info"])
                 data.save()
                 UnLabeledData.objects.filter(pk=meta_data["unlabeled_id"]).delete()
             ret_dict = {
@@ -402,3 +537,54 @@ def test_export_project(project_id=-1):
     # print(type(ret))
     data = json.loads(ret)["data"]
     return data
+
+
+def init():
+    ProjectInfo.objects.all().delete()
+    FileInfo.objects.all().delete()
+    BaseTags.objects.all().delete()
+    UnLabeledData.objects.all().delete()
+    LabeledData.objects.all().delete()
+
+    interface = DB_interface()
+
+    # 添加基本 tags
+    relations = ["Cause-Effect", "Instrument-Agency", "Product-Producer", "Content-Container", "Entity-Origin", "Entity-Destination", "Component-Whole", "Member-Collection", "Message-Topic", "Other"]
+    for r in relations:
+        base_tag = BaseTags(tag_name=r)
+        base_tag.save()
+
+    project = ProjectInfo(project_name='test_project', project_tags=['Cause-Effect', 'Message-Topic'])
+    project.save()
+
+    interface.modify_project_name(project_id=project.project_id, new_name='test_project_1')
+    interface.add_tag_to_project(project_id=project.project_id, tag='test_tag_single')
+    interface.add_tags_to_project(project_id=project.project_id, tags=['test_tag_multiple', ])
+    interface.delete_tag_from_project(project_id=project.project_id, tag='Cause-Effect')
+
+
+    file_content = ['The most common audits were about waste and recycling.', 'The company fabricates plastic chairs.']
+    # file = FileInfo(file_name='test_file', project_id=project, file_content=file_content)
+    # file.save()
+    file_json = interface.upload_file(file_name='test_file', project_id=project.project_id, file_contents=file_content)
+    file_id = json.loads(file_json)["file_id"]
+
+    unlabeled_data_json = interface.fetch_unlabeled_data(project_id=project.project_id, num=1)
+    unlabeled_data = json.loads(unlabeled_data_json)["data"][0]
+    # labeled_data =
+    labeled_data = [{
+        "unlabeled_id": unlabeled_data["id"],
+        "text": "<e1>特朗普</e1>是<e2>奥巴马</e2>的朋友",
+        "project_id": "1",
+        "predicted_relation": "朋友",
+        "predicted_e1": "奥巴马",
+        "predicted_e2": "特朗普",
+        "labeled_relation": "朋友",
+        "labeled_e1": "奥巴马",
+        "labeled_e2": "特朗普",
+        "additional_info": ["朋友", "是"]
+    }, ]
+    interface.commit_labeled_data(labeled_data=labeled_data, file_id=file_id, project_id=project.project_id)
+
+    interface.export_project(project_id=project.project_id)
+

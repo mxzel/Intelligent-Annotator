@@ -1,13 +1,16 @@
 from django.db import models
+from django.contrib.postgres.fields import *
 
 
 class ProjectInfo(models.Model):
     """
     project_id = "project_id"
     project_name = "project_name"
+    project_tags = "project_tags"
     """
     project_id = models.AutoField(primary_key=True)
     project_name = models.CharField(max_length=20, unique=True)
+    project_tags = ArrayField(base_field=models.CharField(max_length=20, unique=True, default=None), default=[])
 
 
 class FileInfo(models.Model):
@@ -19,6 +22,10 @@ class FileInfo(models.Model):
     file_id = models.AutoField(primary_key=True)
     file_name = models.CharField(max_length=20, unique=False)
     project_id = models.ForeignKey(ProjectInfo, on_delete=models.CASCADE)
+
+
+class BaseTags(models.Model):
+    tag_name = models.CharField(max_length=20, unique=True)
 
 
 class UnLabeledData(models.Model):

@@ -1,5 +1,9 @@
 import json
 from datetime import datetime
+
+from django.db import IntegrityError
+
+from annotator.models import *
 # data = [{'a': 1, 'b': 2, 'c': 3}]
 # json_string = json.dumps(data, ensure_ascii=False)
 # json_string = json.dumps(data, sort_keys=True, indent=4, separators=(',', ': '), ensure_ascii=False)
@@ -10,12 +14,15 @@ from datetime import datetime
 from annotator.DB_Manager import Labeled_DB_Manager, \
     Unlabeled_DB_Manager, Project_info_DB_Manager, File_info_DB_Manager
 
+"""
+try:
+    ProjectInfo(project_name='1234').save()
+except IntegrityError:
+    print(
+"""
+
 
 class DB_interface:
-    labeled_db = Labeled_DB_Manager()
-    unlabeled_db = Unlabeled_DB_Manager()
-    project_info_db = Project_info_DB_Manager()
-    file_info_db = File_info_DB_Manager()
 
     def svm(self, content):
         return content
@@ -46,38 +53,26 @@ class DB_interface:
         """
         print('开始调用')
 
-
         if project_name == '':
             data = json.loads(json_string)
             project_name = data["project_name"]
-        print(project_name)
-        records = self.project_info_db.select(condition="project_name=\'" + project_name + "\'")
-
-        # 可以创建
-        if len(records) == 0:
-            try:
-                pid = self.project_info_db.insert(project_name=project_name)
-                ret_data = {
-                    "status": True,
-                    "project_id": pid[0],
-                    "code": 200,
-                    "message": "创建成功"
-                }
-            except:
-                ret_data = {
-                    "status": False,
-                    "project_id": -1,
-                    "code": 200,
-                    "message": "创建失败，原因未知！"
-                }
-        # 数据库中已含有同名项目，不可创建
-        else:
+        try:
+            project = ProjectInfo(project_name=project_name)
+            project.save()
+            ret_data = {
+                "status": True,
+                "project_id": project.project_id,
+                "code": 200,
+                "message": "创建成功"
+            }
+        except IntegrityError as e:
             ret_data = {
                 "status": False,
                 "project_id": -1,
                 "code": 200,
-                "message": "创建失败，数据库中已含有同名项目！"
+                "message": str(e)
             }
+
         json_string = json.dumps(ret_data, ensure_ascii=False)
         print(json_string)
         return json_string
@@ -119,50 +114,29 @@ class DB_interface:
             file_name = data["file_name"]
             file_contents = data["file_contents"]
             project_id = data["project_id"]
-        #print("111"+file_name)
-        #print(file_contents)
-        # 判断数据库中相同项目下是否已经有了同名的文件
-        records = self.file_info_db.select(
-            condition="file_name=\'" + file_name + "\' and project_id=\'" + str(project_id) + "\'")
-
-        # 文件可以上传
-        if len(records) == 0:
-            # try:
-            file_id = self.file_info_db.insert(project_id=project_id, file_name=file_name)
-            ret = self.unlabeled_db.insert(
-                file_id=file_id, data_content='', upload_time=str(datetime.now()))
-            self.labeled_db.insert(
-                unlabeled_id=ret[0], data_content='', file_id=file_id, labeled_time=str(datetime.now()),
-                labeled_content='', predicted_relation='', predicted_e1='', predicted_e2='', labeled_relation='',
-                labeled_e1='', labeled_e2='', additional_info=''
-            )
+        try:
+            project = ProjectInfo.objects.get(pk=project_id)
+            file_info = FileInfo(file_name=file_name, project_id=project)
+            file_info.save()
             for sentence in file_contents:
-
-                self.unlabeled_db.insert(
-                    file_id=file_id, data_content=sentence, upload_time=str(datetime.now()))
+                unlabeled_data = UnLabeledData(file_id=file_info, data_content=sentence,
+                                               upload_time=datetime.now(), project_id=project)
+                unlabeled_data.save()
             ret_data = {
                 "status": True,
-                "file_id": file_id[0],
+                "file_id": file_info.file_id,
                 "code": 200,
                 "message": u"文件上传成功！"
             }
-            # except:
-            #     ret_data = {
-            #         "status": False,
-            #         "file_id": -1,
-            #         "code": -1,
-            #         "message": u"文件上传失败，原因未知！"
-            #     }
-        # 项目下包含了同名文件，不可上传
-        else:
+        except IntegrityError as e:
             ret_data = {
                 "status": False,
                 "file_id": -1,
                 "code": -1,
-                "message": u"文件上传失败，项目中已包含同名文件！"
+                "message": str(e)
             }
         json_string = json.dumps(ret_data, ensure_ascii=False)
-        print("upload_file2"+json_string)
+        print("upload_file2" + json_string)
         return json_string
 
     def fetch_unlabeled_data(self, json_string: json = '', project_id: int = -1, num: int = -1):
@@ -211,42 +185,14 @@ class DB_interface:
         print(project_id)
         if project_id == -1 and num == -1:
             data = json.loads(json_string)
-            project_id = data["project_id"]
-            num = data["num"]
+            project_id = int(data["project_id"])
+            num = int(data["num"])
 
-        # 从数据库中取出项目下的一部分未标注的数据
         try:
-            print(str(project_id))
-            rows = self.unlabeled_db.select(columns="unlabeled_id, data_content",
-                                            num=num,
-                                            additional_tables='file_info',
-                                            condition=self.unlabeled_db.table_name
-                                                    + '.file_id=file_info.file_id and file_info.project_id='
-                                                    + str(project_id) + 'order by unlabeled_id')
-
-        except:
-            ret_dict = {
-                "status": False,
-                "data": None,
-                "code": -1,
-                "message": "取出数据失败，未知错误！",
-            }
-            print(ret_dict)
-            return json.dumps(ret_dict, ensure_ascii=False)
-
-        # 如果数据已经全部标注完
-        if len(rows) == 0:
-            ret_dict = {
-                "status": False,
-                "data": None,
-                "code": -1,
-                "message": "取出数据失败，该项目已经标注完成！",
-            }
-
-        # 数据取出成功
-        else:
-            unlabeled_data = [{"unlabeled_id": row[0], "data_content": row[1]} for row in rows]
-            # print(unlabeled_data)
+            objects = UnLabeledData.objects.filter(project_id=ProjectInfo.objects.get(pk=project_id))
+            objects = objects if num == -1 else objects[:num]
+            unlabeled_data = [{"unlabeled_id": o.unlabeled_id, "data_content": o.data_content}
+                              for o in objects]
             ret_dict = {
                 "status": True,
                 "data":
@@ -263,12 +209,18 @@ class DB_interface:
                 "code": 200,
                 "message": "成功取出" + str(len(unlabeled_data)) + "条数据！",
             }
-
+        except IntegrityError as e:
+            ret_dict = {
+                "status": False,
+                "data": None,
+                "code": -1,
+                "message": str(e),
+            }
         # TODO: 对数据进行预标注，将预标注后的数据包装成 dict
         print(ret_dict)
         return json.dumps(ret_dict, ensure_ascii=False)
 
-    def commit_labeled_data(self, json_string: json = '', labeled_data: list = None, file_id: int = None):
+    def commit_labeled_data(self, json_string: json = '', labeled_data: list = None, file_id: int = None, project_id: int=None):
         """
         将已标注的数据提交到数据库
 
@@ -283,8 +235,9 @@ class DB_interface:
             "data":
                 [
                     {
-                        "id": "364",
+                        "unlabeled_id": "364",
                         "text": "<e1>特朗普</e1>是<e2>奥巴马</e2>的朋友",
+                        "project_id": "1",
                         "predicted_relation": "朋友",
                         "predicted_e1": "奥巴马",
                         "predicted_e2": "特朗普",
@@ -308,39 +261,25 @@ class DB_interface:
         if labeled_data is None:
             labeled_data = json.loads(json_string)
             labeled_data = labeled_data["data"]
-        for meta_data in labeled_data:
-            # meta_data["text"].replace("<e1>").replace("</e1>").replace("<e2>").replace("</e2>")
-            try:
-                if file_id is None:
-                    self.unlabeled_db.select(columns='file_id', condition='unlabeled_id=' + meta_data["id"])
-                    file_id = self.unlabeled_db.fetchone()
-                # "text".replace("<>")
-                content_origin = meta_data["text"].replace("<e1>", "").replace("</e1>", "").replace("<e2>", "").replace(
-                    "</e2>", "")
-                # print(file_id)
-                self.labeled_db.insert(unlabeled_id=meta_data["id"], data_content=content_origin, file_id=file_id,
-                                       labeled_time=str(datetime.now()), labeled_content=meta_data["text"],
-                                       predicted_relation=meta_data["predicted_relation"],
-                                       predicted_e1=meta_data["predicted_e1"], predicted_e2=meta_data["predicted_e2"],
-                                       labeled_relation=meta_data["labeled_relation"],
-                                       labeled_e1=meta_data["labeled_e1"],
-                                       labeled_e2=meta_data["labeled_e2"], additional_info=meta_data["additional_info"])
-                self.unlabeled_db.delete(condition="unlabeled_id=" + str(meta_data["id"]))
-            except:
-                ret_dict = {
-                    "status": False,
-                    "code": -1,
-                    "message": "提交失败，未知错误！",
-                    "data": labeled_data
-                }
-                print(ret_dict)
-                return json.dumps(ret_dict, ensure_ascii=False)
+        try:
+            for meta_data in labeled_data:
+                content_origin = meta_data["text"].replace("<e1>", "").replace("</e1>", "").replace("<e2>", "").replace("</e2>", "")
+                data = LabeledData(data_content=content_origin, file_id=FileInfo.objects.get(pk=file_id), project_id=ProjectInfo.objects.get(pk=project_id), labeled_time=datetime.now(), labeled_content=meta_data["text"], predicted_relation=meta_data["predicted_relation"], predicted_e1=meta_data["predicted_e1"], predicted_e2=meta_data["predicted_e2"], labeled_relation=meta_data["labeled_relation"], labeled_e1=meta_data["labeled_e1"], labeled_e2=meta_data["labeled_e2"], additional_info=meta_data["additional_info"])
+                data.save()
+                UnLabeledData.objects.filter(pk=meta_data["unlabeled_id"]).delete()
+            ret_dict = {
+                "status": True,
+                "code": 200,
+                "message": "已标注数据提交成功"
+            }
+        except IntegrityError as e:
+            ret_dict = {
+                "status": False,
+                "code": -1,
+                "message": str(e),
+                "data": labeled_data
+            }
 
-        ret_dict = {
-            "status": True,
-            "code": 200,
-            "message": "已标注数据提交成功"
-        }
         print(ret_dict)
         return json.dumps(ret_dict, ensure_ascii=False)
 
@@ -359,11 +298,16 @@ class DB_interface:
                 "status": true,
                 "data":
                     [
-                        {
-                            "labeled_content": "<e1>特朗普</e1>是<e2>奥巴马</e2>的基友",
-                            "labeled_relation": "基友",
-                            "additional_info": ["基友", "是"]
-                        },
+                        "1	\"The system as described above has its greatest application in an arrayed <e1>configuration</e1> of antenna <e2>elements</e2>.\"
+                        Component-Whole(e2,e1)
+                        AdditionalInfo: Not a collection: there is structure here, organisation.
+
+                        ",
+                        "2	\"The <e1>child</e1> was carefully wrapped and bound into the <e2>cradle</e2> by means of a cord.\"
+                        Other
+                        AdditionalInfo:
+
+                        ",
                         ...
                     ],
                 "code": 200,
@@ -374,57 +318,49 @@ class DB_interface:
             project_id = json.loads(json_string)
             project_id = project_id["project_id"]
         # try:
-        rows = self.labeled_db.select(
-            columns="labeled_content, labeled_relation, additional_info",
-            additional_tables='file_info',
-            condition="file_info.project_id = " + str(project_id) + " " +
-                      "and file_info.file_id = " + self.labeled_db.table_name + ".file_id order by labeled_id")
-        # except:
-        #     ret_dict = {
-        #         "status": False,
-        #         "data": None,
-        #         "code": -1,
-        #         "message": "导出失败，原因未知"
-        #     }
-        #     return json.dumps(ret_dict, ensure_ascii=False)
+        try:
+            labeled_dataset = LabeledData.objects.filter(project_id=ProjectInfo.objects.get(pk=project_id))
+            data = []
+            for index, labeled_data in enumerate(labeled_dataset):
+                line1 = str(index + 1) + '\t' + '"' + labeled_data.labeled_content + '"\n'
+                line2 = labeled_data.labeled_relation + '\n'
+                line3 = "AdditionalInfo: " + labeled_data.additional_info + '\n'
+                line4 = '\n'
+                line = line1 + line2 + line3 + line4
+                data.append(line)
+            ret_dict = {
+                "status": True,
+                "data": data,
+                "code": 200,
+                "message": "工程导出成功"
+            }
+        except IntegrityError as e:
+            ret_dict = {
+                "status": False,
+                "data": None,
+                "code": -1,
+                "message": "工程导出失败"
+            }
 
-        ret_dict = {
-            "status": True,
-            "data": [{
-                "labeled_content": row[0],
-                "labeled_relation": row[1],
-                "additional_info": row[2]
-            } for row in rows
-            ],
-            "code": 200,
-            "message": "工程导出成功"
-        }
         print(ret_dict)
         return json.dumps(ret_dict, ensure_ascii=False)
 
 
 def test_create_project(project_name="test_project"):
-    # 测试通过
-    print('\n创建项目', project_name)
     interface = DB_interface()
-    data = {
-        "project_name": project_name
-    }
-    json_string = json.dumps(data, ensure_ascii=False)
-    # print(json_string)
-    ret_info = interface.create_project(json_string=json_string)
-    print(ret_info)
-    project_id = json.loads(ret_info)["project_id"]
-    return project_id
+    ret = interface.create_project(project_name='123')
+    ret = interface.create_project(project_name='12345')
+    ret = interface.create_project(project_name='test_project')
 
 
 def test_upload_file(project_id=-1, file_name=''):
+    # from annotator.models import *
+    # from annotator.DB_interface import *
+    # interface = DB_interface()
     # 测试通过
     print('\n上传文件', file_name)
     interface = DB_interface()
-
-    ret = interface.upload_file(file_name=file_name, project_id=project_id,
-                                file_contents=['奥巴马和特朗普是基友', 'Today is a good day'])
+    ret = interface.upload_file(file_name='123', project_id=1, file_contents=['奥巴马和特朗普是基友', 'Today is a good day'])
     print(ret)
     file_id = json.loads(ret)["file_id"]
     return file_id
@@ -433,7 +369,7 @@ def test_upload_file(project_id=-1, file_name=''):
 def test_fetch_unlabeled_data(file_id=-1, project_id=-1, num=-1):
     print('\n获取未标注数据')
     interface = DB_interface()
-    ret = interface.fetch_unlabeled_data(project_id=project_id, num=num)
+    ret = interface.fetch_unlabeled_data(project_id=1, num=1)
     print("unlabeled_data", ret)
     # print(type(ret))
     data = json.loads(ret)["data"]
@@ -444,8 +380,8 @@ def test_commit_labaled_data(unlabeled_data, file_id=-1):
     print('\n提交已标注数据')
     interface = DB_interface()
     labeled_data = {
-        "id": unlabeled_data["id"],
-        "text": "<e1>Today</e1> is a good <e2>day</e2>",
+        "unlabeled_id": 3,
+        "text": "<e1>Today</e1> is a good <e2>day1</e2>",
         "predicted_relation": "is",
         "predicted_e1": "Today",
         "predicted_e2": "day",
@@ -454,7 +390,7 @@ def test_commit_labaled_data(unlabeled_data, file_id=-1):
         "labeled_e2": "day",
         "additional_info": ["a", "good"]
     }
-    ret = interface.commit_labeled_data(labeled_data=[labeled_data, ], file_id=file_id)
+    ret = interface.commit_labeled_data(labeled_data=[labeled_data, ], file_id=3)
     print("unlabeled_data", ret)
 
 
@@ -466,67 +402,3 @@ def test_export_project(project_id=-1):
     # print(type(ret))
     data = json.loads(ret)["data"]
     return data
-
-
-def init():
-    interface = DB_interface()
-
-    # interface.project_info_db.create()
-    # interface.file_info_db.create()
-    # interface.unlabeled_db.create()
-    # interface.labeled_db.create()
-
-    interface.labeled_db.drop()
-    interface.unlabeled_db.drop()
-    interface.file_info_db.drop()
-    interface.project_info_db.drop()
-
-    interface.project_info_db.create()
-    interface.file_info_db.create()
-    interface.unlabeled_db.create()
-    interface.labeled_db.create()
-
-    # print('创建项目')
-    # ret_info = interface.create_project(project_name="__test__")
-    # print(ret_info)
-    # project_id = json.loads(ret_info)["project_id"]
-    #
-    # print('\n上传文件')
-    # ret_info = interface.upload_file(file_name='__test_file__', project_id=project_id,
-    #                                  file_contents=['Today is a good day1', 'Today is a good day1'])
-    # file_id = json.loads(ret_info)["file_id"]
-    # print(ret_info)
-    #
-    # print('\n获取未标注数据')
-    # ret_info = interface.fetch_unlabeled_data(project_id=project_id, num=-1)
-    # print(ret_info)
-    # unlabeled_data = json.loads(ret_info)["data"][0]
-    # labeled_data = {
-    #     "id": unlabeled_data["id"],
-    #     "text": "<e1>Today</e1> is a good <e2>day1</e2>",
-    #     "predicted_relation": "is",
-    #     "predicted_e1": "Today",
-    #     "predicted_e2": "day1",
-    #     "labeled_relation": "is",
-    #     "labeled_e1": "Today",
-    #     "labeled_e2": "day1",
-    #     "additional_info": ["a", "good"]
-    # }
-    #
-    # print('\n提交已标注数据')
-    # ret_info = interface.commit_labeled_data(labeled_data=[labeled_data, ], file_id=file_id)
-    # print(ret_info)
-
-    # print(ret)
-
-
-if __name__ == '__main__':
-    init()
-    project_id = test_create_project()
-    file_id = test_upload_file(project_id=project_id, file_name='test_file')
-    unlabeled_data = test_fetch_unlabeled_data(project_id=project_id, num=-1)
-    test_commit_labaled_data(unlabeled_data=unlabeled_data[1], file_id=file_id)
-    test_export_project(project_id=project_id)
-    num=6
-    ret =[(75, ' Today is a good day1'), (76, ' Today is a good day2'), (77, ' Today is a good day3'), (78, ' Today is a good day4'), (79, ' Today is a good day5'), (80, ' Today is a good day6')]
-    num = ret.__len__() if num > ret.__len__() else num

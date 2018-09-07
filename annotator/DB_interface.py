@@ -7,7 +7,7 @@ from datetime import datetime
 # text = json.loads(json_string)
 # print(text)
 
-from cmdb.DB_Manager import Labeled_DB_Manager, \
+from annotator.DB_Manager import Labeled_DB_Manager, \
     Unlabeled_DB_Manager, Project_info_DB_Manager, File_info_DB_Manager
 
 

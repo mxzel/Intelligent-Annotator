@@ -5,7 +5,7 @@ import psycopg2
 class DB_Manager(object):
     table_name = None
 
-    def __init__(self, dbname="annotator", user="annotator", password="annotator"):
+    def __init__(self, dbname="django-annotator", user="django-annotator", password="django-annotator"):
         self._dbname = dbname
         self._user = user
         self._password = password

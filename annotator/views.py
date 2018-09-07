@@ -7,8 +7,8 @@ from annotator import DB_interface
 
 
 def index(request):
-    #return HttpResponse("hello world!")
-    return render(request,"index.html")
+    # return HttpResponse("hello world!")
+    return render(request, "index.html")
 
 
 def test_connect(request):
@@ -17,57 +17,55 @@ def test_connect(request):
     :param request:
     :return:
     """
-    return JsonResponse(data={"training_process": 50, "code":200, "message":"annotate success"})
+    return JsonResponse(data={"training_process": 50, "code": 200, "message": "annotate success"})
+
 
 def creat_project(request):
-    if request.method=='POST':
-        projectname=request.POST.get("projectname",None)
-        #tags=request.POST.get("tags",None)
-        #projectid=request.POST.get("projectid",None)
+    if request.method == 'POST':
+        projectname = request.POST.get("projectname", None)
+        # tags=request.POST.get("tags",None)
+        # projectid=request.POST.get("projectid",None)
         print(projectname)
         interface = DB_interface.DB_interface()
-
 
         return HttpResponse(interface.create_project(project_name=projectname))
 
 
-
-
 def upload_file(request):
-    if request.method=="POST":
-        file_content=request.POST.get("file_contents",None)
-        file_contents= file_content.strip(',').split(',')
-        #file_contents = ['奥巴马和特朗普是基友', 'Today is a good day']
-        file_name=request.POST.get("file_name",None)
-        project_id=request.POST.get("project_id",None)
+    if request.method == "POST":
+        file_content = request.POST.get("file_contents", None)
+        file_contents = file_content.strip(',').split(',')
+        # file_contents = ['奥巴马和特朗普是基友', 'Today is a good day']
+        file_name = request.POST.get("file_name", None)
+        project_id = request.POST.get("project_id", None)
         interface = DB_interface.DB_interface()
         print("views")
         print(file_contents)
 
-
-        return HttpResponse(interface.upload_file(file_name=file_name,project_id=project_id,file_contents=file_contents))
-
+        return HttpResponse(
+            interface.upload_file(file_name=file_name, project_id=project_id, file_contents=file_contents))
 
 
 def fetch_unlabeled_data(request):
-    if request.method=="POST":
-        projectid=request.POST.get("project_id",None)
-        num=request.POST.get("num",None)
+    if request.method == "POST":
+        projectid = request.POST.get("project_id", None)
+        num = request.POST.get("num", None)
         interface = DB_interface.DB_interface()
         print("views")
         print(projectid)
         print(num)
 
-        return HttpResponse(interface.fetch_unlabeled_data(project_id=projectid,num=num))
+        return HttpResponse(interface.fetch_unlabeled_data(project_id=projectid, num=num))
 
-        #datacontent=models.Unlabeled_DB_Manager.data_content
+        # datacontent=models.Unlabeled_DB_Manager.data_content
 
-        #return JsonResponse(data=[{"id":id,"text":text,"predicted_relation":relation,"predicted_e1":e1,"predicted-e2":e2},{}])
+        # return JsonResponse(data=[{"id":id,"text":text,"predicted_relation":relation,"predicted_e1":e1,"predicted-e2":e2},{}])
 
 
 def commit_label_data(request):
-    if request.method=="POST":
-        file_id=request.POST.get("file_id",None)
+    if request.method == "POST":
+        file_id = request.POST.get("file_id", None)
+        project_id = request.POST.get("project_id", None)
 
         id1 = request.POST.get("id1", None)
         text1 = request.POST.get("text1", None)
@@ -129,83 +127,89 @@ def commit_label_data(request):
         labeled6_e2 = request.POST.get("labeled6_e2", None)
         additional_info6 = request.POST.get("additional_info6", None)
         interface = DB_interface.DB_interface()
-        labeled_data1={
-                    "id": id1,
-                    "text": text1,
-                    "predicted_relation": predicted_relation1,
-                    "predicted_e1": predicted1_e1,
-                    "predicted_e2": predicted1_e2,
-                    "labeled_relation": labeled_relation1,
-                    "labeled_e1": labeled1_e1,
-                    "labeled_e2": labeled1_e2,
-                    "additional_info": additional_info1
-                }
-        labeled_data2={
-                    "id": id2,
-                    "text": text2,
-                    "predicted_relation": predicted_relation2,
-                    "predicted_e1": predicted2_e1,
-                    "predicted_e2": predicted2_e2,
-                    "labeled_relation": labeled_relation2,
-                    "labeled_e1": labeled2_e1,
-                    "labeled_e2": labeled2_e2,
-                    "additional_info": additional_info2
-                }
-        labeled_data3={
-                    "id": id3,
-                    "text": text3,
-                    "predicted_relation": predicted_relation3,
-                    "predicted_e1": predicted3_e1,
-                    "predicted_e2": predicted3_e2,
-                    "labeled_relation": labeled_relation3,
-                    "labeled_e1": labeled3_e1,
-                    "labeled_e2": labeled3_e2,
-                    "additional_info": additional_info3
-                }
-        labeled_data4={
-                    "id": id4,
-                    "text": text4,
-                    "predicted_relation": predicted_relation1,
-                    "predicted_e1": predicted4_e1,
-                    "predicted_e2": predicted4_e2,
-                    "labeled_relation": labeled_relation4,
-                    "labeled_e1": labeled4_e1,
-                    "labeled_e2": labeled4_e2,
-                    "additional_info": additional_info4
-                }
-        labeled_data5={
-                    "id": id5,
-                    "text": text5,
-                    "predicted_relation": predicted_relation5,
-                    "predicted_e1": predicted5_e1,
-                    "predicted_e2": predicted5_e2,
-                    "labeled_relation": labeled_relation5,
-                    "labeled_e1": labeled5_e1,
-                    "labeled_e2": labeled5_e2,
-                    "additional_info": additional_info5
-                }
-        labeled_data6={
-                    "id": id6,
-                    "text": text6,
-                    "predicted_relation": predicted_relation6,
-                    "predicted_e1": predicted6_e1,
-                    "predicted_e2": predicted6_e2,
-                    "labeled_relation": labeled_relation6,
-                    "labeled_e1": labeled6_e1,
-                    "labeled_e2": labeled6_e2,
-                    "additional_info": additional_info6
-                }
+        labeled_data1 = {
+            "unlabeled_id": id1,
+            "text": text1,
+            "project_id": project_id,
+            "predicted_relation": predicted_relation1,
+            "predicted_e1": predicted1_e1,
+            "predicted_e2": predicted1_e2,
+            "labeled_relation": labeled_relation1,
+            "labeled_e1": labeled1_e1,
+            "labeled_e2": labeled1_e2,
+            "additional_info": additional_info1
+        }
+        labeled_data2 = {
+            "unlabeled_id": id2,
+            "text": text2,
+            "project_id": project_id,
+            "predicted_relation": predicted_relation2,
+            "predicted_e1": predicted2_e1,
+            "predicted_e2": predicted2_e2,
+            "labeled_relation": labeled_relation2,
+            "labeled_e1": labeled2_e1,
+            "labeled_e2": labeled2_e2,
+            "additional_info": additional_info2
+        }
+        labeled_data3 = {
+            "unlabeled_id": id3,
+            "text": text3,
+            "project_id": project_id,
+            "predicted_relation": predicted_relation3,
+            "predicted_e1": predicted3_e1,
+            "predicted_e2": predicted3_e2,
+            "labeled_relation": labeled_relation3,
+            "labeled_e1": labeled3_e1,
+            "labeled_e2": labeled3_e2,
+            "additional_info": additional_info3
+        }
+        labeled_data4 = {
+            "unlabeled_id": id4,
+            "text": text4,
+            "project_id": project_id,
+            "predicted_relation": predicted_relation1,
+            "predicted_e1": predicted4_e1,
+            "predicted_e2": predicted4_e2,
+            "labeled_relation": labeled_relation4,
+            "labeled_e1": labeled4_e1,
+            "labeled_e2": labeled4_e2,
+            "additional_info": additional_info4
+        }
+        labeled_data5 = {
+            "unlabeled_id": id5,
+            "text": text5,
+            "project_id": project_id,
+            "predicted_relation": predicted_relation5,
+            "predicted_e1": predicted5_e1,
+            "predicted_e2": predicted5_e2,
+            "labeled_relation": labeled_relation5,
+            "labeled_e1": labeled5_e1,
+            "labeled_e2": labeled5_e2,
+            "additional_info": additional_info5
+        }
+        labeled_data6 = {
+            "unlabeled_id": id6,
+            "text": text6,
+            "project_id": project_id,
+            "predicted_relation": predicted_relation6,
+            "predicted_e1": predicted6_e1,
+            "predicted_e2": predicted6_e2,
+            "labeled_relation": labeled_relation6,
+            "labeled_e1": labeled6_e1,
+            "labeled_e2": labeled6_e2,
+            "additional_info": additional_info6
+        }
 
+        return HttpResponse(interface.commit_labeled_data(
+            labeled_data=[labeled_data1, labeled_data2, labeled_data3, labeled_data4, labeled_data5, labeled_data6],
+            file_id=file_id))
 
+        # models.Labeled_DB_Manager.insert(labeled_id=labeledid,unlabeled_id=unlabeledid,file_id=fileid,data_content=datacontent,labeled_time=labeledtime,labeled_content=labeledcontent,predicted_relation=predictrelation,predicted_e1=predicte1,predicted_e2=predicte2,labeled_relation=labeledrelation,labeled_e1=labelede1,labeled_e2=labelede2,additional_info=additionalinfo)
 
-        return HttpResponse(interface.commit_labeled_data(labeled_data=[labeled_data1,labeled_data2,labeled_data3,labeled_data4,labeled_data5,labeled_data6],file_id=file_id))
-
-        #models.Labeled_DB_Manager.insert(labeled_id=labeledid,unlabeled_id=unlabeledid,file_id=fileid,data_content=datacontent,labeled_time=labeledtime,labeled_content=labeledcontent,predicted_relation=predictrelation,predicted_e1=predicte1,predicted_e2=predicte2,labeled_relation=labeledrelation,labeled_e1=labelede1,labeled_e2=labelede2,additional_info=additionalinfo)
 
 def export_project(request):
     if request.method == "POST":
         projectid = request.POST.get("project_id", None)
         interface = DB_interface.DB_interface()
-
 
         return HttpResponse(interface.export_project(project_id=projectid))

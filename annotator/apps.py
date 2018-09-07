@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class CmdbConfig(AppConfig):
+class AnnotatorConfig(AppConfig):
     name = 'annotator'

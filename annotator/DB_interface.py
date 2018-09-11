@@ -207,6 +207,30 @@ class DB_interface:
         json_string = json.dumps(ret_data, ensure_ascii=False)
         return json_string
 
+    def get_project_tags(self, project_id: int):
+        """
+        获得项目的标签
+        :param project_id: 项目id
+        :return:
+        """
+        try:
+            project = ProjectInfo.objects.get(pk=project_id)
+            ret_data = {
+                "status": True,
+                "code": 200,
+                "tags": project.project_tags,
+                "message": u"标签获取成功"
+            }
+        except IntegrityError as e:
+            ret_data = {
+                "status": False,
+                "code": -1,
+                "message": str(e)
+            }
+        json_string = json.dumps(ret_data, ensure_ascii=False)
+        return json_string
+
+
     def get_base_tags(self):
         """
         获得基础标签

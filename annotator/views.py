@@ -23,7 +23,7 @@ def test_connect(request):
 def creat_project(request):
     if request.method == 'POST':
         projectname = request.POST.get("projectname", None)
-        # tags=request.POST.get("tags",None)
+        #tags=request.POST.get("tags",None)
         # projectid=request.POST.get("projectid",None)
         print(projectname)
         interface = DB_interface.DB_interface()
@@ -44,6 +44,7 @@ def upload_file(request):
 
         return HttpResponse(
             interface.upload_file(file_name=file_name, project_id=project_id, file_contents=file_contents))
+
 
 
 def fetch_unlabeled_data(request):
@@ -213,3 +214,41 @@ def export_project(request):
         interface = DB_interface.DB_interface()
 
         return HttpResponse(interface.export_project(project_id=projectid))
+
+
+def modify_project_name(request):
+    if request.method == "POST":
+        projectid = request.POST.get("project_id", None)
+        new_name = request.POST.get("new_name",None)
+        interface = DB_interface.DB_interface()
+
+        return HttpResponse(interface.modify_project_name(project_id=projectid,new_name=new_name))
+
+def override_tags(request):
+    if request.method == "POST":
+        project_id=request.POST.get("project_id",None)
+        tags=request.POST.get("tags",None)
+        interface = DB_interface.DB_interface()
+
+        return HttpResponse(interface.override_tags(project_id=project_id,tags=tags))
+
+def delete_project(request):
+    if request.method == "POST":
+        projectid = request.POST.get("project_id", None)
+        interface = DB_interface.DB_interface()
+
+        return HttpResponse(interface.delete_project(project_id=projectid))
+
+def get_project_tags(request):
+    if request.method == "POST":
+        projectid = request.POST.get("project_id", None)
+        interface = DB_interface.DB_interface()
+
+        return HttpResponse(interface.get_project_tags(project_id=projectid))
+
+def get_label_progress(request):
+    if request.method == "POST":
+        projectid = request.POST.get("project_id", None)
+        interface = DB_interface.DB_interface()
+
+        return HttpResponse(interface.get_label_progress(project_id=projectid))

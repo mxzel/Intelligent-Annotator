@@ -91,6 +91,25 @@ class DB_interface:
         json_string = json.dumps(ret_data, ensure_ascii=False)
         return json_string
 
+    def get_label_progress(self, project_id: int):
+        try:
+            project = ProjectInfo.objects.get(pk=project_id)
+            ret = project.sentence_labeled / (project.sentence_unlabeled + project.sentence_labeled)
+            ret_data = {
+                "status": True,
+                "code": 200,
+                "progress": ret,
+                "message": u"标注进度获取成功"
+            }
+        except IntegrityError as e:
+            ret_data = {
+                "status": False,
+                "code": -1,
+                "message": str(e)
+            }
+        json_string = json.dumps(ret_data, ensure_ascii=False)
+        return json_string
+
     def override_tags(self, project_id: int, tags: list):
         """
         用新的tags覆盖项目原有的tags
@@ -211,7 +230,7 @@ class DB_interface:
         """
         获得项目的标签
         :param project_id: 项目id
-        :return:
+        :return: tags: list
         """
         try:
             project = ProjectInfo.objects.get(pk=project_id)
@@ -310,6 +329,8 @@ class DB_interface:
                 unlabeled_data = UnLabeledData(file_id=file_info, data_content=sentence,
                                                upload_time=datetime.now(), project_id=project)
                 unlabeled_data.save()
+                project.sentence_unlabeled += 1
+            project.save()
             ret_data = {
                 "status": True,
                 "file_id": file_info.file_id,
@@ -408,8 +429,8 @@ class DB_interface:
         print(ret_dict)
         return json.dumps(ret_dict, ensure_ascii=False)
 
-    def commit_labeled_data(self, json_string: json = '', labeled_data: list = None, file_id: int = None,
-                            project_id: int = None):
+    def commit_labeled_data(self, json_string: json = '', labeled_data: list = None, file_id: int = 0,
+                            project_id: int = 0):
         """
         将已标注的数据提交到数据库
 
@@ -451,6 +472,7 @@ class DB_interface:
             labeled_data = json.loads(json_string)
             labeled_data = labeled_data["data"]
         try:
+            project = ProjectInfo.objects.get(pk=project_id)
             for meta_data in labeled_data:
                 content_origin = meta_data["text"].replace("<e1>", "").replace("</e1>", "").replace("<e2>", "").replace(
                     "</e2>", "")
@@ -463,6 +485,9 @@ class DB_interface:
                                    labeled_e2=meta_data["labeled_e2"], additional_info=meta_data["additional_info"])
                 data.save()
                 UnLabeledData.objects.filter(pk=meta_data["unlabeled_id"]).delete()
+                project.sentence_labeled += 1
+                project.sentence_unlabeled -= 1
+            project.save()
             ret_dict = {
                 "status": True,
                 "code": 200,

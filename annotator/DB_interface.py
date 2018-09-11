@@ -91,7 +91,38 @@ class DB_interface:
         json_string = json.dumps(ret_data, ensure_ascii=False)
         return json_string
 
+    def override_tags(self, project_id: int, tags: list):
+        """
+        用新的tags覆盖项目原有的tags
+        :param project_id: 项目id
+        :param tags: 新的tags
+        :return:
+        """
+        try:
+            project = ProjectInfo.objects.get(pk=project_id)
+            project.project_tags = tags
+            project.save()
+            ret_data = {
+                "status": True,
+                "code": 200,
+                "message": u"添加成功"
+            }
+        except IntegrityError as e:
+            ret_data = {
+                "status": False,
+                "code": -1,
+                "message": str(e)
+            }
+        json_string = json.dumps(ret_data, ensure_ascii=False)
+        return json_string
+
     def add_tag_to_project(self, project_id: int, tag: str):
+        """
+        添加一个tag到项目中
+        :param project_id: 项目id
+        :param tag: 被添加的tag
+        :return:
+        """
         try:
             project = ProjectInfo.objects.get(pk=project_id)
             project.project_tags.append(tag)
@@ -111,6 +142,12 @@ class DB_interface:
         return json_string
 
     def add_tags_to_project(self, project_id: int, tags: list):
+        """
+        添加一些tag到项目中
+        :param project_id: 项目id
+        :param tags: 被添加的tags
+        :return:
+        """
         try:
             project = ProjectInfo.objects.get(pk=project_id)
             project.project_tags.extend(tags)
@@ -565,6 +602,7 @@ def init():
     interface.add_tag_to_project(project_id=project.project_id, tag='test_tag_single')
     interface.add_tags_to_project(project_id=project.project_id, tags=['test_tag_multiple', ])
     interface.delete_tag_from_project(project_id=project.project_id, tag='Cause-Effect')
+    interface.override_tags(project_id=project.project_id, tags=['test_tag1', 'test_tag2'])
 
 
     file_content = ['The most common audits were about waste and recycling.', 'The company fabricates plastic chairs.']

@@ -303,6 +303,7 @@ class DB_interface:
             }
         """
         print("upload_file1")
+        print(file_contents)
         if file_contents is None and project_id == -1:
             data = json.loads(json_string)
             file_name = data["file_name"]
@@ -396,7 +397,7 @@ class DB_interface:
             data = json.loads(json_string)
             project_id = int(data["project_id"])
             num = int(data["num"])
-
+        num = int(num)
         try:
             objects = UnLabeledData.objects.filter(project_id=ProjectInfo.objects.get(pk=project_id))
             objects = objects if num == -1 else objects[:num]

@@ -10,7 +10,7 @@ class ProjectInfo(models.Model):
     """
     project_id = models.AutoField(primary_key=True)
     project_name = models.CharField(max_length=20, unique=True)
-    project_tags = ArrayField(base_field=models.CharField(max_length=20, unique=True, default=None), default=[])
+    project_tags = ArrayField(base_field=models.CharField(max_length=20, unique=True, default=None), default=list)
     # project_process = models.FloatField(default=0.0)
     sentence_labeled = models.IntegerField(default=0)
     sentence_unlabeled = models.IntegerField(default=0)

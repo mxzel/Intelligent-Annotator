@@ -54,7 +54,7 @@ class DB_interface:
                 "status": True,
                 "project_id": project.project_id,
                 "code": 200,
-                "message": "创建成功"
+                "message": u"创建成功"
             }
         except IntegrityError as e:
             ret_data = {

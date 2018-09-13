@@ -83,7 +83,7 @@ class DB_interface:
             ret_data = {
                 "status": True,
                 "code": 200,
-                "message": u"项目名称修改成功"
+                "message": u"Rename project name successfully!"
             }
         except IntegrityError as e:
             ret_data = {
@@ -102,7 +102,7 @@ class DB_interface:
                 "status": True,
                 "code": 200,
                 "progress": ret,
-                "message": u"标注进度获取成功"
+                "message": u"Successfully fetch labeling process!"
             }
         except IntegrityError as e:
             ret_data = {
@@ -124,7 +124,7 @@ class DB_interface:
                 "status": True,
                 "code": 200,
                 "projects": projects,
-                "message": u"获取成功"
+                "message": u"Successfully fetch projects !"
             }
         except IntegrityError as e:
             ret_data = {
@@ -150,7 +150,7 @@ class DB_interface:
             ret_data = {
                 "status": True,
                 "code": 200,
-                "message": u"添加成功"
+                "message": u"Successfully override tags!"
             }
         except IntegrityError as e:
             ret_data = {
@@ -175,7 +175,7 @@ class DB_interface:
             ret_data = {
                 "status": True,
                 "code": 200,
-                "message": u"添加成功"
+                "message": u"Successfully add tag to project!"
             }
         except IntegrityError as e:
             ret_data = {
@@ -200,7 +200,7 @@ class DB_interface:
             ret_data = {
                 "status": True,
                 "code": 200,
-                "message": u"添加成功"
+                "message": u"Successfully add tags to project!"
             }
         except IntegrityError as e:
             ret_data = {
@@ -219,7 +219,7 @@ class DB_interface:
             ret_data = {
                 "status": True,
                 "code": 200,
-                "message": u"删除成功"
+                "message": u"Successfully delete tag from project!"
             }
         except IntegrityError as e:
             ret_data = {
@@ -241,7 +241,7 @@ class DB_interface:
             ret_data = {
                 "status": True,
                 "code": 200,
-                "message": u"项目删除成功"
+                "message": u"Successfully delete project!"
             }
         except IntegrityError as e:
             ret_data = {
@@ -264,7 +264,7 @@ class DB_interface:
                 "status": True,
                 "code": 200,
                 "tags": project.project_tags,
-                "message": u"标签获取成功"
+                "message": u"Successfully fetch tags of project!"
             }
         except IntegrityError as e:
             ret_data = {
@@ -342,7 +342,7 @@ class DB_interface:
                 "status": False,
                 "file_id": -1,
                 "code": -1,
-                "message": "文件格式错误"
+                "message": "Error of file format!"
             }
             json_string = json.dumps(ret_data, ensure_ascii=False)
             return json_string
@@ -362,7 +362,7 @@ class DB_interface:
                 "status": True,
                 "file_id": file_info.file_id,
                 "code": 200,
-                "message": u"文件上传成功！"
+                "message": u"Successfully upload file."
             }
         except IntegrityError as e:
             ret_data = {
@@ -443,7 +443,7 @@ class DB_interface:
                         for meta_data in unlabeled_data
                     ],
                 "code": 200,
-                "message": "成功取出" + str(len(unlabeled_data)) + "条数据！",
+                "message": "Successfully took out " + str(len(unlabeled_data)) + " pieces of data.",
             }
         except IntegrityError as e:
             ret_dict = {
@@ -518,7 +518,7 @@ class DB_interface:
             ret_dict = {
                 "status": True,
                 "code": 200,
-                "message": "已标注数据提交成功"
+                "message": "Labeled data submitted successfully."
             }
         except IntegrityError as e:
             ret_dict = {
@@ -580,14 +580,14 @@ class DB_interface:
                 "status": True,
                 "data": data,
                 "code": 200,
-                "message": "工程导出成功"
+                "message": "Project exported successfully."
             }
         except IntegrityError as e:
             ret_dict = {
                 "status": False,
                 "data": None,
                 "code": -1,
-                "message": "工程导出失败"
+                "message": "Project export failed."
             }
 
         print(ret_dict)

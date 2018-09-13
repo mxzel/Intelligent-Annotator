@@ -33,7 +33,7 @@ function updata_progress() {
     var xml = createXMLHttpRequest()
     xml.open('POST', 'get_label_progress', false);   //这边如果是get请求,可以不填,如果是异步提交也可以不填
     xml.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    xml.send("&project_id=" + id);                         //这里是请求体,如果是get请求,那么里面设为null.
+    xml.send("project_id=" + id);                         //这里是请求体,如果是get请求,那么里面设为null.
     xml.onreadystatechange = function () {     //如果是post,那么里面就设置值
         if (xml.readyState == 4 && xml.status == 200) {     //当xml.readyState == 4的时候,相当于jquery的success页面
             var content = xml.responseText
@@ -75,6 +75,34 @@ function updata_progress() {
             var a2 = document.getElementById("tags1");
             a2.appendChild(a1);
         }
+    }
+
+    function delete_project() {
+        var xml=createXMLHttpRequest();
+        xml.open('POST', 'delete_project', false);   //这边如果是get请求,可以不填,如果是异步提交也可以不填
+        xml.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xml.send("project_id=" + id);//这里是请求体,如果是get请求,那么里面设为null.
+        xml.onreadystatechange = function () {     //如果是post,那么里面就设置值
+        if (xml.readyState == 4 && xml.status == 200) {     //当xml.readyState == 4的时候,相当于jquery的success页面
+            console.log("delete project success")
+            alter("删除成功")
+        }else
+            alert("删除失败")
+    }
+    }
+
+
+    function change_project_name() {
+        var name=document.getElementById("project_name1").innerText;
+        var xml=createXMLHttpRequest();
+        xml.open('POST', 'modify_project_name', false);   //这边如果是get请求,可以不填,如果是异步提交也可以不填
+        xml.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xml.send("project_id=" + id+"&new_name="+name);                         //这里是请求体,如果是get请求,那么里面设为null.
+        xml.onreadystatechange = function () {     //如果是post,那么里面就设置值
+        if (xml.readyState == 4 && xml.status == 200) {     //当xml.readyState == 4的时候,相当于jquery的success页面
+            console.log("change project name success")
+        }
+    }
     }
 
     function add1() {
@@ -331,7 +359,7 @@ function updata_progress() {
     var file_id
     var startID
     var endID
-
+    var isImport=0;
     function fileimport() {
         var selectedFile = document.getElementById("files").files[0];//获取读取的File对象
         var name = selectedFile.name;//读取选中文件的文件名
@@ -498,6 +526,7 @@ function updata_progress() {
 
 
         }
+        isImport++;
     }
 
 
@@ -666,26 +695,46 @@ function updata_progress() {
         var mytable = new Array(table1, table2, table3, table4, table5, table6);
 
         for (var m = 0; m < 6; m++) {
-            var a0 = document.getElementById("index" + (m + 1));
-            var a1 = document.createElement("div");
-            var length1 = jsoncontent.data[m].text.split(" ").length;
-            for (var i = 0; i < length1; i++) {
-                var def = false;
-                var a2 = document.createElement("span")
-                a2.id = m + "text" + i
-                a2.onclick = function () {
-                    def = !def;
-                    if (def) {
-                        getdetail(this);
-                    }
-                    else getdetail2(this);
-                };
+                var a0 = document.getElementById("index" + (m + 1));
+                var a1 = document.createElement("div");
+                var length1 = jsoncontent.data[m].text.split(" ").length;
+                for (var i = 0; i < length1; i++) {
+                    var def = false;
+                    var a2 = document.createElement("span")
+                    a2.id = m + "text" + i
+                    a2.onmousedown = function () {
+                        /*def = !def;
+                        if (def ) {
+                            getdetail(this);
+                        }
+                        else getdetail2(this);*/
+                        startID = this.id;
+                        console.log(startID)
+                    };
+                    a2.onmouseup = function () {
 
-                a2.innerText = mytable[m][i] + " ";
-                a1.appendChild(a2);
+                        endID = this.id;
+                        console.log(endID)
+                        var startid = parseInt(startID.substr(startID.length - 1, 1));
+                        var endid = parseInt(endID.substr(endID.length - 1, 1));
+                        for (var i = startid; i <= endid; i++) {
+                            var a2id = parseInt(endID.substr(0, 1)) + "text" + i;
+
+                            var changeID = document.getElementById(a2id);
+                            console.log(changeID.style.backgroundColor === "orange");
+                            if (changeID.style.backgroundColor === "orange") {
+                                console.log(changeID)
+                                changeID.style.backgroundColor = "#e9ecef"
+                            } else
+                                changeID.style.backgroundColor = "orange"
+                        }
+                    }
+
+                    a2.innerText = mytable[m][i] + " ";
+                    a1.appendChild(a2);
+                }
+                a0.appendChild(a1);
             }
-            a0.appendChild(a1);
-        }
 
         $("#choose1").val(jsoncontent.data[0].predicted_relation)
         for (var i = 0; i < table1.length; i++) {
@@ -770,7 +819,7 @@ function updata_progress() {
             submit = submit + 1;
 
         a = 6 - submit;
-        if (submit < 6) {
+        if (submit < 6&&isImport!=0) {
             var con = confirm("您还有" + a + "条记录没有标注，确定提交吗？");
             if (con == true) {
                 var temp = confirm("你已经提交成功！");
@@ -948,6 +997,8 @@ function updata_progress() {
 
 
             }
+        }else{
+            alert("请先导入数据！")
         }
 
         submit = 0;

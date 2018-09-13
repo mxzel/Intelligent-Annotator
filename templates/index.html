@@ -72,6 +72,13 @@
             </div>
 
             <div class="modal-body">
+                项目名称
+                <div class="form-inline">
+                <input type="text" class="form-control" style="margin: 10px" id="project_name1" placeholder="项目名称">
+                <button type="button" class="btn btn-default" onclick="change_project_name()">
+                    更改
+                </button>
+                </div>
                 预设标签
                 <div class="form-inline">
                     <input type="text" class="form-control" style="margin: 10px" id="tag1" placeholder="请输入标签名称/将所有标签添加后再提交">
@@ -80,6 +87,9 @@
                     </button>
                 </div>
                 <div id="tags1"></div>
+                    <button type="button" class="btn btn-danger" style="margin: 10px" onclick="delete_project()">
+                        删除此项目
+                    </button>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" id="close11" data-dismiss="modal">关闭

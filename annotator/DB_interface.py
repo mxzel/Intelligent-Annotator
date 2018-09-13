@@ -5,13 +5,28 @@ from django.db import IntegrityError
 
 from annotator.models import *
 
-
-# data = [{'a': 1, 'b': 2, 'c': 3}]
-# json_string = json.dumps(data, ensure_ascii=False)
-# json_string = json.dumps(data, sort_keys=True, indent=4, separators=(',', ': '), ensure_ascii=False)
-# print(json_string)
-# text = json.loads(json_string)
-# print(text)
+"""
+Project:
+    create_project(project_name, project_tags): 创建项目
+    modify_project_name(project_id): 修改项目名字
+    get_projects(): 获得所有项目
+    delete_project(project_id): 删除项目
+    export_project(project_id): 导出项目
+    
+Tag: 
+    override_tags(project_id, tags): 用新的标签覆盖所有标签
+    add_tag_to_project(project_id, tag): 为项目添加一个标签
+    add_tags_to_project(project_id, tags): 为项目添加一些标签
+    delete_tag_from_project(project_id, tag): 删除项目中的一个标签
+    get_project_tags(project_id): 获得项目标签
+    get_base_tags(): 获得基础标签
+    
+Label:
+    upload_file(file_name, project_id, file_contents): 上传文件
+    get_label_process(project_id): 获得标注进度
+    fetch_unlabeled_data(project_id, num): 获取未标注数据
+    commit_labeled_data(labeled_data, project_id): 提交已标注数据
+"""
 
 
 class DB_interface:
@@ -119,12 +134,12 @@ class DB_interface:
         :return:
         """
         try:
-            projects = list(ProjectInfo.objects.all())
+            projects = ProjectInfo.objects.all()
             ret_data = {
                 "status": True,
                 "code": 200,
-                "projects": projects,
-                "message": u"Successfully fetch projects !"
+                "projects": [(p.project_id, p.project_name) for p in projects],
+                "message": u"Successfully fetch projects!"
             }
         except IntegrityError as e:
             ret_data = {
@@ -134,7 +149,6 @@ class DB_interface:
             }
         json_string = json.dumps(ret_data, ensure_ascii=False)
         return json_string
-
 
     def override_tags(self, project_id: int, tags: list):
         """
@@ -274,7 +288,6 @@ class DB_interface:
             }
         json_string = json.dumps(ret_data, ensure_ascii=False)
         return json_string
-
 
     def get_base_tags(self):
         """
@@ -666,7 +679,8 @@ def init():
     interface = DB_interface()
 
     # 添加基本 tags
-    relations = ["Cause-Effect", "Instrument-Agency", "Product-Producer", "Content-Container", "Entity-Origin", "Entity-Destination", "Component-Whole", "Member-Collection", "Message-Topic", "Other"]
+    relations = ["Cause-Effect", "Instrument-Agency", "Product-Producer", "Content-Container", "Entity-Origin",
+                 "Entity-Destination", "Component-Whole", "Member-Collection", "Message-Topic", "Other"]
     for r in relations:
         base_tag = BaseTags(tag_name=r)
         base_tag.save()
@@ -679,7 +693,6 @@ def init():
     interface.add_tags_to_project(project_id=project.project_id, tags=['test_tag_multiple', ])
     interface.delete_tag_from_project(project_id=project.project_id, tag='Cause-Effect')
     interface.override_tags(project_id=project.project_id, tags=['test_tag1', 'test_tag2'])
-
 
     file_content = ['The most common audits were about waste and recycling.', 'The company fabricates plastic chairs.']
     # file = FileInfo(file_name='test_file', project_id=project, file_content=file_content)
@@ -705,4 +718,3 @@ def init():
     interface.commit_labeled_data(labeled_data=labeled_data, file_id=file_id, project_id=project.project_id)
 
     interface.export_project(project_id=project.project_id)
-

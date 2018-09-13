@@ -81,6 +81,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'annotator',
         'USER': 'annotator',
+        'HOST': '223.3.75.75',
+        'PORT': 10880,
         'PASSWORD': 'annotator',
     }
 }

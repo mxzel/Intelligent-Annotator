@@ -19,7 +19,7 @@ class DB_interface:
     def svm(self, content):
         return content
 
-    def create_project(self, json_string: json = '', project_name: str = '', project_tags: list = []):
+    def create_project(self, json_string: json = '', project_name: str = '', project_tags=None):
         """
         新建一个工程
 
@@ -40,7 +40,9 @@ class DB_interface:
                 "message": "创建成功"
             }
         """
-        print('开始调用')
+        if project_tags is None:
+            project_tags = []
+        # print('开始调用')
 
         if project_name == '':
             data = json.loads(json_string)
@@ -64,6 +66,7 @@ class DB_interface:
 
         json_string = json.dumps(ret_data, ensure_ascii=False)
         print(json_string)
+
         return json_string
 
     def modify_project_name(self, project_id: int, new_name: str):
@@ -109,6 +112,29 @@ class DB_interface:
             }
         json_string = json.dumps(ret_data, ensure_ascii=False)
         return json_string
+
+    def get_projects(self):
+        """
+        获得项目列表
+        :return:
+        """
+        try:
+            projects = list(ProjectInfo.objects.all())
+            ret_data = {
+                "status": True,
+                "code": 200,
+                "projects": projects,
+                "message": u"获取成功"
+            }
+        except IntegrityError as e:
+            ret_data = {
+                "status": False,
+                "code": -1,
+                "message": str(e)
+            }
+        json_string = json.dumps(ret_data, ensure_ascii=False)
+        return json_string
+
 
     def override_tags(self, project_id: int, tags: list):
         """

@@ -34,7 +34,7 @@ def creat_project(request):
 def upload_file(request):
     if request.method == "POST":
         file_content = request.POST.get("file_contents", None)
-        file_contents = file_content.strip(',').split(',')
+        file_contents = file_content.strip(',').split('\n')
         # file_contents = ['奥巴马和特朗普是基友', 'Today is a good day']
         file_name = request.POST.get("file_name", None)
         project_id = request.POST.get("project_id", None)

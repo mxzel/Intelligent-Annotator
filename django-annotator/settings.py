@@ -82,7 +82,7 @@ DATABASES = {
         'NAME': 'annotator',
         'USER': 'annotator',
         'PASSWORD': 'annotator',
-        # 'HOST':'223.3.127.226',
+        # 'HOST':'223.3.127.226',pythion
     }
 }
 

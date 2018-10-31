@@ -242,40 +242,44 @@ function updata_progress() {
     var project_info = new Map();
 
     function confirm2() {
-        $("#buttons0").empty();
-        $("#buttons1").empty();
-        $("#buttons2").empty();
-        $("#buttons3").empty();
-        $("#buttons4").empty();
-        $("#buttons5").empty();
-        var t = $('#newname').val();
-        if (t != null && t != "") {
-            document.getElementById("dropdown").innerHTML = "当前项目：" + t;
-            var aText = "<li><a onclick=\"changeproject(this)\">" + t + "</a></li>";
-            var Text = document.getElementById("selectproject").innerHTML
-            document.getElementById("selectproject").innerHTML = Text + aText;
-        }
+        if($("#index1").text()==null){
+            alter("无提交内容")
+        }else {
+            $("#buttons0").empty();
+            $("#buttons1").empty();
+            $("#buttons2").empty();
+            $("#buttons3").empty();
+            $("#buttons4").empty();
+            $("#buttons5").empty();
+            var t = $('#newname').val();
+            if (t != null && t != "") {
+                document.getElementById("dropdown").innerHTML = "当前项目：" + t;
+                var aText = "<li><a onclick=\"changeproject(this)\">" + t + "</a></li>";
+                var Text = document.getElementById("selectproject").innerHTML
+                document.getElementById("selectproject").innerHTML = Text + aText;
+            }
 
-        var temp = confirm("你已经提交成功！");
-        $("div[name='projectname']").val(t);
-        $("div[name='tags']").val(tags);
-        //$("div[name='projectid']").val(t);
-        $('#myModal').modal('hide');
-        $('#myModal1').modal('hide');
-        if (temp == true) {
-            setbutton2();
-            setbutton();
+            var temp = confirm("你已经提交成功！");
+            $("div[name='projectname']").val(t);
+            $("div[name='tags']").val(tags);
+            //$("div[name='projectid']").val(t);
+            $('#myModal').modal('hide');
+            $('#myModal1').modal('hide');
+            if (temp == true) {
+                setbutton2();
+                setbutton();
 
-        }
+            }
 
-        xml = createXMLHttpRequest();
-        xml.open('POST', 'creat_project', true);
-        xml.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xml.send("projectname=" + t);
-        xml.onreadystatechange = function () {     //如果是post,那么里面就设置值
-            if (xml.readyState == 4 && xml.status == 200) {     //当xml.readyState == 4的时候,相当于jquery的success页面
-                console.log("projectname:" + xml.responseText)
-                project_info.set(t, xml.responseText.substring(31, 33))
+            xml = createXMLHttpRequest();
+            xml.open('POST', 'creat_project', true);
+            xml.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xml.send("projectname=" + t);
+            xml.onreadystatechange = function () {     //如果是post,那么里面就设置值
+                if (xml.readyState == 4 && xml.status == 200) {     //当xml.readyState == 4的时候,相当于jquery的success页面
+                    console.log("projectname:" + xml.responseText)
+                    project_info.set(t, xml.responseText.substring(31, 33))
+                }
             }
         }
 

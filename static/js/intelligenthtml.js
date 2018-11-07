@@ -1,6 +1,13 @@
+//TODO：get_label_progress；override_tags；
+
 var state=new Array();
 var tags=new Array();
 var textshow="";
+
+
+var clickcount = 0//用于统计当前页面用户标注数量
+
+var project_info = new Map();//项目信息
 
 HTMLElement.prototype.__defineGetter__("currentStyle", function () {
 return this.ownerDocument.defaultView.getComputedStyle(this, null);
@@ -29,7 +36,13 @@ function add() {
 
 }
 
-function updata_progress() {
+    /**
+     * 进度条更新
+     *
+     * @param
+     * @return
+     */
+    function updata_progress() {
     var xml = createXMLHttpRequest()
     xml.open('POST', 'get_label_progress', false);   //这边如果是get请求,可以不填,如果是异步提交也可以不填
     xml.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -47,6 +60,12 @@ function updata_progress() {
 
     }
 
+    /**
+     * 取消标注标签
+     *
+     * @param
+     * @return
+     */
     function cancel(i) {
         var a1 = document.getElementById("tags");
         var text = i.innerText;
@@ -61,6 +80,12 @@ function updata_progress() {
 
     }
 
+    /**
+     * 更改配置后初始化标注标签
+     *
+     * @param
+     * @return
+     */
     function initags() {
 
         for (var i = 0; i < tags.length; i++) {
@@ -70,13 +95,19 @@ function updata_progress() {
             a1.className = "btn btn-lg btn-warning";
             a1.setAttribute("style", "margin-left: 8px;margin-bottom:12px;height: 30px;line-height: 10px;");
             a1.onclick = function () {
-                cancel1(this);
+                cancel(this);
             };
             var a2 = document.getElementById("tags1");
             a2.appendChild(a1);
         }
     }
 
+
+    /**
+     * 删除项目
+     *
+     * @return
+     */
     function delete_project() {
         var xml=createXMLHttpRequest();
         xml.open('POST', 'delete_project', false);   //这边如果是get请求,可以不填,如果是异步提交也可以不填
@@ -87,11 +118,14 @@ function updata_progress() {
             console.log("delete project success")
             alter("删除成功")
         }else
-            alert("删除失败")
+            alert("删除失败")//TODO：失败原因
     }
     }
 
-
+    /**
+     * 更改项目名称
+     * @return
+     */
     function change_project_name() {
         var name=document.getElementById("project_name1").innerText;
         var xml=createXMLHttpRequest();
@@ -102,10 +136,15 @@ function updata_progress() {
         if (xml.readyState == 4 && xml.status == 200) {     //当xml.readyState == 4的时候,相当于jquery的success页面
             console.log("change project name success")
         }
+        //TODO：更改失败
     }
     }
 
-    function add1() {
+    /**
+     * 添加标签（新建项目时）
+     * @return
+     */
+    function addtag() {
         var text = $('#tag1').val();
         tags.push(text);
 
@@ -114,7 +153,7 @@ function updata_progress() {
         a1.className = "btn btn-lg btn-warning";
         a1.setAttribute("style", "margin-left: 8px;margin-bottom:12px;height: 30px;line-height: 10px;");
         a1.onclick = function () {
-            cancel1(this);
+            cancel(this);
         };
         var a2 = document.getElementById("tags1");
         a2.appendChild(a1);
@@ -127,25 +166,19 @@ function updata_progress() {
     }
 
 
-    function cancel1(i) {
-        var a1 = document.getElementById("tags1");
-        var text = i.innerText;
-        var index = 0;
-        for (var j = 0; j < tags.length; j++) {
-            if (text == tags[j])
-                index = j;
-        }
-        tags.splice(index, 1);
-        a1.removeChild(i);
-
-    }
-
-
-    function a() {
+    /**
+     * 点击导入按钮是模拟点击files
+     */
+    function clickFile() {
         $("#files").click();
 
     }
 
+
+
+    /**
+     * 标注界面标签点击时改变颜色
+     */
     function changecolor(self) {
         var mycolor = document.getElementById(self.id);
 
@@ -175,6 +208,10 @@ function updata_progress() {
     }
 
 
+    /**
+     * 改变项目
+     */
+
     function changeproject(cp) {
         var vs = cp.innerText
         //var vs = $('#selectproject option:selected').val();
@@ -194,8 +231,11 @@ function updata_progress() {
         }
     }
 
-    var clickcount = 0
 
+
+    /**
+     * 新建项目
+     */
     function newproject() {
 
         tags.splice(0, tags.length);
@@ -239,9 +279,11 @@ function updata_progress() {
 //返回后台
     }
 
-    var project_info = new Map();
 
-    function confirm2() {
+    /**
+     * 提交项目配置
+     */
+    function confirmProjectInfo() {
         if($("#index1").text()==null){
             alter("无提交内容")
         }else {
@@ -266,7 +308,7 @@ function updata_progress() {
             $('#myModal').modal('hide');
             $('#myModal1').modal('hide');
             if (temp == true) {
-                setbutton2();
+                setTagButtons();
                 setbutton();
 
             }
@@ -286,6 +328,9 @@ function updata_progress() {
 
     }
 
+    /**
+     * ajax
+     */
     function createXMLHttpRequest() {
         var xmlHttp;
         // 适用于大多数浏览器，以及IE7和IE更高版本
@@ -306,6 +351,10 @@ function updata_progress() {
         return xmlHttp;
     }
 
+
+    /**
+     * 检查多选框是否应被勾选
+     */
     function defaultcheck(i) {
         var j = i.getAttribute("id");
         var reg = /^[0-9]+.?[0-9]*$/;
@@ -327,7 +376,11 @@ function updata_progress() {
         document.getElementById("ok" + j3).checked = true;
     }
 
-    function setbutton2() {
+
+    /**
+     * 重置标签按钮
+     */
+    function setTagButtons() {
         var temp = tags.length;
 
         for (var j = 0; j < 6; j++) {
@@ -364,6 +417,9 @@ function updata_progress() {
     var startID
     var endID
     var isImport=0;
+     /**
+     * 文件导入+初始化界面
+     */
     function fileimport() {
         var selectedFile = document.getElementById("files").files[0];//获取读取的File对象
         var name = selectedFile.name;//读取选中文件的文件名
@@ -532,19 +588,9 @@ function updata_progress() {
         }
         isImport++;
     }
-
-
-    function getdetail(column) {
-        column.style.background = "orange";
-
-    }
-
-    function getdetail2(column2) {
-        column2.style.background = "red";
-
-    }
-
-
+    /**
+     * 文件导出
+     */
     function fileexport() {
 
         xml2 = createXMLHttpRequest()
@@ -573,6 +619,10 @@ function updata_progress() {
     var page1 = 6;
     var mydata = new Array();
 
+
+    /**
+     * 初始化界面按钮
+     */
     function setbutton() {
         document.getElementById('ok1').checked = false;
         document.getElementById('ok2').checked = false;
@@ -604,47 +654,9 @@ function updata_progress() {
         }
     }
 
-    function setinner() {
-        var mycontent1 = document.getElementById("index1");
-        var mycontent2 = document.getElementById("index2");
-        var mycontent3 = document.getElementById("index3");
-        var mycontent4 = document.getElementById("index4");
-        var mycontent5 = document.getElementById("index5");
-        var mycontent6 = document.getElementById("index6");
-        var mycontent7 = document.getElementById("choose1");
-        var mycontent8 = document.getElementById("choose2");
-        var mycontent9 = document.getElementById("choose3");
-        var mycontent10 = document.getElementById("choose4");
-        var mycontent11 = document.getElementById("choose5");
-        var mycontent12 = document.getElementById("choose6");
-
-
-        var con1 = new Array(mycontent1, mycontent2, mycontent3, mycontent4, mycontent5, mycontent6);
-        var con2 = new Array(mycontent7, mycontent8, mycontent9, mycontent10, mycontent11, mycontent12);
-        for (var i = 0; i < 6; i++) {
-
-
-            con1[i].innerText = null;
-            con2[i].innerText = "选中标签为：";
-
-        }
-        ;
-    }
-
-    function fnDelete() {
-        var elem = getElementById("index1");
-        while (elem.hasChildNodes()) //当elem下还存在子节点时 循环继续
-        {
-            elem.removeChild(elem.firstChild);
-        }
-    }
-
-    function removeSpan() {
-        var obj = document.getElementById("span");
-        var parent = obj.parentNode;
-        parent.removeChild(obj);
-    }
-
+    /**
+     * 初始化文本显示区域
+     */
     function set() {
 
         for (var i = 0; i < tags.length * 6; i++) {
@@ -707,11 +719,6 @@ function updata_progress() {
                     var a2 = document.createElement("span")
                     a2.id = m + "text" + i
                     a2.onmousedown = function () {
-                        /*def = !def;
-                        if (def ) {
-                            getdetail(this);
-                        }
-                        else getdetail2(this);*/
                         startID = this.id;
                         console.log(startID)
                     };
@@ -739,6 +746,9 @@ function updata_progress() {
                 }
                 a0.appendChild(a1);
             }
+
+
+            //预标注
 
         $("#choose1").val(jsoncontent.data[0].predicted_relation)
         for (var i = 0; i < table1.length; i++) {
@@ -798,7 +808,12 @@ function updata_progress() {
         text_id = []
     }
 
-    function confirm1() {
+
+
+    /**
+     * 提交标注数据
+     */
+    function commitData() {
 
         var a = 0;
         var submit = 0;
@@ -953,42 +968,6 @@ function updata_progress() {
                     var id5 = text_id[4].id
                     var id6 = text_id[5].id
 
-
-                    /* for(var i=0;i<text_id.length;i++ ){
-                         if(text_id[i].text.toString()==text1)
-                             id1=text_id[i].id
-                     }
-
-                     for(var i=0;i<text_id.length;i++ ){
-                         if(text_id[i].text.toString()==text2)
-                             id2=text_id[i].id
-                     }
-
-                     for(var i=0;i<text_id.length;i++ ){
-                         if(text_id[i].text.toString()==text3)
-                             id3=text_id[i].id
-                     }
-
-                     for(var i=0;i<text_id.length;i++ ){
-                         if(text_id[i].text.toString()==text3)
-                             id3=text_id[i].id
-                     }
-
-                     for(var i=0;i<text_id.length;i++ ){
-                         if(text_id[i].text.toString()==text4)
-                             id4=text_id[i].id
-                     }
-
-                     for(var i=0;i<text_id.length;i++ ){
-                         if(text_id[i].text.toString()==text5)
-                             id5=text_id[i].id
-                     }
-
-                     for(var i=0;i<text_id.length;i++ ){
-                         if(text_id[i].text.toString()==text6)
-                             id6=text_id[i].id
-                     }*/
-
                     xml2 = createXMLHttpRequest()
                     xml2.open('POST', 'commit_label_data', false);
                     xml2.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -1009,20 +988,6 @@ function updata_progress() {
 
 
     }
-
-    function myClose() {
-        var a = 5 - submit;
-        alert("aaa")
-        if (submit < 5) {
-            var con = confirm("您还有" + a + "条记录没有标注，是否保存？");
-
-            if (con == true) {
-                var temp = confirm("你已经保存成功！");
-            }
-        }
-
-    }
-
 
     function trim(s) {
         return trimRight(trimLeft(s));
@@ -1045,7 +1010,7 @@ function updata_progress() {
         return str;
     }
 
-//去掉右边的空白 www.2cto.com
+//去掉右边的空白
     function trimRight(s) {
         if (s == null) return "";
         var whitespace = new String(" \t\n\r");

@@ -52,7 +52,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" id="close1" data-dismiss="modal">关闭
                 </button>
-                <button type="button" class="btn btn-primary"  onclick="confirm2()">
+                <button type="button" class="btn btn-primary"  onclick="confirmProjectInfo()">
                     提交
                 </button>
 
@@ -82,7 +82,7 @@
                 预设标签
                 <div class="form-inline">
                     <input type="text" class="form-control" style="margin: 10px" id="tag1" placeholder="请输入标签名称/将所有标签添加后再提交">
-                    <button type="button" class="btn btn-default" onclick="add1()">
+                    <button type="button" class="btn btn-default" onclick="addtag()">
                         添加
                     </button>
                 </div>
@@ -94,7 +94,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" id="close11" data-dismiss="modal">关闭
                 </button>
-                <button type="button" class="btn btn-primary"  onclick="confirm2()">
+                <button type="button" class="btn btn-primary"  onclick="confirmProjectInfo()">
                     提交
                 </button>
             </div>
@@ -128,7 +128,7 @@
                     </ul>
                 </li>
                 <li ><a href="#"  data-toggle="modal" data-target="#myModal1" onclick="initags()">更改配置 <span class="sr-only">(current)</span></a></li>
-                <li><a href="#" onclick="a()" >导入</a></li>
+                <li><a href="#" onclick="clickFile()" >导入</a></li>
                 <input type="file" id="files" style="display:none" onchange="fileimport();"/>
 
                 <li><a href="#" id="export" onclick="fileexport()">导出</a></li>
@@ -136,7 +136,7 @@
             </ul>
             <form class="navbar-form navbar-left">
 
-                <button type="submit" class="btn btn-default" onclick="confirm1()">提交</button>
+                <button type="submit" class="btn btn-default" onclick="commitData()">提交</button>
             </form>
 
             <div class="progress" style="margin-top: 15px;width: 400px">

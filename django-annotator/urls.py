@@ -25,5 +25,11 @@ urlpatterns = [
     path('upload_file',views.upload_file),
     path('fetch_unlabeled_data',views.fetch_unlabeled_data),
     path('commit_label_data',views.commit_label_data),
-    path('export_project',views.export_project)
+    path('export_project',views.export_project),
+    path('override_tags',views.override_tags),
+    path('get_label_progress',views.get_label_progress),
+    path('delete_project',views.delete_project),
+    path('modify_project_name',views.modify_project_name),
+    path('get_project_tags',views.get_project_tags)
+
 ]

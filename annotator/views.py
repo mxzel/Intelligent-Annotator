@@ -18,16 +18,21 @@ def test_connect(request):
     :return:
     """
     return JsonResponse(data={"training_process": 50, "code": 200, "message": "annotate success"})
+
 #新建项目
+
+
 def creat_project(request):
     if request.method == 'POST':
         projectname = request.POST.get("projectname", None)
-        #tags=request.POST.get("tags",None)
+        tags=request.POST.get("tags",None)
         # projectid=request.POST.get("projectid",None)
-        print(projectname)
+        print("tags:"+tags)
+        tagsList = tags.split(',')
         interface = DB_interface.DB_interface()
 
-        return HttpResponse(interface.create_project(project_name=projectname))
+        return HttpResponse(
+            interface.create_project(project_name=projectname,project_tags=tagsList))
 
 #上传文件
 def upload_file(request):
@@ -46,6 +51,8 @@ def upload_file(request):
 
 
 #获取未标注数据
+
+
 def fetch_unlabeled_data(request):
     if request.method == "POST":
         projectid = request.POST.get("project_id", None)
@@ -62,6 +69,8 @@ def fetch_unlabeled_data(request):
         # return JsonResponse(data=[{"id":id,"text":text,"predicted_relation":relation,"predicted_e1":e1,"predicted-e2":e2},{}])
 
 #提交未标注数据
+
+
 def commit_label_data(request):
     if request.method == "POST":
         file_id = request.POST.get("file_id", None)
@@ -207,6 +216,8 @@ def commit_label_data(request):
         # models.Labeled_DB_Manager.insert(labeled_id=labeledid,unlabeled_id=unlabeledid,file_id=fileid,data_content=datacontent,labeled_time=labeledtime,labeled_content=labeledcontent,predicted_relation=predictrelation,predicted_e1=predicte1,predicted_e2=predicte2,labeled_relation=labeledrelation,labeled_e1=labelede1,labeled_e2=labelede2,additional_info=additionalinfo)
 
 #导出项目
+
+
 def export_project(request):
     if request.method == "POST":
         projectid = request.POST.get("project_id", None)
@@ -215,6 +226,8 @@ def export_project(request):
         return HttpResponse(interface.export_project(project_id=projectid))
 
 #更改项目名称
+
+
 def modify_project_name(request):
     if request.method == "POST":
         projectid = request.POST.get("project_id", None)
@@ -224,16 +237,21 @@ def modify_project_name(request):
         return HttpResponse(interface.modify_project_name(project_id=projectid,new_name=new_name))
 
 #更改预设标注标签
+
+
 def override_tags(request):
     if request.method == "POST":
         project_id=request.POST.get("project_id",None)
         tags=request.POST.get("tags",None)
         interface = DB_interface.DB_interface()
+        tagsList = tags.split(',')
 
-        return HttpResponse(interface.override_tags(project_id=project_id,tags=tags))
+        return HttpResponse(interface.override_tags(project_id=project_id,tags=tagsList))
 
 
 #删除项目
+
+
 def delete_project(request):
     if request.method == "POST":
         projectid = request.POST.get("project_id", None)
@@ -242,6 +260,8 @@ def delete_project(request):
         return HttpResponse(interface.delete_project(project_id=projectid))
 
 #获取项目预设标签
+
+
 def get_project_tags(request):
     if request.method == "POST":
         projectid = request.POST.get("project_id", None)
@@ -251,6 +271,8 @@ def get_project_tags(request):
 
 
 #获取进度条进度
+
+
 def get_label_progress(request):
     if request.method == "POST":
         projectid = request.POST.get("project_id", None)

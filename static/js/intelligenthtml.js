@@ -223,14 +223,20 @@ function add() {
             if (con == true) {
                 var temp = confirm("你已经提交成功！");
                 if (temp == true) {
-                    set();
+                    xml.open('POST', 'get_project_tags', false);   //这边如果是get请求,可以不填,如果是异步提交也可以不填
+                    xml.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                    xml.send("project_id=" + id+"&new_name="+name);                         //这里是请求体,如果是get请求,那么里面设为null.
+                    xml.onreadystatechange = function () {     //如果是post,那么里面就设置值
+                    if (xml.readyState == 4 && xml.status == 200) {     //当xml.readyState == 4的时候,相当于jquery的success页面
+                        tags = xml.responseText
+                        console.log("get tags success")
+                    }
                 }
-
-
+                set();
             }
         }
     }
-
+}
 
 
     /**
@@ -316,13 +322,22 @@ function add() {
             xml = createXMLHttpRequest();
             xml.open('POST', 'creat_project', true);
             xml.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xml.send("projectname=" + t);
+            xml.send("projectname=" + t+"&tags="+tags.toString());
             xml.onreadystatechange = function () {     //如果是post,那么里面就设置值
                 if (xml.readyState == 4 && xml.status == 200) {     //当xml.readyState == 4的时候,相当于jquery的success页面
                     console.log("projectname:" + xml.responseText)
                     project_info.set(t, xml.responseText.substring(31, 33))
                 }
             }
+            // xml1 = createXMLHttpRequest();
+            // xml1.open('POST', 'override_tags', true);
+            // xml1.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            // xml1.send("project_id=" + id + "&tags="+tagString);
+            // xml1.onreadystatechange = function () {     //如果是post,那么里面就设置值
+            //     if (xml1.readyState == 4 && xml1.status == 200) {     //当xml.readyState == 4的时候,相当于jquery的success页面
+            //         console.log("projectid:" + xml.responseText)
+            //     }
+            // }
         }
 
 
@@ -1084,5 +1099,6 @@ function add() {
         this.size = size;
         this.isEmpty = isEmpty;
     }
+
 
 

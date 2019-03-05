@@ -63,7 +63,7 @@ class DB_interface:
             data = json.loads(json_string)
             project_name = data["project_name"]
         try:
-            project = ProjectInfo(project_name=project_name, project_tags=project_tags)
+            project = Project(project_name=project_name, project_tags=project_tags)
             project.save()
             ret_data = {
                 "status": True,
@@ -92,7 +92,7 @@ class DB_interface:
         :return: json
         """
         try:
-            project = ProjectInfo.objects.get(pk=project_id)
+            project = Project.objects.get(pk=project_id)
             project.project_name = new_name
             project.save()
             ret_data = {
@@ -111,7 +111,7 @@ class DB_interface:
 
     def get_label_progress(self, project_id: int):
         try:
-            project = ProjectInfo.objects.get(pk=project_id)
+            project = Project.objects.get(pk=project_id)
             ret = project.sentence_labeled / (project.sentence_unlabeled + project.sentence_labeled)
             ret_data = {
                 "status": True,
@@ -134,7 +134,7 @@ class DB_interface:
         :return:
         """
         try:
-            projects = ProjectInfo.objects.all()
+            projects = Project.objects.all()
             ret_data = {
                 "status": True,
                 "code": 200,
@@ -158,7 +158,7 @@ class DB_interface:
         :return:
         """
         try:
-            project = ProjectInfo.objects.get(pk=project_id)
+            project = Project.objects.get(pk=project_id)
             project.project_tags = tags
             project.save()
             ret_data = {
@@ -183,7 +183,7 @@ class DB_interface:
         :return:
         """
         try:
-            project = ProjectInfo.objects.get(pk=project_id)
+            project = Project.objects.get(pk=project_id)
             project.project_tags.append(tag)
             project.save()
             ret_data = {
@@ -208,7 +208,7 @@ class DB_interface:
         :return:
         """
         try:
-            project = ProjectInfo.objects.get(pk=project_id)
+            project = Project.objects.get(pk=project_id)
             project.project_tags.extend(tags)
             project.save()
             ret_data = {
@@ -227,7 +227,7 @@ class DB_interface:
 
     def delete_tag_from_project(self, project_id: int, tag: str):
         try:
-            project = ProjectInfo.objects.get(pk=project_id)
+            project = Project.objects.get(pk=project_id)
             project.project_tags.remove(tag)
             project.save()
             ret_data = {
@@ -251,7 +251,7 @@ class DB_interface:
         :return: json
         """
         try:
-            ProjectInfo.objects.get(pk=project_id).delete()
+            Project.objects.get(pk=project_id).delete()
             ret_data = {
                 "status": True,
                 "code": 200,
@@ -273,7 +273,7 @@ class DB_interface:
         :return: tags: list
         """
         try:
-            project = ProjectInfo.objects.get(pk=project_id)
+            project = Project.objects.get(pk=project_id)
             ret_data = {
                 "status": True,
                 "code": 200,
@@ -362,8 +362,8 @@ class DB_interface:
 
         # 文件格式正确，尝试写入数据库
         try:
-            project = ProjectInfo.objects.get(pk=project_id)
-            file_info = FileInfo(file_name=file_name, project_id=project)
+            project = Project.objects.get(pk=project_id)
+            file_info = File(file_name=file_name, project_id=project)
             file_info.save()
             for sentence in file_contents:
                 unlabeled_data = UnLabeledData(file_id=file_info, data_content=sentence,
@@ -438,7 +438,7 @@ class DB_interface:
             num = int(data["num"])
         num = int(num)
         try:
-            objects = UnLabeledData.objects.filter(project_id=ProjectInfo.objects.get(pk=project_id))
+            objects = UnLabeledData.objects.filter(project_id=Project.objects.get(pk=project_id))
             objects = objects if num == -1 else objects[:num]
             unlabeled_data = [{"unlabeled_id": o.unlabeled_id, "data_content": o.data_content}
                               for o in objects]
@@ -512,12 +512,12 @@ class DB_interface:
             labeled_data = json.loads(json_string)
             labeled_data = labeled_data["data"]
         try:
-            project = ProjectInfo.objects.get(pk=project_id)
+            project = Project.objects.get(pk=project_id)
             for meta_data in labeled_data:
                 content_origin = meta_data["text"].replace("<e1>", "").replace("</e1>", "").replace("<e2>", "").replace(
                     "</e2>", "")
-                data = LabeledData(data_content=content_origin, file_id=FileInfo.objects.get(pk=file_id),
-                                   project_id=ProjectInfo.objects.get(pk=project_id), labeled_time=datetime.now(),
+                data = LabeledData(data_content=content_origin, file_id=File.objects.get(pk=file_id),
+                                   project_id=Project.objects.get(pk=project_id), labeled_time=datetime.now(),
                                    labeled_content=meta_data["text"],
                                    predicted_relation=meta_data["predicted_relation"],
                                    predicted_e1=meta_data["predicted_e1"], predicted_e2=meta_data["predicted_e2"],
@@ -580,7 +580,7 @@ class DB_interface:
             project_id = project_id["project_id"]
         # try:
         try:
-            labeled_dataset = LabeledData.objects.filter(project_id=ProjectInfo.objects.get(pk=project_id))
+            labeled_dataset = LabeledData.objects.filter(project_id=Project.objects.get(pk=project_id))
             data = []
             for index, labeled_data in enumerate(labeled_dataset):
                 line1 = str(index + 1) + '\t' + '"' + labeled_data.labeled_content + '"\n'
@@ -670,8 +670,8 @@ def init():
     用作初始化数据库中的数据
     :return:
     """
-    ProjectInfo.objects.all().delete()
-    FileInfo.objects.all().delete()
+    Project.objects.all().delete()
+    File.objects.all().delete()
     BaseTags.objects.all().delete()
     UnLabeledData.objects.all().delete()
     LabeledData.objects.all().delete()
@@ -685,7 +685,7 @@ def init():
         base_tag = BaseTags(tag_name=r)
         base_tag.save()
 
-    project = ProjectInfo(project_name='test_project', project_tags=['Cause-Effect', 'Message-Topic'])
+    project = Project(project_name='test_project', project_tags=['Cause-Effect', 'Message-Topic'])
     project.save()
 
     interface.modify_project_name(project_id=project.project_id, new_name='test_project_1')

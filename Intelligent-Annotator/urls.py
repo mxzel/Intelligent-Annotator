@@ -18,12 +18,12 @@ from django.urls import path
 from annotator import views
 
 urlpatterns = [
-    #path('admin/', admin.site.urls),
-    path('index',views.index),
-    path('test_connect',views.test_connect),
-    path('creat_project',views.creat_project),
-    path('upload_file',views.upload_file),
-    path('fetch_unlabeled_data',views.fetch_unlabeled_data),
-    path('commit_label_data',views.commit_label_data),
-    path('export_project',views.export_project)
+    # path('admin/', admin.site.urls),
+    path('index', views.index),
+    path('test_connect', views.test_connect),
+    path('creat_project', views.creat_project),
+    path('upload_file', views.upload_file),
+    path('fetch_unlabeled_data', views.fetch_unlabeled_data),
+    path('commit_label_data', views.commit_label_data),
+    path('export_project', views.export_project)
 ]

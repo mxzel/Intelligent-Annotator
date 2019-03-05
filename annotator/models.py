@@ -19,7 +19,7 @@ class File(models.Model):
 
 
 class BaseTags(models.Model):
-    """基础标签？"""
+    """基础标签"""
     tag_name = models.CharField(max_length=20, unique=True)
 
 

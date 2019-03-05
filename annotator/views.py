@@ -10,11 +10,6 @@ def index(request):
 
 
 def test_connect(request):
-    """
-    test if connect is OK
-    :param request:
-    :return:
-    """
     return JsonResponse(data={"training_process": 50, "code": 200, "message": "annotate success"})
 
 

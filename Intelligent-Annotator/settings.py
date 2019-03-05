@@ -77,14 +77,14 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     },
-    'annotator': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'annotator',
-        'USER': 'annotator',
-        'HOST': '223.3.75.75',
-        'PORT': 10880,
-        'PASSWORD': 'annotator',
-    }
+    # 'annotator': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'annotator',
+    #     'USER': 'annotator',
+    #     'HOST': '223.3.75.75',
+    #     'PORT': 10880,
+    #     'PASSWORD': 'annotator',
+    # }
 }
 
 # Password validation
@@ -127,8 +127,8 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
-DATABASE_ROUTERS = ['Intelligent-Annotator.database_router.DatabaseAppsRouter']
-DATABASE_APPS_MAPPING = {
-    'annotator': 'annotator',
-}
+# DATABASE_ROUTERS = ['Intelligent-Annotator.database_router.DatabaseAppsRouter']
+# DATABASE_APPS_MAPPING = {
+#     'annotator': 'annotator',
+# }
 

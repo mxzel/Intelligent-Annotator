@@ -1,13 +1,11 @@
 from django.shortcuts import render
 from django.shortcuts import HttpResponse
 from django.http import JsonResponse
-# Create your views here.
 from annotator import models
 from annotator import DB_interface
 
 
 def index(request):
-    # return HttpResponse("hello world!")
     return render(request, "index.html")
 
 

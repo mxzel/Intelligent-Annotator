@@ -75,11 +75,11 @@ WSGI_APPLICATION = 'Intelligent-Annotator.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, 'django.sqlite3'),
     },
     'annotator': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, 'annotator.sqlite3'),
     }
     # 'annotator': {
     #     'ENGINE': 'django.db.backends.postgresql',

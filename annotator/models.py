@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Project(models.Model):
-    "创建的项目信息"
+    """创建的项目信息"""
     project_id = models.AutoField(primary_key=True)
     project_name = models.CharField(max_length=20, unique=True)
     project_tags = models.TextField(unique=False)
@@ -11,19 +11,19 @@ class Project(models.Model):
 
 
 class File(models.Model):
-    "上传的文件信息"
+    """上传的文件信息"""
     file_id = models.AutoField(primary_key=True)
     file_name = models.CharField(max_length=20, unique=False)
     project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
 
 
 class BaseTags(models.Model):
-    "基础标签"
+    """基础标签"""
     tag_name = models.CharField(max_length=20, unique=True)
 
 
 class UnLabeledData(models.Model):
-    "未标注数据"
+    """未标注数据"""
     unlabeled_id = models.AutoField(primary_key=True)
     file_id = models.ForeignKey(File, on_delete=models.CASCADE)
     project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
@@ -32,7 +32,7 @@ class UnLabeledData(models.Model):
 
 
 class LabeledData(models.Model):
-    "已标注数据"
+    """已标注数据"""
     labeled_id = models.AutoField(primary_key=True)
     file_id = models.ForeignKey(File, on_delete=models.CASCADE)
     project_id = models.ForeignKey(Project, on_delete=models.CASCADE)

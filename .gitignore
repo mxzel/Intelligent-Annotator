@@ -1,7 +1,5 @@
 .DS_Store
 .idea/
-db.sqlite3
-migrations/0.*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

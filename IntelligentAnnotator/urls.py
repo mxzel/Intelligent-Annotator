@@ -15,15 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from annotator import views
+from annotator import views, affair, tests
 
 urlpatterns = [
-    # path('admin/', admin.site.urls),
+    path('', views.index),
     path('index', views.index),
-    path('test_connect', views.test_connect),
-    path('creat_project', views.creat_project),
-    path('upload_file', views.upload_file),
-    path('fetch_unlabeled_data', views.fetch_unlabeled_data),
-    path('commit_label_data', views.commit_label_data),
-    path('export_project', views.export_project)
+
+    path('create_project', affair.create_project),
+    path('upload_file', affair.upload_file),
+    path('fetch_unlabeled_data', affair.fetch_unlabeled_data),
+    path('commit_label_data', affair.commit_label_data),
+    path('export_project', affair.export_project),
+
+    path('test_connect', tests.test_connect),
 ]

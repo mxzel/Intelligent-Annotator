@@ -46,12 +46,3 @@ class LabeledData(models.Model):
     labeled_e1 = models.CharField(max_length=20, unique=False)
     labeled_e2 = models.CharField(max_length=20, unique=False)
     additional_info = models.CharField(max_length=30, unique=False)
-
-
-
-# class Test(models.Model):
-#     test_id = models.AutoField(primary_key=True)
-#
-# class Person(models.Model):
-    # first_name = models.CharField(max_length=30)
-    # last_name = models.CharField(max_length=30)

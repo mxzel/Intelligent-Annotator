@@ -1,8 +1,8 @@
-
 from django.shortcuts import render
 from django.shortcuts import HttpResponse
 from django.http import JsonResponse
 import annotator.manager as manager
+
 
 def create_project(request):
     if request.method == 'POST':

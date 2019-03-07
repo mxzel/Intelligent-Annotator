@@ -8,6 +8,11 @@ def create_project(project_name, project_tags=None):
     return ProjectManager.create_project(project_name, project_tags)
 
 
+def upload_file(file_name: str = '', project_id: int = -1, file_contents: list = None, ):
+    """上传文件"""
+    return ProjectManager.upload_file(file_name, project_id, file_contents)
+
+
 def modify_project_name(project_id, new_name):
     """修改项目名字"""
     return ProjectManager.modify_project_name(project_id, new_name)

@@ -225,7 +225,7 @@ function confirm2() {
     }
 
      xml=createXMLHttpRequest();
-     xml.open('POST','creat_project',true);
+     xml.open('POST','create_project',true);
      xml.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
      xml.send("projectname="+t);
      xml.onreadystatechange=function () {     //如果是post,那么里面就设置值

@@ -52,7 +52,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" id="close1" data-dismiss="modal">关闭
                 </button>
-                <button type="button" class="btn btn-primary"  onclick="confirm2()">
+                <button type="button" class="btn btn-primary"  onclick="confirmProjectInfo()">
                     提交
                 </button>
 
@@ -72,19 +72,29 @@
             </div>
 
             <div class="modal-body">
+                项目名称
+                <div class="form-inline">
+                <input type="text" class="form-control" style="margin: 10px" id="project_name1" placeholder="项目名称">
+                <button type="button" class="btn btn-default" onclick="change_project_name()">
+                    更改
+                </button>
+                </div>
                 预设标签
                 <div class="form-inline">
                     <input type="text" class="form-control" style="margin: 10px" id="tag1" placeholder="请输入标签名称/将所有标签添加后再提交">
-                    <button type="button" class="btn btn-default" onclick="add1()">
+                    <button type="button" class="btn btn-default" onclick="addtag()">
                         添加
                     </button>
                 </div>
                 <div id="tags1"></div>
+                    <button type="button" class="btn btn-danger" style="margin: 10px" onclick="delete_project()">
+                        删除此项目
+                    </button>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" id="close11" data-dismiss="modal">关闭
                 </button>
-                <button type="button" class="btn btn-primary"  onclick="confirm2()">
+                <button type="button" class="btn btn-primary"  onclick="confirmProjectInfo()">
                     提交
                 </button>
             </div>
@@ -118,7 +128,7 @@
                     </ul>
                 </li>
                 <li ><a href="#"  data-toggle="modal" data-target="#myModal1" onclick="initags()">更改配置 <span class="sr-only">(current)</span></a></li>
-                <li><a href="#" onclick="a()" >导入</a></li>
+                <li><a href="#" onclick="clickFile()" >导入</a></li>
                 <input type="file" id="files" style="display:none" onchange="fileimport();"/>
 
                 <li><a href="#" id="export" onclick="fileexport()">导出</a></li>
@@ -126,12 +136,12 @@
             </ul>
             <form class="navbar-form navbar-left">
 
-                <button type="submit" class="btn btn-default" onclick="confirm1()">提交</button>
+                <button type="submit" class="btn btn-default" onclick="commitData()">提交</button>
             </form>
 
             <div class="progress" style="margin-top: 15px;width: 400px">
-                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width:35%">
-                    <span class="sr-only">45% Complete</span>
+                <div id="progress" class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+                    <span  class="sr-only">0 Complete</span>
                 </div>
             </div>
 
@@ -139,9 +149,9 @@
     </div><!-- /.container-fluid -->
 </nav>
 <div class="panel panel-default" style="margin: 15px">
-    <div class="panel-heading" style="background-color: white;height: 120px;margin-top: 90px">
-        <div style="background-color: #e9ecef;height: 80px;border-radius: 15px">
-        <div class="panel-title" id="index1"style="text-indent: 2em"></div>
+    <div class="panel-heading" style="background-color: white;min-height: 120px;margin-top: 90px">
+        <div style="background-color: #e9ecef;height: 80px;border-radius: 15px;display:table">
+        <div class="panel-title" id="index1"style="vertical-align: middle; display: table-cell;"></div>
         </div>
         <div id="choose1" style="margin: 5px;margin-left: 30px">选中标签为：</div>
     </div>
@@ -158,9 +168,9 @@
 </div>
 
 <div class="panel panel-default" style="margin: 15px">
-    <div class="panel-heading" style="background-color: white;height: 120px;">
-        <div style="background-color: #e9ecef;height: 80px;border-radius: 15px">
-            <div class="panel-title" id="index2" style="text-indent: 2em"></div>
+    <div class="panel-heading" style="background-color: white;min-height: 120px;">
+        <div style="background-color: #e9ecef;height: 80px;border-radius: 15px;display:table">
+            <div class="panel-title" id="index2" style="vertical-align: middle; display: table-cell;"></div>
         </div>
         <div id="choose2" style="margin: 5px;margin-left: 30px">选中标签为：</div>
     </div>
@@ -178,9 +188,9 @@
 </div>
 
 <div class="panel panel-default" style="margin: 15px">
-    <div class="panel-heading" style="background-color: white;height: 120px;">
-        <div style="background-color: #e9ecef;height: 80px;border-radius: 15px">
-            <div class="panel-title" id="index3"style="text-indent: 2em"></div>
+    <div class="panel-heading" style="background-color: white;min-height: 120px;">
+        <div style="background-color: #e9ecef;height: 80px;border-radius: 15px;display:table">
+            <div class="panel-title" id="index3"style="vertical-align: middle; display: table-cell;"></div>
         </div>
         <div id="choose3" style="margin: 5px;margin-left: 30px">选中标签为：</div>
     </div>
@@ -198,9 +208,9 @@
 </div>
 
 <div class="panel panel-default" style="margin: 15px">
-    <div class="panel-heading" style="background-color: white;height: 120px;">
-        <div style="background-color: #e9ecef;height: 80px;border-radius: 15px">
-            <div class="panel-title" id="index4"style="text-indent: 2em"></div>
+    <div class="panel-heading" style="background-color: white;min-height: 120px;">
+        <div style="background-color: #e9ecef;height: 80px;border-radius: 15px;display:table">
+            <div class="panel-title" id="index4"style="vertical-align: middle; display: table-cell;"></div>
         </div>
         <div id="choose4" style="margin: 5px;margin-left: 30px">选中标签为：</div>
     </div>
@@ -217,9 +227,9 @@
 </div>
 
 <div class="panel panel-default" style="margin: 15px">
-    <div class="panel-heading" style="background-color: white;height: 120px;">
-        <div style="background-color: #e9ecef;height: 80px;border-radius: 15px">
-            <div class="panel-title" id="index5"style="text-indent: 2em"></div>
+    <div class="panel-heading" style="background-color: white;min-height: 120px;">
+        <div style="background-color: #e9ecef;height: 80px;border-radius: 15px;display:table">
+            <div class="panel-title" id="index5"style="vertical-align: middle; display: table-cell;"></div>
         </div>
         <div id="choose5" style="margin: 5px;margin-left: 30px">选中标签为：</div>
     </div>
@@ -237,9 +247,9 @@
 </div>
 
 <div class="panel panel-default" style="margin: 15px">
-    <div class="panel-heading" style="background-color: white;height: 120px;">
-        <div style="background-color: #e9ecef;height: 80px;border-radius: 15px">
-            <div class="panel-title" id="index6"style="text-indent: 2em"></div>
+    <div class="panel-heading" style="background-color: white;min-height: 120px;">
+        <div style="background-color: #e9ecef;height: 80px;border-radius: 15px;display:table">
+            <div class="panel-title" id="index6"style="vertical-align: middle; display: table-cell;"></div>
         </div>
         <div id="choose6" style="margin: 5px;margin-left: 30px">选中标签为：</div>
     </div>

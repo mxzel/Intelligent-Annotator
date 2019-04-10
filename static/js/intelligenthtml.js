@@ -184,10 +184,15 @@ function newproject() {
 
             var con = confirm("您还有" + a + "条记录没有标注，确定更换吗？");
             if (con == true) {
-
+            $('#myModal').modal('show')
+            }else{
+            $('#myModal').modal('hide')
             }
+
         }
 
+    }else{
+        $('#myModal').modal('show')
     }
 
         clickcount++
@@ -258,24 +263,26 @@ function createXMLHttpRequest() {
     }
 
 function defaultcheck(i) {
-    var j=i.getAttribute("id");
-    var reg= /^[0-9]+.?[0-9]*$/;
-    var j1=j.charAt(11).toString();
-    var j2=j.charAt(12).toString();
-    var j11=parseInt(j1);
-    if (reg.test(j2)) {
-        console.log("if")
-        var j21 = parseInt(j2)
-        var j3=((j11*10+j21)/tags.length)+1
-    }else{
-        console.log("else")
-        var j3=(j11/tags.length)+1
-    }
-
-
-    console.log(j2);
-    console.log(j3);
-        document.getElementById("ok"+j3).checked=true;
+    var j=parseInt(i.toString().charAt(7))+1
+    var j1 = j.toString()
+    // var j=i.getAttribute("id");
+    // var reg= /^[0-9]+.?[0-9]*$/;
+    // var j1=j.charAt(11).toString();
+    // var j2=j.charAt(12).toString();
+    // var j11=parseInt(j1);
+    // if (reg.test(j2)) {
+    //     console.log("if")
+    //     var j21 = parseInt(j2)
+    //     var j3=((j11*10+j21)/tags.length)+1
+    // }else{
+    //     console.log("else")
+    //     var j3=(j11/tags.length)+1
+    // }
+    //
+    //
+    // console.log(j2);
+    // console.log(j3);
+        document.getElementById("ok"+j1).checked=false;
 }
 
 function setbutton2(){
@@ -292,7 +299,8 @@ function setbutton2(){
             a2.setAttribute("style","margin-left: 8px;margin-bottom:12px;height: 30px;line-height: 10px;");
             a2.onclick=function(){
                 changecolor(this);
-                defaultcheck(this);
+                defaultcheck(this.parentElement.id);
+                console.log(this.parentElement.id)
             };
 
             a1.appendChild(a2);
@@ -505,12 +513,12 @@ var page1 = 6;
 var mydata = new Array();
 
 function setbutton() {
-    document.getElementById('ok1').checked=false;
-    document.getElementById('ok2').checked=false;
-    document.getElementById('ok3').checked=false;
-    document.getElementById('ok4').checked=false;
-    document.getElementById('ok5').checked=false;
-    document.getElementById('ok6').checked=false;
+    document.getElementById('ok1').checked=true;
+    document.getElementById('ok2').checked=true;
+    document.getElementById('ok3').checked=true;
+    document.getElementById('ok4').checked=true;
+    document.getElementById('ok5').checked=true;
+    document.getElementById('ok6').checked=true;
     var con = new Array(100);
     for (var m = 0; m < tags.length*6; m++) {
 
@@ -873,32 +881,26 @@ function confirm1(){
                     if(text_id[i].text.toString()==text1)
                         id1=text_id[i].id
                 }
-
                 for(var i=0;i<text_id.length;i++ ){
                     if(text_id[i].text.toString()==text2)
                         id2=text_id[i].id
                 }
-
                 for(var i=0;i<text_id.length;i++ ){
                     if(text_id[i].text.toString()==text3)
                         id3=text_id[i].id
                 }
-
                 for(var i=0;i<text_id.length;i++ ){
                     if(text_id[i].text.toString()==text3)
                         id3=text_id[i].id
                 }
-
                 for(var i=0;i<text_id.length;i++ ){
                     if(text_id[i].text.toString()==text4)
                         id4=text_id[i].id
                 }
-
                 for(var i=0;i<text_id.length;i++ ){
                     if(text_id[i].text.toString()==text5)
                         id5=text_id[i].id
                 }
-
                 for(var i=0;i<text_id.length;i++ ){
                     if(text_id[i].text.toString()==text6)
                         id6=text_id[i].id
@@ -1031,4 +1033,3 @@ function Map(){
  this.size=size;
  this.isEmpty=isEmpty;
 }
-

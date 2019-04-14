@@ -189,9 +189,12 @@ function newproject() {
             $('#myModal').modal('hide')
             }
 
-        }
+        }else{
+        $('#myModal').modal('show')
+    }
 
     }else{
+        confirm("该页数据已提交")
         $('#myModal').modal('show')
     }
 
@@ -501,7 +504,7 @@ function fileexport(){
 
     var file = new File([tempcon], "data.txt", { type: "text/plain;charset=utf-8" });
     saveAs(file);
-    alter("文件已下载")
+    alert("文件已下载")
 }
 
 

@@ -184,6 +184,7 @@ function newproject() {
 
             var con = confirm("您还有" + a + "条记录没有标注，确定更换吗？");
             if (con == true) {
+            confirm("该页数据已提交")
             $('#myModal').modal('show')
             }else{
             $('#myModal').modal('hide')
@@ -194,7 +195,6 @@ function newproject() {
     }
 
     }else{
-        confirm("该页数据已提交")
         $('#myModal').modal('show')
     }
 
@@ -394,17 +394,11 @@ function fileimport() {
             var a1 = document.createElement("div");
             var length1 = jsoncontent.data[m].text.split(" ").length;
             for (var i = 0; i < length1; i++) {
-                var def = false;
                 var a2 = document.createElement("span")
                 a2.id=m+"text"+i
                 a2.onclick = function () {
-                    def = !def;
-                    if (def ) {
                         getdetail(this);
-                    }
-                    else getdetail2(this);
                 };
-
                 a2.innerText = mytable[m][i] + " ";
                 a1.appendChild(a2);
             }
@@ -475,13 +469,13 @@ function fileimport() {
 
 
 function getdetail(column){
+
+    if (column.style.background=="orange") {
+        column.style.background="rgb(233,236,239)"
+    }else
     column.style.background="orange";
-
 }
-function getdetail2(column2){
-    column2.style.background="red";
 
-}
 
 
 function fileexport(){
@@ -516,12 +510,12 @@ var page1 = 6;
 var mydata = new Array();
 
 function setbutton() {
-    document.getElementById('ok1').checked=true;
-    document.getElementById('ok2').checked=true;
-    document.getElementById('ok3').checked=true;
-    document.getElementById('ok4').checked=true;
-    document.getElementById('ok5').checked=true;
-    document.getElementById('ok6').checked=true;
+    document.getElementById('ok1').checked=false;
+    document.getElementById('ok2').checked=false;
+    document.getElementById('ok3').checked=false;
+    document.getElementById('ok4').checked=false;
+    document.getElementById('ok5').checked=false;
+    document.getElementById('ok6').checked=false;
     var con = new Array(100);
     for (var m = 0; m < tags.length*6; m++) {
 

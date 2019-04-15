@@ -5,18 +5,18 @@ from annotator.models import *
 
 """
 Data:
-    upload_file(file_name, project_id, file_contents): 上传文件
-    get_label_process(project_id): 获得标注进度
+
+    
     fetch_unlabeled_data(project_id, num): 获取未标注数据
     commit_labeled_data(labeled_data, project_id): 提交已标注数据
 """
 
-
 class DataManager:
     @staticmethod
-    def fetch_unlabeled_data(project_id: int = -1, num: int = -1):
+    def fetch_unlabeled_data(project_id: int = -1, num: int = -1) -> dict:
         """
         获取未标注的数据
+        关于数据的详细描述请参阅 models.py 文件
 
         pipeline:
             1. 点击下一页
@@ -29,22 +29,21 @@ class DataManager:
 
         :return:
             {
-                "status": true,
+                "status": True,
                 "data":
                     [
                         {
                             "id": 1,
-                            "text": "aaa",
-                            "predicted_relation": "friend",
-                            "predicted_e1": "马云",
-                            "predicted_e2": "马化腾",
-                        },
-                        {
-                            "id": 2,
-                            "text": "aaa",
-                            "predicted_relation": "friend",
-                            "predicted_e1": "奥巴马",
-                            "predicted_e2": "特朗普",
+                            # 1993年2月15日，李彤出生在吉林某城市。
+                            "text": ['1', '9', '9', '3', '年', '2', '月', '1', '5', '日', '，',
+                             '李', '彤', '出', '生', '在', '吉', '林', '某', '城', '市', '。'],
+                            "predicted_relation": "人-出生地",
+                            "predicted_e1": "李彤",
+                            "predicted_e2": "吉林",
+                            "predicted_e1_start": 11,
+                            "predicted_e1_end": 12,
+                            "predicted_e2_start": 16,
+                            "predicted_e2_end": 17,
                         },
                         ...
                     ]
@@ -52,11 +51,9 @@ class DataManager:
                 "message": "成功取出 num 条数据",
             }
         """
-        print(project_id)
 
-        num = int(num)
         try:
-            objects = UnLabeledData.objects.filter(project_id=Project.objects.get(pk=project_id))
+            objects = UnlabeledData.objects.filter(project_id=Project.objects.get(pk=project_id))
             objects = objects if num == -1 else objects[:num]
             unlabeled_data = [{"unlabeled_id": o.unlabeled_id, "data_content": o.data_content}
                               for o in objects]
@@ -64,32 +61,37 @@ class DataManager:
                 "status": True,
                 "data":
                     [
+                        # TODO: 对数据进行预标注，将预标注后的数据包装成 dict
                         {
                             "id": meta_data["unlabeled_id"],
-                            "text": meta_data["data_content"],
-                            "predicted_relation": "unlabel",
-                            "predicted_e1": "unlabel",
-                            "predicted_e2": "unlabel",
+                            "text": list(meta_data["data_content"]),
+                            "predicted_relation": "relation",
+                            "predicted_e1": "e1",
+                            "predicted_e2": "e2",
+                            "predicted_e1_start": 11,
+                            "predicted_e1_end": 12,
+                            "predicted_e2_start": 16,
+                            "predicted_e2_end": 17,
                         }
                         for meta_data in unlabeled_data
                     ],
                 "code": 200,
                 "message": "Successfully took out " + str(len(unlabeled_data)) + " pieces of data.",
             }
+            print("成功取出" + str(len(unlabeled_data)) + "条未标注数据")
         except IntegrityError as e:
             ret_dict = {
                 "status": False,
-                "data": None,
                 "code": -1,
                 "message": str(e),
             }
-        # TODO: 对数据进行预标注，将预标注后的数据包装成 dict
-        print(ret_dict)
-        return json.dumps(ret_dict, ensure_ascii=False)
+            print("取出未标注数据失败！" + str(e))
+
+        return ret_dict
 
     @staticmethod
     def commit_labeled_data(labeled_data: list = None, file_id: int = 0,
-                            project_id: int = 0):
+                            project_id: int = 0) -> dict:
         """
         将已标注的数据提交到数据库
 
@@ -100,6 +102,31 @@ class DataManager:
             4. 如果中途出现错误，返回所有数据，并附带错误信息
 
         :param labeled_data: 已标注的数据
+            [
+                {
+                    "text": ['1', '9', '9', '3', '年', '2', '月', '1', '5', '日', '，',
+                     '李', '彤', '出', '生', '在', '吉', '林', '某', '城', '市', '。'],
+
+                    "predicted_relation": "人-出生地",
+                    "predicted_e1": "李彤",
+                    "predicted_e2": "吉林",
+                    "predicted_e1_start": 11,
+                    "predicted_e1_end": 12,
+                    "predicted_e2_start": 16,
+                    "predicted_e2_end": 17,
+
+                    "labeled_relation": "人-出生地",
+                    "labeled_e1": "李彤",
+                    "labeled_e2": "吉林",
+                    "labeled_e1_start": 11,
+                    "labeled_e1_end": 12,
+                    "labeled_e2_start": 16,
+                    "labeled_e2_end": 17,
+
+                    "additional_info": "",
+                },
+                ...
+            ]
 
         :return:
             {
@@ -111,17 +138,43 @@ class DataManager:
         try:
             project = Project.objects.get(pk=project_id)
             for meta_data in labeled_data:
-                content_origin = meta_data["text"].replace("<e1>", "").replace("</e1>", "").replace("<e2>", "").replace(
-                    "</e2>", "")
-                data = LabeledData(data_content=content_origin, file_id=File.objects.get(pk=file_id),
-                                   project_id=Project.objects.get(pk=project_id), labeled_time=datetime.now(),
-                                   labeled_content=meta_data["text"],
-                                   predicted_relation=meta_data["predicted_relation"],
-                                   predicted_e1=meta_data["predicted_e1"], predicted_e2=meta_data["predicted_e2"],
-                                   labeled_relation=meta_data["labeled_relation"], labeled_e1=meta_data["labeled_e1"],
-                                   labeled_e2=meta_data["labeled_e2"], additional_info=meta_data["additional_info"])
+
+                e1_start, e1_end = meta_data["labeled_e1_start"], meta_data["labeled_e1_end"]
+                e2_start, e2_end = meta_data["labeled_e2_start"], meta_data["labeled_e2_end"]
+                meta_data['text'].insert(e1_start, '<e1>')
+                meta_data['text'].insert(e1_end, '</e1>')
+                meta_data['text'].insert(e2_start, '<e2>')
+                meta_data['text'].insert(e2_end, '</e2>')
+                sentence = ''.join(meta_data['text'])
+
+                data = LabeledData(
+                    file_id=File.objects.get(pk=file_id),
+                    project_id=Project.objects.get(pk=project_id),
+
+                    labeled_time=datetime.now(),
+                    labeled_content=sentence,
+
+                    predicted_relation=meta_data["predicted_relation"],
+                    predicted_e1=meta_data["predicted_e1"],
+                    predicted_e2=meta_data["predicted_e2"],
+                    predicted_e1_start=meta_data["predicted_e1_start"],
+                    predicted_e1_end=meta_data["predicted_e1_end"],
+                    predicted_e2_start=meta_data["predicted_e2_start"],
+                    predicted_e2_end=meta_data["predicted_e2_end"],
+
+                    labeled_relation=meta_data["labeled_relation"],
+                    labeled_e1=meta_data["labeled_e1"],
+                    labeled_e2=meta_data["labeled_e2"],
+                    labeled_e1_start=meta_data["labeled_e1_start"],
+                    labeled_e1_end=meta_data["labeled_e1_end"],
+                    labeled_e2_start=meta_data["labeled_e2_start"],
+                    labeled_e2_end=meta_data["labeled_e2_end"],
+
+                    additional_info=meta_data["additional_info"]
+                )
+
                 data.save()
-                UnLabeledData.objects.filter(pk=meta_data["unlabeled_id"]).delete()
+                UnlabeledData.objects.filter(pk=meta_data["unlabeled_id"]).delete()
                 project.sentence_labeled += 1
                 project.sentence_unlabeled -= 1
             project.save()
@@ -130,13 +183,13 @@ class DataManager:
                 "code": 200,
                 "message": "Labeled data submitted successfully."
             }
+            print("成功提交标注数据")
         except IntegrityError as e:
             ret_dict = {
                 "status": False,
                 "code": -1,
                 "message": str(e),
-                "data": labeled_data
             }
+            print("提交标注数据失败！" + str(e))
 
-        print(ret_dict)
-        return json.dumps(ret_dict, ensure_ascii=False)
+        return ret_dict

@@ -10,9 +10,33 @@ class Project(models.Model):
     """创建的项目信息"""
     project_id = models.AutoField(primary_key=True)
     project_name = models.CharField(max_length=20, unique=True)
-    project_tags = models.TextField(unique=False)
+
     sentence_labeled = models.IntegerField(default=0)
     sentence_unlabeled = models.IntegerField(default=0)
+
+    # 这里应该要用 ArrayField，但是 sqlite 不支持，所以改用 TextField，在文本中添加空白分隔符来模拟数组
+    tag_spliter = ' '
+    project_tags = models.TextField(unique=False)
+
+    def get_tags_from_project(self) -> list:
+        """以 list 的形式获取项目标签"""
+        return self.project_tags.strip().split(self.tag_spliter)
+
+    def add_tags_to_project(self, new_tags: list):
+        """为项目添加标签"""
+        tags = self.get_tags_from_project()
+        tags.extend(new_tags)
+        self.store_tags_to_project(tags)
+
+    def delete_tag_from_project(self, tag: str):
+        """从项目中删除一个标签"""
+        tags = self.get_tags_from_project()
+        tags.remove(tag)
+        self.store_tags_to_project(tags)
+
+    def store_tags_to_project(self, tags: list):
+        """将 list 形式的 tags 以 str 的形式保存到项目中"""
+        self.project_tags = self.tag_spliter.join(tags)
 
 
 class File(models.Model):

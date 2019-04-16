@@ -367,10 +367,10 @@ function fileimport() {
         xml1.send("project_id="+id+"&num="+Number(6))
         //xml1.onreadystatechange=function () {     //如果是post,那么里面就设置值
             if(xml1.readyState == 4 && xml1.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
-                console.log("content"+content)
+                console.log("content: "+content)
                 content=xml1.responseText
                 jsoncontent=eval("("+content+")");
-                console.log("json"+jsoncontent.data[0].text)
+                console.log("json: "+jsoncontent.data[0].text)
             }
 
             for(var l=0;l<jsoncontent.data.length;l++){
@@ -381,25 +381,25 @@ function fileimport() {
         //}
 
 
-        var table1 = jsoncontent.data[0].text.split(" ");
-        var table2 = jsoncontent.data[1].text.split(" ");
-        var table3 = jsoncontent.data[2].text.split(" ");
-        var table4 = jsoncontent.data[3].text.split(" ");
-        var table5 = jsoncontent.data[4].text.split(" ");
-        var table6 = jsoncontent.data[5].text.split(" ");
+        var table1 = jsoncontent.data[0].text.join("");
+        var table2 = jsoncontent.data[1].text.join("");
+        var table3 = jsoncontent.data[2].text.join("");
+        var table4 = jsoncontent.data[3].text.join("");
+        var table5 = jsoncontent.data[4].text.join("");
+        var table6 = jsoncontent.data[5].text.join("");
         var mytable = new Array(table1, table2, table3, table4, table5, table6);
 
         for (var m = 0; m < 6; m++) {
             var a0 = document.getElementById("index" + (m + 1));
             var a1 = document.createElement("div");
-            var length1 = jsoncontent.data[m].text.split(" ").length;
+            var length1 = jsoncontent.data[m].text.join("").length;
             for (var i = 0; i < length1; i++) {
                 var a2 = document.createElement("span")
                 a2.id=m+"text"+i
                 a2.onclick = function () {
                         getdetail(this);
                 };
-                a2.innerText = mytable[m][i] + " ";
+                a2.innerText = mytable[m][i];
                 a1.appendChild(a2);
             }
             a0.appendChild(a1);

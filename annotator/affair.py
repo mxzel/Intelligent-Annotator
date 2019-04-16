@@ -3,21 +3,17 @@ from django.shortcuts import HttpResponse
 from django.http import JsonResponse
 import annotator.manager as manager
 
-id = -1
 
 def create_project(request):
-    global id
     if request.method == "POST":
         project_name = request.POST.get("projectname", '')
-        project_tags = request.POST.get("projecttags", [])
+        project_tags = request.POST.get("tags", [])
         ret_dict = manager.create_project(
             project_name=project_name, project_tags=project_tags)
-        id = ret_dict["project_id"]
         return JsonResponse(ret_dict)
 
 
 def upload_file(request):
-    print("项目id号为：" + str(id))
     if request.method == "POST":
         default_content = "Today is a good day.\nToday is a good day.\n"
         file_content = request.POST.get("file_contents", default_content)
@@ -26,6 +22,15 @@ def upload_file(request):
 
         return JsonResponse(manager.upload_file(
             project_id=project_id, file_contents=file_contents))
+
+
+def override_tags(request):
+    if request.method == "POST":
+        project_id = int(request.POST.get("project_id", -1))
+        tags = request.POST.get("tags", [])
+
+        return JsonResponse(manager.override_tags(
+            project_id=project_id, tags=tags))
 
 
 def fetch_unlabeled_data(request):
@@ -43,26 +48,26 @@ def commit_label_data(request):
         labeled_data = []
 
         for i in range(6):
-            idx = str(i+1)
-            text = request.POST.get("text"+idx, None)
+            idx = str(i + 1)
+            text = request.POST.get("text" + idx, None)
 
-            predicted_relation = request.POST.get("predicted_relation"+idx, None)
-            predicted_e1 = request.POST.get("predicted"+idx+"_e1", None)
-            predicted_e2 = request.POST.get("predicted"+idx+"_e2", None)
-            predicted_e1_start = int(request.POST.get("predicted_e1_start"+idx, -1))
-            predicted_e1_end = int(request.POST.get("predicted_e1_end"+idx, -1))
+            predicted_relation = request.POST.get("predicted_relation" + idx, None)
+            predicted_e1 = request.POST.get("predicted" + idx + "_e1", None)
+            predicted_e2 = request.POST.get("predicted" + idx + "_e2", None)
+            predicted_e1_start = int(request.POST.get("predicted_e1_start" + idx, -1))
+            predicted_e1_end = int(request.POST.get("predicted_e1_end" + idx, -1))
             predicted_e2_start = int(request.POST.get("predicted_e2_start+idx", -1))
-            predicted_e2_end = int(request.POST.get("predicted_e2_end"+idx, -1))
+            predicted_e2_end = int(request.POST.get("predicted_e2_end" + idx, -1))
 
-            labeled_relation = request.POST.get("labeled_relation"+idx, None)
-            labeled_e1 = request.POST.get("labeled"+idx+"_e1", None)
-            labeled_e2 = request.POST.get("labeled"+idx+"_e2", None)
-            labeled_e1_start = int(request.POST.get("labeled_e1_start"+idx, -1))
-            labeled_e1_end = int(request.POST.get("labeled_e1_end"+idx, -1))
-            labeled_e2_start = int(request.POST.get("labeled_e2_start"+idx, -1))
+            labeled_relation = request.POST.get("labeled_relation" + idx, None)
+            labeled_e1 = request.POST.get("labeled" + idx + "_e1", None)
+            labeled_e2 = request.POST.get("labeled" + idx + "_e2", None)
+            labeled_e1_start = int(request.POST.get("labeled_e1_start" + idx, -1))
+            labeled_e1_end = int(request.POST.get("labeled_e1_end" + idx, -1))
+            labeled_e2_start = int(request.POST.get("labeled_e2_start" + idx, -1))
             labeled_e2_end = int(request.POST.get("labeled_e2_end", -1))
 
-            additional_info = request.POST.get("additional_info"+idx, None)
+            additional_info = request.POST.get("additional_info" + idx, None)
 
             data = {
                 "text": text,
@@ -99,8 +104,3 @@ def export_project(request):
         project_id = int(request.POST.get("project_id", -1))
 
         return JsonResponse(manager.export_project(project_id=project_id))
-
-def test_click(request):
-    global id
-    if request.method == "POST":
-        print("项目id号为：" + str(id))

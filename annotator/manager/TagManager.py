@@ -21,7 +21,7 @@ class TagManager:
         """
         try:
             project = Project.objects.get(pk=project_id)
-            project.project_tags = new_tags
+            project.store_tags_to_project(new_tags)
             project.save()
             ret_data = {
                 "status": True,

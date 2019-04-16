@@ -1,4 +1,3 @@
-
 import json
 from sqlite3 import IntegrityError
 from annotator.models import *
@@ -13,134 +12,115 @@ Tag:
     get_base_tags(): 获得基础标签
 """
 
+
 class TagManager:
     @staticmethod
-    def override_tags(project_id: int, tags: list):
+    def override_tags(project_id: int, new_tags: list) -> dict:
         """
-        用新的tags覆盖项目原有的tags
-        :param project_id: 项目id
-        :param tags: 新的tags
-        :return:
+        用new_tags覆盖项目原有的tags
         """
         try:
             project = Project.objects.get(pk=project_id)
-            project.project_tags = tags
+            project.project_tags = new_tags
             project.save()
             ret_data = {
                 "status": True,
                 "code": 200,
                 "message": u"Successfully override tags!"
             }
+            print("标签覆盖成功！覆盖后的标签为: " + str(new_tags))
         except IntegrityError as e:
             ret_data = {
                 "status": False,
                 "code": -1,
                 "message": str(e)
             }
-        json_string = json.dumps(ret_data, ensure_ascii=False)
-        return json_string
+            print("标签覆盖失败！" + str(e))
+        return ret_data
 
     @staticmethod
-    def add_tag_to_project(project_id: int, tag: str):
+    def add_tag_to_project(project_id: int, tag: str) -> dict:
         """
         添加一个tag到项目中
-        :param project_id: 项目id
-        :param tag: 被添加的tag
-        :return:
+        :param tag: 要添加的tag
         """
-        try:
-            project = Project.objects.get(pk=project_id)
-            project.project_tags.append(tag)
-            project.save()
-            ret_data = {
-                "status": True,
-                "code": 200,
-                "message": u"Successfully add tag to project!"
-            }
-        except IntegrityError as e:
-            ret_data = {
-                "status": False,
-                "code": -1,
-                "message": str(e)
-            }
-        json_string = json.dumps(ret_data, ensure_ascii=False)
-        return json_string
+        return TagManager.add_tags_to_project(project_id, [tag,])
 
     @staticmethod
-    def add_tags_to_project(project_id: int, tags: list):
+    def add_tags_to_project(project_id: int, tags: list) -> dict:
         """
         添加一些tag到项目中
-        :param project_id: 项目id
         :param tags: 被添加的tags
-        :return:
         """
         try:
             project = Project.objects.get(pk=project_id)
-            project.project_tags.extend(tags)
+            project.add_tags_to_project(tags)
             project.save()
             ret_data = {
                 "status": True,
                 "code": 200,
                 "message": u"Successfully add tags to project!"
             }
+            print("成功添加标签到项目！添加的标签为: " + ' '.join(tags))
         except IntegrityError as e:
             ret_data = {
                 "status": False,
                 "code": -1,
                 "message": str(e)
             }
-        json_string = json.dumps(ret_data, ensure_ascii=False)
-        return json_string
+            print("添加标签到项目失败！" + str(e))
+        return ret_data
 
     @staticmethod
-    def delete_tag_from_project(project_id: int, tag: str):
+    def delete_tag_from_project(project_id: int, tag: str) -> dict:
         try:
             project = Project.objects.get(pk=project_id)
-            project.project_tags.remove(tag)
+            project.delete_tag_from_project(tag)
             project.save()
             ret_data = {
                 "status": True,
                 "code": 200,
                 "message": u"Successfully delete tag from project!"
             }
+            print("从项目中删除标签成功！被删除的标签为: " + tag)
         except IntegrityError as e:
             ret_data = {
                 "status": False,
                 "code": -1,
                 "message": str(e)
             }
-        json_string = json.dumps(ret_data, ensure_ascii=False)
-        return json_string
+            print("从项目中删除标签失败！" + str(e))
+        return ret_data
 
     @staticmethod
-    def get_project_tags(project_id: int):
+    def get_project_tags(project_id: int) -> dict:
         """
         获得项目的标签
-        :param project_id: 项目id
-        :return: tags: list
         """
         try:
             project = Project.objects.get(pk=project_id)
+            tags = project.get_tags_from_project()
             ret_data = {
                 "status": True,
                 "code": 200,
-                "tags": project.project_tags,
+                "tags": tags,
                 "message": u"Successfully fetch tags of project!"
             }
+            print("从项目中获取标签成功！获取到的标签为: " + tags)
         except IntegrityError as e:
             ret_data = {
                 "status": False,
                 "code": -1,
                 "message": str(e)
             }
-        json_string = json.dumps(ret_data, ensure_ascii=False)
-        return json_string
+            print("从项目中获取标签失败！" + str(e))
+        return ret_data
 
     @staticmethod
-    def get_base_tags():
+    @DeprecationWarning
+    def get_base_tags() -> dict:
         """
         获得基础标签
-        :return:
         """
         try:
             base_tags = list(BaseTags.objects.all())
@@ -155,5 +135,4 @@ class TagManager:
                 "code": -1,
                 "message": str(e)
             }
-        json_string = json.dumps(ret_data, ensure_ascii=False)
-        return json_string
+        return ret_data

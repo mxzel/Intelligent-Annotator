@@ -136,7 +136,7 @@ function  changeproject(cp) {
         if(con==true){
             var temp=confirm("你已经提交成功！");
             if(temp==true){
-                set();
+                initButton();
             }
         }
     }
@@ -214,8 +214,8 @@ function confirmCreateProject() {
     $("div[name='tags']").val(tags);
     $('#myModal').modal('hide');
     if(temp==true){
-        setbutton2();
-        setbutton();
+        setButton();
+        setButtonState();
     }
      xml=createXMLHttpRequest();
      xml.open('POST','create_project',true);
@@ -250,14 +250,15 @@ function confirmChangeTags() {
     $("div[name='tags']").val(tags);
     $('#myModal1').modal('hide');
     if(temp==true){
-        setbutton2();
-        setbutton();
+        setButton();
+        setButtonState();
     }
     var projectName = document.getElementById("dropdown").innerHTML
+    projectName.substr(5,projectName.length-1)
     xml_add=createXMLHttpRequest();
      xml_add.open('POST','add_tags_to_project',true);
      xml_add.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-     xml_add.send("project_id="+project_info.get()+"&tags"+tags);
+     xml_add.send("project_id="+project_info.get(projectName)+"&tags"+tags);
      xml_add.onreadystatechange=function () {     //如果是post,那么里面就设置值
             if(xml_add.readyState == 4 && xml_add.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
                 console.log("add_tags_to_project:"+xml_add.responseText)
@@ -289,32 +290,15 @@ function createXMLHttpRequest() {
 function defaultcheck(i) {
     var j=parseInt(i.toString().charAt(7))+1
     var j1 = j.toString()
-    // var j=i.getAttribute("id");
-    // var reg= /^[0-9]+.?[0-9]*$/;
-    // var j1=j.charAt(11).toString();
-    // var j2=j.charAt(12).toString();
-    // var j11=parseInt(j1);
-    // if (reg.test(j2)) {
-    //     console.log("if")
-    //     var j21 = parseInt(j2)
-    //     var j3=((j11*10+j21)/tags.length)+1
-    // }else{
-    //     console.log("else")
-    //     var j3=(j11/tags.length)+1
-    // }
-    //
-    //
-    // console.log(j2);
-    // console.log(j3);
         document.getElementById("ok"+j1).checked=false;
 }
 
-function setbutton2(){
+//初始化标签按钮数量
+function setButton(){
     var temp=tags.length;
 
     for(var j=0;j<6;j++){
         var a1=document.getElementById("buttons"+j);
-
         for(var i=0;i<temp;i++){
             var a2 = document.createElement("button")
             a2.id="changecolor"+(j*tags.length+i);
@@ -326,13 +310,30 @@ function setbutton2(){
                 defaultcheck(this.parentElement.id);
                 console.log(this.parentElement.id)
             };
-
             a1.appendChild(a2);
         }
-
     }
+}
 
-
+//改变点击后标签颜色
+function changecolor(self) {
+    var mycolor = document.getElementById(self.id);
+    var i= self.id.replace(/[^0-9]/ig,"");
+    state[i] = !state[i];
+    if (state[i] == true) {
+        mycolor.style.backgroundColor = "orange";
+    }
+    else {
+        mycolor.style.backgroundColor = "rgb(221,221,221)";
+    }
+    var mycontent1 = document.getElementById("choose" + (Math.floor(i / tags.length) + 1));
+    if (state[i] == true) {
+        mycontent1.innerText = mycontent1.innerText + "(" + mycolor.innerHTML + ")";
+    }
+    if (state[i] == false) {
+        var change = "(" + mycolor.innerHTML + ")";
+        mycontent1.innerText = (mycontent1.innerText).replace(change, "")
+    }
 }
 
 
@@ -345,15 +346,14 @@ var project2file_id=new Map()
 var id
 var file_id
 var hasData=0;
-function fileimport() {
+//文件读取
+function fileImport() {
     var selectedFile = document.getElementById("files").files[0];//获取读取的File对象
     var name = selectedFile.name;//读取选中文件的文件名
     var size = selectedFile.size;//读取选中文件的大小
     console.log("文件名:" + name + "大小：" + size);
-
-    var reader = new FileReader();//这里是核心！！！读取操作就是由它完成的。
+    var reader = new FileReader();
     reader.readAsText(selectedFile);//读取文件的内容
-
     reader.onload = function () {
         console.log(this.result);//当读取完成之后会回调这个函数，然后此时文件的内容存储到了result中。直接操作即可。
         txtdata = this.result;//传入值为空
@@ -374,12 +374,7 @@ function fileimport() {
                 jsoncontent1=eval("("+content+")");
                 console.log("json"+jsoncontent1.file_id)
                 file_id=jsoncontent1.file_id
-        //        project2file_id.set(id,xml.responseText.substring(24,24))
-
-
             }
-        //}
-
 
         var jsoncontent
         var content
@@ -389,10 +384,10 @@ function fileimport() {
         xml1.send("project_id="+id+"&num="+Number(6))
         //xml1.onreadystatechange=function () {     //如果是post,那么里面就设置值
             if(xml1.readyState == 4 && xml1.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
-                console.log("content"+content)
+                console.log("content: "+content)
                 content=xml1.responseText
                 jsoncontent=eval("("+content+")");
-                console.log("json"+jsoncontent.data[0].text)
+                console.log("json: "+jsoncontent.data[0].text)
             }else{
                 hasData=0
             }
@@ -402,28 +397,25 @@ function fileimport() {
                 text_id.push(row)
             }
 
-        //}
-
-
-        var table1 = jsoncontent.data[0].text.split(" ");
-        var table2 = jsoncontent.data[1].text.split(" ");
-        var table3 = jsoncontent.data[2].text.split(" ");
-        var table4 = jsoncontent.data[3].text.split(" ");
-        var table5 = jsoncontent.data[4].text.split(" ");
-        var table6 = jsoncontent.data[5].text.split(" ");
+        var table1 = jsoncontent.data[0].text.join("");
+        var table2 = jsoncontent.data[1].text.join("");
+        var table3 = jsoncontent.data[2].text.join("");
+        var table4 = jsoncontent.data[3].text.join("");
+        var table5 = jsoncontent.data[4].text.join("");
+        var table6 = jsoncontent.data[5].text.join("");
         var mytable = new Array(table1, table2, table3, table4, table5, table6);
 
         for (var m = 0; m < 6; m++) {
             var a0 = document.getElementById("index" + (m + 1));
             var a1 = document.createElement("div");
-            var length1 = jsoncontent.data[m].text.split(" ").length;
+            var length1 = jsoncontent.data[m].text.join("").length;
             for (var i = 0; i < length1; i++) {
                 var a2 = document.createElement("span")
                 a2.id=m+"text"+i
                 a2.onclick = function () {
                         getdetail(this);
                 };
-                a2.innerText = mytable[m][i] + " ";
+                a2.innerText = mytable[m][i];
                 a1.appendChild(a2);
             }
             a0.appendChild(a1);
@@ -489,7 +481,7 @@ function fileimport() {
 }
 
 
-
+//选词点击变色
 function getdetail(column){
 
     if (column.style.background=="orange") {
@@ -499,7 +491,7 @@ function getdetail(column){
 }
 
 
-
+//文件导出
 function fileexport(){
 
     xml2=createXMLHttpRequest()
@@ -510,7 +502,6 @@ function fileexport(){
             if(xml2.readyState == 4 && xml2.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
                 content=xml2.responseText
                 jsoncontent2=eval("("+content+")");
-        //        project2file_id.set(id,xml.responseText.substring(24,24)
             }
             var tempcon=" ";
             for(var i=0;i<jsoncontent2.data.length;i++){
@@ -525,13 +516,12 @@ function fileexport(){
 
 
 
-
-
 var page = 0;
 var page1 = 6;
 var mydata = new Array();
 
-function setbutton() {
+//初始化按钮状态（颜色 勾选
+function setButtonState() {
     document.getElementById('ok1').checked=false;
     document.getElementById('ok2').checked=false;
     document.getElementById('ok3').checked=false;
@@ -540,15 +530,11 @@ function setbutton() {
     document.getElementById('ok6').checked=false;
     var con = new Array(100);
     for (var m = 0; m < tags.length*6; m++) {
-
         con[m] = "changecolor" + m ;
-
     }
     for (var j = 0; j < tags.length*6; j++) {
         var mycolor = document.getElementById(con[j]);
         mycolor.style.color = "white";
-
-
     }
     var con1 = new Array(19);
     for (var m = 0; m < 6; m++) {
@@ -562,55 +548,11 @@ function setbutton() {
     }
 }
 
-function setinner() {
-    var mycontent1 = document.getElementById("index1");
-    var mycontent2 = document.getElementById("index2");
-    var mycontent3 = document.getElementById("index3");
-    var mycontent4 = document.getElementById("index4");
-    var mycontent5 = document.getElementById("index5");
-    var mycontent6 = document.getElementById("index6");
-    var mycontent7 = document.getElementById("choose1");
-    var mycontent8 = document.getElementById("choose2");
-    var mycontent9 = document.getElementById("choose3");
-    var mycontent10 = document.getElementById("choose4");
-    var mycontent11 = document.getElementById("choose5");
-    var mycontent12 = document.getElementById("choose6");
-
-
-
-    var con1 = new Array(mycontent1, mycontent2, mycontent3, mycontent4, mycontent5,mycontent6);
-    var con2 = new Array(mycontent7, mycontent8, mycontent9, mycontent10,mycontent11,mycontent12);
-    for (var i = 0; i < 6; i++) {
-
-
-        con1[i].innerText = null;
-        con2[i].innerText = "选中标签为：";
-
-    }
-    ;
-}
-
-function fnDelete() {
-    var elem = getElementById("index1");
-    while (elem.hasChildNodes()) //当elem下还存在子节点时 循环继续
-    {
-        elem.removeChild(elem.firstChild);
-    }
-}
-
-function removeSpan() {
-    var obj = document.getElementById("span");
-    var parent = obj.parentNode;
-    parent.removeChild(obj);
-}
-
-function set() {
-
+//初始化button
+function initButton() {
     for (var i = 0; i < tags.length*6; i++) {
         state[i] == false;
     }
-
-
 
     for (var i = 0; i < 6; i++) {
         var mycontent1 = document.getElementById("index1");
@@ -626,16 +568,12 @@ function set() {
         var mycontent11 = document.getElementById("choose5");
         var mycontent12 = document.getElementById("choose6");
 
-
-
         var con1 = new Array(mycontent1, mycontent2, mycontent3, mycontent4, mycontent5,mycontent6);
         var con2 = new Array(mycontent7, mycontent8, mycontent9, mycontent10,mycontent11,mycontent12);
         mydata[mydata.length] = con1[i].innerText + con2[i].innerText;
         con1[i].innerHTML = "";
         con2[i].innerText = "选中标签为：";
-
     }
-    ;
         var jsoncontent
         var content
         xml1=createXMLHttpRequest()
@@ -650,33 +588,25 @@ function set() {
                 console.log("json"+jsoncontent.data[0].text)
             }
 
-
-
-        var table1 = jsoncontent.data[0].text.split(" ");
-        var table2 = jsoncontent.data[1].text.split(" ");
-        var table3 = jsoncontent.data[2].text.split(" ");
-        var table4 = jsoncontent.data[3].text.split(" ");
-        var table5 = jsoncontent.data[4].text.split(" ");
-        var table6 = jsoncontent.data[5].text.split(" ");
+        var table1 = jsoncontent.data[0].text.join("");
+        var table2 = jsoncontent.data[1].text.join("");
+        var table3 = jsoncontent.data[2].text.join("");
+        var table4 = jsoncontent.data[3].text.join("");
+        var table5 = jsoncontent.data[4].text.join("");
+        var table6 = jsoncontent.data[5].text.join("");
         var mytable = new Array(table1, table2, table3, table4, table5, table6);
 
         for (var m = 0; m < 6; m++) {
             var a0 = document.getElementById("index" + (m + 1));
             var a1 = document.createElement("div");
-            var length1 = jsoncontent.data[m].text.split(" ").length;
+            var length1 = jsoncontent.data[m].text.join("").length;
             for (var i = 0; i < length1; i++) {
-                var def = false;
                 var a2 = document.createElement("span")
                 a2.id=m+"text"+i
                 a2.onclick = function () {
-                    def = !def;
-                    if (def ) {
                         getdetail(this);
-                    }
-                    else getdetail2(this);
                 };
-
-                a2.innerText = mytable[m][i] + " ";
+                a2.innerText = mytable[m][i];
                 a1.appendChild(a2);
             }
             a0.appendChild(a1);
@@ -736,11 +666,10 @@ function set() {
             if (table1[i]==jsoncontent.data[5].predicted_e2)
                 table1[i].click;
         }
-
         text_id=[]
 }
-
-    function confirm1() {
+     // 提交一页标注文本
+    function confirmLabeledData() {
 
         var a = 0;
         var submit = 0;
@@ -900,8 +829,8 @@ function set() {
                     xml2.open('POST', 'commit_label_data', false);
                     xml2.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
                     xml2.send("file_id=" + file_id + "&id1=" + id1 + "&text1=" + text1 + "&labeled_relation1=" + labeled_relation1 + "&labeled1_e1=" + labeled1_e1 + "&labeled1_e2=" + labeled1_e2 + "&id2=" + id2 + "&text2=" + text2 + "&labeled_relation2=" + labeled_relation2 + "&labeled2_e1=" + labeled2_e1 + "&labeled2_e2=" + labeled2_e2 + "&id3=" + id3 + "&text3=" + text3 + "&labeled_relation3=" + labeled_relation3 + "&labeled3_e1=" + labeled3_e1 + "&labeled3_e2=" + labeled3_e2 + "&id4=" + id4 + "&text4=" + text4 + "&labeled_relation4=" + labeled_relation4 + "&labeled4_e1=" + labeled4_e1 + "&labeled4_e2=" + labeled4_e2 + "&id5=" + id5 + "&text5=" + text5 + "&labeled_relation5=" + labeled_relation5 + "&labeled5_e1=" + labeled5_e1 + "&labeled5_e2=" + labeled5_e2 + "&id6=" + id6 + "&text6=" + text6 + "&labeled_relation6=" + labeled_relation6 + "&labeled6_e1=" + labeled6_e1 + "&labeled6_e2=" + labeled6_e2)
-                    set()
-                    setbutton();
+                    initButton()
+                    setButtonState();
                     updata_progress();
                     console.log("commit_label_data");
                 }
@@ -917,18 +846,6 @@ function set() {
 
     }
 
-function myClose() {
-    var a=5-submit;
-    alert("aaa")
-    if (submit<5) {
-        var con = confirm("您还有" + a + "条记录没有标注，是否保存？");
-
-        if (con == true) {
-            var temp = confirm("你已经保存成功！");
-        }
-    }
-
-}
 
 
 function trim(s){

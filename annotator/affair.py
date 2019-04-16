@@ -99,3 +99,8 @@ def export_project(request):
         project_id = int(request.POST.get("project_id", -1))
 
         return JsonResponse(manager.export_project(project_id=project_id))
+
+def test_click(request):
+    global id
+    if request.method == "POST":
+        print("项目id号为：" + str(id))

@@ -255,7 +255,7 @@ function confirmChangeTags() {
         setButtonState();
     }
     var projectName = document.getElementById("dropdown").innerHTML
-    projectName.substr(5,projectName.length-1)
+    projectName=projectName.substr(5,projectName.length-1)
     console.log("projectname: "+projectName)
     console.log("project_id: "+project_info.get(projectName))
     xml_add=createXMLHttpRequest();
@@ -887,60 +887,60 @@ function trimRight(s){
 }
 
 
-function Map(){
- var struct=function(key,value,add){
-  this.key=key;
-  this.value=value;
- };
- //添加map键值对
- var set =function(key,value,add){
-  for(var i=0;i<this.arr.length;i++){
-   if(this.arr[i].key===key){
-       if(typeof(add) == "undefined"){
-        add = false;
-    }
-    if(add){//add=true 追加值
-     this.arr[i].value+=","+value;//有相同的key,这value的值往后最加,用逗号(,)隔开而不是替换原先的值
-    }else{
-     this.arr[i].value=value;//替换原先的值
-    }
-     return;
-   }
-  };
-  this.arr[this.arr.length]=new struct(key,value);
- };
- //根据key获取value
- var get=function(key){
-  for(var i=0;i<this.arr.length;i++){
-   if(this.arr[i].key===key){
-    return this.arr[i].value;
-   }
-  }
-  return null;
- };
- //根据key删除
- var remove=function(key){
-  var v;
-  for(var i=0;i<this.arr.length;i++){
-   v=this.arr.pop();
-   if(v.key===key){
-    continue;
-   }
-   this.arr.unshift(v);
-  }
- };
- //获取map键值对个数
- var size=function(){
-  return this.arr.length;
- };
- //判断map是否为空
- var isEmpty=function(){
-  return this.arr.length<=0;
- };
- this.arr=new Array();
- this.get=get;
- this.set=set;
- this.remove=remove;
- this.size=size;
- this.isEmpty=isEmpty;
-}
+// function Map(){
+//  var struct=function(key,value,add){
+//   this.key=key;
+//   this.value=value;
+//  };
+//  //添加map键值对
+//  var set =function(key,value,add){
+//   for(var i=0;i<this.arr.length;i++){
+//    if(this.arr[i].key===key){
+//        if(typeof(add) == "undefined"){
+//         add = false;
+//     }
+//     if(add){//add=true 追加值
+//      this.arr[i].value+=","+value;//有相同的key,这value的值往后最加,用逗号(,)隔开而不是替换原先的值
+//     }else{
+//      this.arr[i].value=value;//替换原先的值
+//     }
+//      return;
+//    }
+//   };
+//   this.arr[this.arr.length]=new struct(key,value);
+//  };
+//  //根据key获取value
+//  var get=function(key){
+//   for(var i=0;i<this.arr.length;i++){
+//    if(this.arr[i].key==key){
+//     return this.arr[i].value;
+//    }
+//   }
+//   return null;
+//  };
+//  //根据key删除
+//  var remove=function(key){
+//   var v;
+//   for(var i=0;i<this.arr.length;i++){
+//    v=this.arr.pop();
+//    if(v.key==key){
+//     continue;
+//    }
+//    this.arr.unshift(v);
+//   }
+//  };
+//  //获取map键值对个数
+//  var size=function(){
+//   return this.arr.length;
+//  };
+//  //判断map是否为空
+//  var isEmpty=function(){
+//   return this.arr.length<=0;
+//  };
+//  this.arr=new Array();
+//  this.get=get;
+//  this.set=set;
+//  this.remove=remove;
+//  this.size=size;
+//  this.isEmpty=isEmpty;
+// }

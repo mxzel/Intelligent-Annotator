@@ -28,7 +28,6 @@ class ProjectManager:
             3. 后台接收到数据，检查数据项目信息表中是否已含有相同名字的项目
             4. 如果有，告知前端项目创建失败，原因是已经含有了相同名字的项目；
             否则在项目信息表中新建条目，告知前端项目创建成功，并返回项目 pid
-
         """
         if project_tags is None:
             project_tags = []
@@ -47,7 +46,7 @@ class ProjectManager:
         except IntegrityError as e:
             ret_data = {
                 "status": False,
-                "code": 200,
+                "code": -1,
                 "message": str(e)
             }
             print("项目创建失败！" + str(e))

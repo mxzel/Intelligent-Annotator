@@ -14,7 +14,7 @@ Data:
 
 class DataManager:
     @staticmethod
-    def fetch_unlabeled_data(project_id: int = -1, num: int = -1) -> dict:
+    def fetch_unlabeled_data(project_id: int, num: int = -1) -> dict:
         """
         获取未标注的数据
         关于数据的详细描述请参阅 models.py 文件
@@ -91,8 +91,7 @@ class DataManager:
         return ret_dict
 
     @staticmethod
-    def commit_labeled_data(labeled_data: list = None, file_id: int = 0,
-                            project_id: int = 0) -> dict:
+    def commit_labeled_data(labeled_data: list, file_id: int, project_id: int) -> dict:
         """
         将已标注的数据提交到数据库
 

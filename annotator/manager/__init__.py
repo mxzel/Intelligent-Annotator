@@ -8,9 +8,9 @@ def create_project(project_name, project_tags=None):
     return ProjectManager.create_project(project_name, project_tags)
 
 
-def upload_file(file_name: str = '', project_id: int = -1, file_contents: list = None, ):
+def upload_file(project_id: int = -1, file_contents: list = None):
     """上传文件"""
-    return ProjectManager.upload_file(file_name, project_id, file_contents)
+    return ProjectManager.upload_file(project_id, file_contents)
 
 
 def modify_project_name(project_id, new_name):
@@ -57,10 +57,10 @@ def get_base_tags():
     return TagManager.get_base_tags()
 
 
-def fetch_unlabeled_data(project_id: int = -1, num: int = -1):
+def fetch_unlabeled_data(project_id: int, num: int = -1):
     return DataManager.fetch_unlabeled_data(project_id, num)
 
 
-def commit_labeled_data(labeled_data: list = None, file_id: int = 0,
-                        project_id: int = 0):
+def commit_labeled_data(labeled_data: list, file_id: int,
+                        project_id: int):
     return DataManager.commit_labeled_data(labeled_data, file_id, project_id)

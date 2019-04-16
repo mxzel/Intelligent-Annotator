@@ -14,13 +14,13 @@ class Project(models.Model):
     sentence_labeled = models.IntegerField(default=0)
     sentence_unlabeled = models.IntegerField(default=0)
 
-    # 这里应该要用 ArrayField，但是 sqlite 不支持，所以改用 TextField，在文本中添加空白分隔符来模拟数组
-    tag_spliter = ' '
+    # 这里应该要用 ArrayField，但是 sqlite 不支持，所以改用 TextField，在文本中添加分隔符来模拟数组
+    tag_spliter = ','
     project_tags = models.TextField(unique=False)
 
     def get_tags_from_project(self) -> list:
         """以 list 的形式获取项目标签"""
-        return self.project_tags.strip().split(self.tag_spliter)
+        return self.project_tags.strip(self.tag_spliter).split(self.tag_spliter)
 
     def add_tags_to_project(self, new_tags: list):
         """为项目添加标签"""

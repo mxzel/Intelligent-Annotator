@@ -184,10 +184,18 @@ function newproject() {
 
             var con = confirm("您还有" + a + "条记录没有标注，确定更换吗？");
             if (con == true) {
-
+            confirm("该页数据已提交")
+            $('#myModal').modal('show')
+            }else{
+            $('#myModal').modal('hide')
             }
-        }
 
+        }else{
+        $('#myModal').modal('show')
+    }
+
+    }else{
+        $('#myModal').modal('show')
     }
 
         clickcount++
@@ -258,24 +266,26 @@ function createXMLHttpRequest() {
     }
 
 function defaultcheck(i) {
-    var j=i.getAttribute("id");
-    var reg= /^[0-9]+.?[0-9]*$/;
-    var j1=j.charAt(11).toString();
-    var j2=j.charAt(12).toString();
-    var j11=parseInt(j1);
-    if (reg.test(j2)) {
-        console.log("if")
-        var j21 = parseInt(j2)
-        var j3=((j11*10+j21)/tags.length)+1
-    }else{
-        console.log("else")
-        var j3=(j11/tags.length)+1
-    }
-
-
-    console.log(j2);
-    console.log(j3);
-        document.getElementById("ok"+j3).checked=true;
+    var j=parseInt(i.toString().charAt(7))+1
+    var j1 = j.toString()
+    // var j=i.getAttribute("id");
+    // var reg= /^[0-9]+.?[0-9]*$/;
+    // var j1=j.charAt(11).toString();
+    // var j2=j.charAt(12).toString();
+    // var j11=parseInt(j1);
+    // if (reg.test(j2)) {
+    //     console.log("if")
+    //     var j21 = parseInt(j2)
+    //     var j3=((j11*10+j21)/tags.length)+1
+    // }else{
+    //     console.log("else")
+    //     var j3=(j11/tags.length)+1
+    // }
+    //
+    //
+    // console.log(j2);
+    // console.log(j3);
+        document.getElementById("ok"+j1).checked=false;
 }
 
 function setbutton2(){
@@ -292,7 +302,8 @@ function setbutton2(){
             a2.setAttribute("style","margin-left: 8px;margin-bottom:12px;height: 30px;line-height: 10px;");
             a2.onclick=function(){
                 changecolor(this);
-                defaultcheck(this);
+                defaultcheck(this.parentElement.id);
+                console.log(this.parentElement.id)
             };
 
             a1.appendChild(a2);
@@ -383,17 +394,11 @@ function fileimport() {
             var a1 = document.createElement("div");
             var length1 = jsoncontent.data[m].text.split(" ").length;
             for (var i = 0; i < length1; i++) {
-                var def = false;
                 var a2 = document.createElement("span")
                 a2.id=m+"text"+i
                 a2.onclick = function () {
-                    def = !def;
-                    if (def ) {
                         getdetail(this);
-                    }
-                    else getdetail2(this);
                 };
-
                 a2.innerText = mytable[m][i] + " ";
                 a1.appendChild(a2);
             }
@@ -464,13 +469,13 @@ function fileimport() {
 
 
 function getdetail(column){
+
+    if (column.style.background=="orange") {
+        column.style.background="rgb(233,236,239)"
+    }else
     column.style.background="orange";
-
 }
-function getdetail2(column2){
-    column2.style.background="red";
 
-}
 
 
 function fileexport(){
@@ -493,7 +498,7 @@ function fileexport(){
 
     var file = new File([tempcon], "data.txt", { type: "text/plain;charset=utf-8" });
     saveAs(file);
-    alter("文件已下载")
+    alert("文件已下载")
 }
 
 
@@ -873,32 +878,26 @@ function confirm1(){
                     if(text_id[i].text.toString()==text1)
                         id1=text_id[i].id
                 }
-
                 for(var i=0;i<text_id.length;i++ ){
                     if(text_id[i].text.toString()==text2)
                         id2=text_id[i].id
                 }
-
                 for(var i=0;i<text_id.length;i++ ){
                     if(text_id[i].text.toString()==text3)
                         id3=text_id[i].id
                 }
-
                 for(var i=0;i<text_id.length;i++ ){
                     if(text_id[i].text.toString()==text3)
                         id3=text_id[i].id
                 }
-
                 for(var i=0;i<text_id.length;i++ ){
                     if(text_id[i].text.toString()==text4)
                         id4=text_id[i].id
                 }
-
                 for(var i=0;i<text_id.length;i++ ){
                     if(text_id[i].text.toString()==text5)
                         id5=text_id[i].id
                 }
-
                 for(var i=0;i<text_id.length;i++ ){
                     if(text_id[i].text.toString()==text6)
                         id6=text_id[i].id
@@ -1031,4 +1030,3 @@ function Map(){
  this.size=size;
  this.isEmpty=isEmpty;
 }
-

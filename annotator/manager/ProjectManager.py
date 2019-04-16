@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from django.utils import timezone as datetime
 from sqlite3 import IntegrityError
 from annotator.models import *
 

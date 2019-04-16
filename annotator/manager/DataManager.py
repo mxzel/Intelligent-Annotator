@@ -11,6 +11,7 @@ Data:
     commit_labeled_data(labeled_data, project_id): 提交已标注数据
 """
 
+
 class DataManager:
     @staticmethod
     def fetch_unlabeled_data(project_id: int = -1, num: int = -1) -> dict:
@@ -138,7 +139,6 @@ class DataManager:
         try:
             project = Project.objects.get(pk=project_id)
             for meta_data in labeled_data:
-
                 e1_start, e1_end = meta_data["labeled_e1_start"], meta_data["labeled_e1_end"]
                 e2_start, e2_end = meta_data["labeled_e2_start"], meta_data["labeled_e2_end"]
                 meta_data['text'].insert(e1_start, '<e1>')

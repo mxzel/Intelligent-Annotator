@@ -172,7 +172,6 @@ function newproject() {
     a=6-submit;
     if(clickcount>0) {
         if (submit < 6) {
-
             var con = confirm("您还有" + a + "条记录没有标注，确定更换吗？");
             if (con == true) {
             confirm("该页数据已提交")
@@ -217,6 +216,7 @@ function confirmCreateProject() {
         setButton();
         setButtonState();
     }
+    var project_id;
      xml=createXMLHttpRequest();
      xml.open('POST','create_project',true);
      xml.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
@@ -225,16 +225,17 @@ function confirmCreateProject() {
             if(xml.readyState == 4 && xml.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
                 console.log("projectname:"+xml.responseText)
                 project_info.set(project_name, xml.responseText.substring(31, 33))
-            }
-        }
-
-     xml_add=createXMLHttpRequest();
-     xml_add.open('POST','add_tags_to_project',true);
-     xml_add.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-     xml_add.send("project_id="+xml.responseText.substring(31, 33)+"&tags"+tags);
-     xml_add.onreadystatechange=function () {     //如果是post,那么里面就设置值
-            if(xml_add.readyState == 4 && xml_add.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
-                console.log("add_tags_to_project:"+xml_add.responseText)
+                project_id=xml.responseText.substring(31, 33);
+                 xml_add=createXMLHttpRequest();
+                 xml_add.open('POST','add_tags_to_project',true);
+                 xml_add.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+                 console.log(project_id+tags)
+                 xml_add.send("project_id="+project_id+"&tags"+tags);
+                 xml_add.onreadystatechange=function () {     //如果是post,那么里面就设置值
+                    if(xml_add.readyState == 4 && xml_add.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
+                        console.log("add_tags_to_project:"+xml_add.responseText)
+                    }
+                 }
             }
         }
 }
@@ -255,6 +256,8 @@ function confirmChangeTags() {
     }
     var projectName = document.getElementById("dropdown").innerHTML
     projectName.substr(5,projectName.length-1)
+    console.log("projectname: "+projectName)
+    console.log("project_id: "+project_info.get(projectName))
     xml_add=createXMLHttpRequest();
      xml_add.open('POST','add_tags_to_project',true);
      xml_add.setRequestHeader("Content-Type","application/x-www-form-urlencoded");

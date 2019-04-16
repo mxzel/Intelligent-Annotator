@@ -3,17 +3,21 @@ from django.shortcuts import HttpResponse
 from django.http import JsonResponse
 import annotator.manager as manager
 
+id = -1
 
 def create_project(request):
+    global id
     if request.method == "POST":
         project_name = request.POST.get("projectname", '')
         project_tags = request.POST.get("projecttags", [])
-
-        return JsonResponse(manager.create_project(
-            project_name=project_name, project_tags=project_tags))
+        ret_dict = manager.create_project(
+            project_name=project_name, project_tags=project_tags)
+        id = ret_dict["project_id"]
+        return JsonResponse(ret_dict)
 
 
 def upload_file(request):
+    print("项目id号为：" + str(id))
     if request.method == "POST":
         default_content = "Today is a good day.\nToday is a good day.\n"
         file_content = request.POST.get("file_contents", default_content)

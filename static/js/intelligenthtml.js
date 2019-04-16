@@ -1,20 +1,21 @@
 var state=new Array();
-var tags=new Array();
+var tags=new Array();//存储标签tag
 var textshow="";
 
 HTMLElement.prototype.__defineGetter__("currentStyle", function () {
 return this.ownerDocument.defaultView.getComputedStyle(this, null);
 });//获取背景色兼容代码
-function add() {
+
+//新建项目模态框添加标签
+function addTag() {
     var text=$('#tag').val();
     tags.push(text);
-
     var a1=document.createElement("button")
     a1.innerText=text;
     a1.className="btn btn-lg btn-warning";
     a1.setAttribute("style","margin-left: 8px;margin-bottom:12px;height: 30px;line-height: 10px;");
     a1.onclick=function(){
-        cancel(this);
+        deleteTag(this);
     };
     var a2=document.getElementById("tags");
     a2.appendChild(a1);
@@ -29,8 +30,27 @@ function add() {
 
 }
 
+//进度条更新 每次提交后更新
+function updata_progress() {
+    var xml = createXMLHttpRequest()
+    xml.open('POST', 'get_label_progress', false);   //这边如果是get请求,可以不填,如果是异步提交也可以不填
+    xml.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xml.send("project_id=" + id);                         //这里是请求体,如果是get请求,那么里面设为null.
+    xml.onreadystatechange = function () {     //如果是post,那么里面就设置值
+        if (xml.readyState == 4 && xml.status == 200) {     //当xml.readyState == 4的时候,相当于jquery的success页面
+            var content = xml.responseText
+            var progress = eval("(" + content + ")");
+            console.log("json" + progress.progress)
+            var progressbar = document.getElementById('progress')
+            progressbar.style.width = progress.progress
 
-function cancel(i) {
+        }
+    }
+
+    }
+
+    //新建项目模态框中删除标签
+function deleteTag(i) {
     var a1=document.getElementById("tags");
     var text=i.innerText;
     var index=0;
@@ -40,11 +60,10 @@ function cancel(i) {
     }
     tags.splice(index,1);
     a1.removeChild(i);
-
-
 }
-function initags() {
 
+//更改项目配置时重新设置标签
+function initags() {
     for (var i=0;i<tags.length;i++){
         var text=tags[i];
         var a1=document.createElement("button")
@@ -52,14 +71,15 @@ function initags() {
         a1.className="btn btn-lg btn-warning";
         a1.setAttribute("style","margin-left: 8px;margin-bottom:12px;height: 30px;line-height: 10px;");
         a1.onclick=function(){
-            cancel1(this);
+            deleteTag_change(this);
         };
         var a2=document.getElementById("tags1");
         a2.appendChild(a1);
     }
 }
 
-function add1() {
+//更改项目配置时添加标签
+function addTag_change() {
     var text=$('#tag1').val();
     tags.push(text);
 
@@ -68,7 +88,7 @@ function add1() {
     a1.className="btn btn-lg btn-warning";
     a1.setAttribute("style","margin-left: 8px;margin-bottom:12px;height: 30px;line-height: 10px;");
     a1.onclick=function(){
-        cancel1(this);
+        deleteTag_change(this);
     };
     var a2=document.getElementById("tags1");
     a2.appendChild(a1);
@@ -82,7 +102,8 @@ function add1() {
 }
 
 
-function cancel1(i) {
+//更改项目配置时删除标签
+function deleteTag_change(i) {
     var a1=document.getElementById("tags1");
     var text=i.innerText;
     var index=0;
@@ -95,42 +116,15 @@ function cancel1(i) {
 
 }
 
-
-function a()
+//点击导入
+function importClick()
 {
     $("#files").click();
 
 }
 
-function changecolor(self) {
-    var mycolor = document.getElementById(self.id);
 
-    var i= self.id.replace(/[^0-9]/ig,"");
-    state[i] = !state[i];
-    if (state[i] == true) {
-        mycolor.style.backgroundColor = "orange";
-    }
-    else {
-        mycolor.style.backgroundColor = "rgb(221,221,221)";
-    }
-    var mycontent1 = document.getElementById("choose" + (Math.floor(i / tags.length) + 1));
-
-    if (state[i] == true) {
-
-        mycontent1.innerText = mycontent1.innerText + "(" + mycolor.innerHTML + ")";
-    }
-    if (state[i] == false) {
-
-        var change = "(" + mycolor.innerHTML + ")";
-        mycontent1.innerText = (mycontent1.innerText).replace(change, "")
-        ;
-
-    }
-
-
-}
-
-
+//切换项目
 function  changeproject(cp) {
     var vs=cp.innerText
     //var vs = $('#selectproject option:selected').val();
@@ -144,14 +138,12 @@ function  changeproject(cp) {
             if(temp==true){
                 set();
             }
-
-
-
         }
     }
 }
 
-var clickcount=0
+var clickcount=0//用于判断是否是第一次进入
+//新建项目
 function newproject() {
 
     tags.splice(0,tags.length);
@@ -177,7 +169,6 @@ function newproject() {
     bo=document.getElementById('ok6');
     if (bo.checked)
         submit=submit+1;
-
     a=6-submit;
     if(clickcount>0) {
         if (submit < 6) {
@@ -197,54 +188,84 @@ function newproject() {
     }else{
         $('#myModal').modal('show')
     }
-
         clickcount++
-
 //返回后台
 }
-var project_info= new Map();
-function confirm2() {
+var project_info= new Map();//存储项目信息（编号
+
+//新建项目确认
+function confirmCreateProject() {
     $("#buttons0").empty();
     $("#buttons1").empty();
     $("#buttons2").empty();
     $("#buttons3").empty();
     $("#buttons4").empty();
     $("#buttons5").empty();
-    var t=$('#newname').val();
-    if (t!=null && t!="")
-
+    var project_name=$('#newname').val();
+    if (project_name!=null && project_name!="")
     {
-        document.getElementById("dropdown").innerHTML="当前项目："+t;
-        var aText = "<li><a onclick=\"changeproject(this)\">"+t+"</a></li>";
+        document.getElementById("dropdown").innerHTML="当前项目："+project_name;
+        var aText = "<li><a onclick=\"changeproject(this)\">"+project_name+"</a></li>";
         var Text = document.getElementById("selectproject").innerHTML
         document.getElementById("selectproject").innerHTML=Text+aText;
     }
-
     var temp=confirm("你已经提交成功！");
-    $("div[name='projectname']").val(t);
+    $("div[name='projectname']").val(project_name);
     $("div[name='tags']").val(tags);
-    //$("div[name='projectid']").val(t);
     $('#myModal').modal('hide');
+    if(temp==true){
+        setbutton2();
+        setbutton();
+    }
+     xml=createXMLHttpRequest();
+     xml.open('POST','create_project',true);
+     xml.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+     xml.send("projectname="+project_name);
+     xml.onreadystatechange=function () {     //如果是post,那么里面就设置值
+            if(xml.readyState == 4 && xml.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
+                console.log("projectname:"+xml.responseText)
+                project_info.set(project_name, xml.responseText.substring(31, 33))
+            }
+        }
+
+     xml_add=createXMLHttpRequest();
+     xml_add.open('POST','add_tags_to_project',true);
+     xml_add.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+     xml_add.send("project_id="+xml.responseText.substring(31, 33)+"&tags"+tags);
+     xml_add.onreadystatechange=function () {     //如果是post,那么里面就设置值
+            if(xml_add.readyState == 4 && xml_add.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
+                console.log("add_tags_to_project:"+xml_add.responseText)
+            }
+        }
+}
+//确认标签（更改项目配置
+function confirmChangeTags() {
+    $("#buttons0").empty();
+    $("#buttons1").empty();
+    $("#buttons2").empty();
+    $("#buttons3").empty();
+    $("#buttons4").empty();
+    $("#buttons5").empty();
+    var temp=confirm("你已经提交成功！");
+    $("div[name='tags']").val(tags);
     $('#myModal1').modal('hide');
     if(temp==true){
         setbutton2();
         setbutton();
-
     }
-
-     xml=createXMLHttpRequest();
-     xml.open('POST','create_project',true);
-     xml.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-     xml.send("projectname="+t);
-     xml.onreadystatechange=function () {     //如果是post,那么里面就设置值
-            if(xml.readyState == 4 && xml.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
-                console.log("projectname:"+xml.responseText)
-                project_info.set(t, xml.responseText.substring(31, 33))
+    var projectName = document.getElementById("dropdown").innerHTML
+    xml_add=createXMLHttpRequest();
+     xml_add.open('POST','add_tags_to_project',true);
+     xml_add.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+     xml_add.send("project_id="+project_info.get()+"&tags"+tags);
+     xml_add.onreadystatechange=function () {     //如果是post,那么里面就设置值
+            if(xml_add.readyState == 4 && xml_add.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
+                console.log("add_tags_to_project:"+xml_add.responseText)
             }
         }
 
-
 }
+
 
 function createXMLHttpRequest() {
         var xmlHttp;
@@ -323,6 +344,7 @@ var txtdata
 var project2file_id=new Map()
 var id
 var file_id
+var hasData=0;
 function fileimport() {
     var selectedFile = document.getElementById("files").files[0];//获取读取的File对象
     var name = selectedFile.name;//读取选中文件的文件名
@@ -371,6 +393,8 @@ function fileimport() {
                 content=xml1.responseText
                 jsoncontent=eval("("+content+")");
                 console.log("json"+jsoncontent.data[0].text)
+            }else{
+                hasData=0
             }
 
             for(var l=0;l<jsoncontent.data.length;l++){
@@ -460,10 +484,8 @@ function fileimport() {
                 table1[i].click;
         }
 
-
-
-
     }
+    hasData++
 }
 
 
@@ -718,210 +740,182 @@ function set() {
         text_id=[]
 }
 
-function confirm1(){
+    function confirm1() {
 
-    var a=0;
-    var submit=0;
-    var bo=document.getElementById('ok1');
-    if (bo.checked)
-        submit++;
+        var a = 0;
+        var submit = 0;
+        var bo = document.getElementById('ok1');
+        if (bo.checked)
+            submit++;
 
-    bo=document.getElementById('ok2');
-    if (bo.checked)
-        submit=submit+1;
-    bo=document.getElementById('ok3');
-    if (bo.checked)
-        submit=submit+1;
-    bo=document.getElementById('ok4');
-    if (bo.checked)
-        submit=submit+1;
-    bo=document.getElementById('ok5');
-    if (bo.checked)
-        submit=submit+1;
-    bo=document.getElementById('ok6');
-    if (bo.checked)
-        submit=submit+1;
+        bo = document.getElementById('ok2');
+        if (bo.checked)
+            submit = submit + 1;
+        bo = document.getElementById('ok3');
+        if (bo.checked)
+            submit = submit + 1;
+        bo = document.getElementById('ok4');
+        if (bo.checked)
+            submit = submit + 1;
+        bo = document.getElementById('ok5');
+        if (bo.checked)
+            submit = submit + 1;
+        bo = document.getElementById('ok6');
+        if (bo.checked)
+            submit = submit + 1;
 
-    a=6-submit;
-    if(submit<6){
-        var con=confirm("您还有"+a+"条记录没有标注，确定提交吗？");
-        if(con==true){
-            var temp=confirm("你已经提交成功！");
+        a = 6 - submit;
+        if (submit < 6&&hasData!=0) {
+            var con = confirm("您还有" + a + "条记录没有标注，确定提交吗？");
+            if (con == true) {
+                var temp = confirm("你已经提交成功！");
 
-            if(temp==true){
+                if (temp == true) {
 
-                var text1=text_id[0].text
-                var text2=text_id[1].text
-                var text3=text_id[2].text
-                var text4=text_id[3].text
-                var text5=text_id[4].text
-                var text6=text_id[5].text
-                var labeled_relation11=$("#choose1").text().split("：")
-                var labeled_relation1=labeled_relation11[1]
-                var labeled_relation21=$("#choose2").text().split("：")
-                var labeled_relation2=labeled_relation21[1]
-                var labeled_relation31=$("#choose3").text().split("：")
-                var labeled_relation3=labeled_relation31[1]
-                var labeled_relation41=$("#choose4").text().split("：")
-                var labeled_relation4=labeled_relation41[1]
-                var labeled_relation51=$("#choose5").text().split("：")
-                var labeled_relation5=labeled_relation51[1]
-                var labeled_relation61=$("#choose6").text().split("：")
-                var labeled_relation6=labeled_relation61[1]
-                var length2=$("#index1").text().split(" ")
-                var labeled1_e1
-                var labeled1_e2
-                for (var i = 0; i <length2.length-1; i++) {
-                    var color=document.getElementById("0text"+i)
-                    if (color.style.backgroundColor=='orange') {
-                        labeled1_e1 = $("#0text" + i).text()
-                        break
+                    var text1 = text_id[0].text
+                    var text2 = text_id[1].text
+                    var text3 = text_id[2].text
+                    var text4 = text_id[3].text
+                    var text5 = text_id[4].text
+                    var text6 = text_id[5].text
+                    var labeled_relation11 = $("#choose1").text().split("：")
+                    var labeled_relation1 = labeled_relation11[1]
+                    var labeled_relation21 = $("#choose2").text().split("：")
+                    var labeled_relation2 = labeled_relation21[1]
+                    var labeled_relation31 = $("#choose3").text().split("：")
+                    var labeled_relation3 = labeled_relation31[1]
+                    var labeled_relation41 = $("#choose4").text().split("：")
+                    var labeled_relation4 = labeled_relation41[1]
+                    var labeled_relation51 = $("#choose5").text().split("：")
+                    var labeled_relation5 = labeled_relation51[1]
+                    var labeled_relation61 = $("#choose6").text().split("：")
+                    var labeled_relation6 = labeled_relation61[1]
+                    var length2 = $("#index1").text().split(" ")
+                    var labeled1_e1
+                    var labeled1_e2
+                    for (var i = 0; i < length2.length - 1; i++) {
+                        var color = document.getElementById("0text" + i)
+                        if (color.style.backgroundColor == 'orange') {
+                            labeled1_e1 = $("#0text" + i).text()
+                            break
+                        }
                     }
-                }
-                for (var i = 0; i <length2.length-1; i++) {
-                    var color = document.getElementById("0text" + i)
-                    if (color.style.backgroundColor == 'orange') {
-                        labeled1_e2 = $("#0text" + i).text()
+                    for (var i = 0; i < length2.length - 1; i++) {
+                        var color = document.getElementById("0text" + i)
+                        if (color.style.backgroundColor == 'orange') {
+                            labeled1_e2 = $("#0text" + i).text()
+                        }
                     }
+
+                    length2 = $("#index2").text().split(" ")
+                    var labeled2_e1
+                    var labeled2_e2
+                    for (var i = 0; i < length2.length - 1; i++) {
+                        var color = document.getElementById("1text" + i)
+                        if (color.style.backgroundColor == 'orange') {
+                            labeled2_e1 = $("#1text" + i).text()
+                            break
+                        }
+                    }
+                    for (var i = 0; i < length2.length - 1; i++) {
+                        var color = document.getElementById("1text" + i)
+                        if (color.style.backgroundColor == 'orange') {
+                            labeled2_e2 = $("#1text" + i).text()
+                        }
+                    }
+
+                    length2 = $("#index3").text().split(" ")
+                    var labeled3_e1
+                    var labeled3_e2
+                    for (var i = 0; i < length2.length - 1; i++) {
+                        var color = document.getElementById("2text" + i)
+                        if (color.style.backgroundColor == 'orange') {
+                            labeled3_e1 = $("#2text" + i).text()
+                            break
+                        }
+                    }
+                    for (var i = 0; i < length2.length - 1; i++) {
+                        var color = document.getElementById("2text" + i)
+                        if (color.style.backgroundColor == 'orange') {
+                            labeled3_e2 = $("#2text" + i).text()
+                        }
+                    }
+
+                    length2 = $("#index4").text().split(" ")
+                    var labeled4_e1
+                    var labeled4_e2
+                    for (var i = 0; i < length2.length - 1; i++) {
+                        var color = document.getElementById("3text" + i)
+                        if (color.style.backgroundColor == 'orange') {
+                            labeled4_e1 = $("#3text" + i).text()
+                            break
+                        }
+                    }
+                    for (var i = 0; i < length2.length - 1; i++) {
+                        var color = document.getElementById("3text" + i)
+                        if (color.style.backgroundColor == 'orange')
+                            labeled4_e2 = $("#3text" + i).text()
+                    }
+
+                    length2 = $("#index5").text().split(" ")
+                    var labeled5_e1
+                    var labeled5_e2
+                    for (var i = 0; i < length2.length - 1; i++) {
+                        var color = document.getElementById("4text" + i)
+                        if (color.style.backgroundColor == 'orange') {
+                            labeled5_e1 = $("#4text" + i).text()
+                            break
+                        }
+                    }
+                    for (var i = 0; i < length2.length - 1; i++) {
+                        var color = document.getElementById("4text" + i)
+                        if (color.style.backgroundColor == 'orange')
+                            labeled5_e2 = $("#4text" + i).text()
+                    }
+
+                    length2 = $("#index6").text().split(" ")
+                    var labeled6_e1
+                    var labeled6_e2
+                    for (var i = 0; i < length2.length - 1; i++) {
+                        var color = document.getElementById("5text" + i)
+                        if (color.style.backgroundColor == 'orange') {
+                            labeled6_e1 = $("#5text" + i).text()
+                            break
+                        }
+                    }
+                    for (var i = 0; i < length2.length - 1; i++) {
+                        var color = document.getElementById("5text" + i)
+                        if (color.style.backgroundColor == 'orange')
+                            labeled6_e2 = $("#5text" + i).text()
+                    }
+                    var id1 = text_id[0].id
+                    var id2 = text_id[1].id
+                    var id3 = text_id[2].id
+                    var id4 = text_id[3].id
+                    var id5 = text_id[4].id
+                    var id6 = text_id[5].id
+=
+
+                    xml2 = createXMLHttpRequest()
+                    xml2.open('POST', 'commit_label_data', false);
+                    xml2.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                    xml2.send("file_id=" + file_id + "&id1=" + id1 + "&text1=" + text1 + "&labeled_relation1=" + labeled_relation1 + "&labeled1_e1=" + labeled1_e1 + "&labeled1_e2=" + labeled1_e2 + "&id2=" + id2 + "&text2=" + text2 + "&labeled_relation2=" + labeled_relation2 + "&labeled2_e1=" + labeled2_e1 + "&labeled2_e2=" + labeled2_e2 + "&id3=" + id3 + "&text3=" + text3 + "&labeled_relation3=" + labeled_relation3 + "&labeled3_e1=" + labeled3_e1 + "&labeled3_e2=" + labeled3_e2 + "&id4=" + id4 + "&text4=" + text4 + "&labeled_relation4=" + labeled_relation4 + "&labeled4_e1=" + labeled4_e1 + "&labeled4_e2=" + labeled4_e2 + "&id5=" + id5 + "&text5=" + text5 + "&labeled_relation5=" + labeled_relation5 + "&labeled5_e1=" + labeled5_e1 + "&labeled5_e2=" + labeled5_e2 + "&id6=" + id6 + "&text6=" + text6 + "&labeled_relation6=" + labeled_relation6 + "&labeled6_e1=" + labeled6_e1 + "&labeled6_e2=" + labeled6_e2)
+                    set()
+                    setbutton();
+                    updata_progress();
+                    console.log("commit_label_data");
                 }
 
-                length2=$("#index2").text().split(" ")
-                var labeled2_e1
-                var labeled2_e2
-                for (var i = 0; i <length2.length-1 ; i++) {
-                    var color=document.getElementById("1text"+i)
-                    if (color.style.backgroundColor=='orange') {
-                        labeled2_e1 = $("#1text" + i).text()
-                        break
-                    }
-                }
-                for (var i = 0; i <length2.length-1 ; i++) {
-                    var color = document.getElementById("1text" + i)
-                    if (color.style.backgroundColor == 'orange') {
-                        labeled2_e2 = $("#1text" + i).text()
-                    }
-                }
 
-                length2=$("#index3").text().split(" ")
-                var labeled3_e1
-                var labeled3_e2
-                for (var i = 0; i <length2.length-1 ; i++) {
-                    var color=document.getElementById("2text"+i)
-                    if (color.style.backgroundColor=='orange')  {
-                        labeled3_e1 = $("#2text" + i).text()
-                        break
-                    }
-                }
-                for (var i = 0; i <length2.length-1 ; i++) {
-                    var color = document.getElementById("2text" + i)
-                    if (color.style.backgroundColor == 'orange') {
-                        labeled3_e2 = $("#2text" + i).text()
-                    }
-                }
-
-                length2=$("#index4").text().split(" ")
-                var labeled4_e1
-                var labeled4_e2
-                for (var i = 0; i <length2.length -1; i++) {
-                    var color=document.getElementById("3text"+i)
-                    if (color.style.backgroundColor=='orange') {
-                        labeled4_e1 = $("#3text" + i).text()
-                        break
-                    }
-                }
-                for (var i = 0; i <length2.length-1 ; i++) {
-                    var color=document.getElementById("3text"+i)
-                    if (color.style.backgroundColor=='orange')
-                        labeled4_e2 = $("#3text" + i).text()
-                }
-
-                length2=$("#index5").text().split(" ")
-                var labeled5_e1
-                var labeled5_e2
-                for (var i = 0; i <length2.length -1; i++) {
-                    var color=document.getElementById("4text"+i)
-                    if (color.style.backgroundColor=='orange') {
-                        labeled5_e1 = $("#4text" + i).text()
-                        break
-                    }
-                }
-                for (var i = 0; i <length2.length-1 ; i++) {
-                    var color=document.getElementById("4text"+i)
-                    if (color.style.backgroundColor=='orange')
-                        labeled5_e2 = $("#4text" + i).text()
-                }
-
-                length2=$("#index6").text().split(" ")
-                var labeled6_e1
-                var labeled6_e2
-                for (var i = 0; i <length2.length-1 ; i++) {
-                    var color=document.getElementById("5text"+i)
-                    if (color.style.backgroundColor=='orange') {
-                        labeled6_e1 = $("#5text" + i).text()
-                        break
-                    }
-                }
-                for (var i = 0; i <length2.length-1 ; i++) {
-                    var color=document.getElementById("5text"+i)
-                    if (color.style.backgroundColor=='orange')
-                        labeled6_e2 = $("#5text" + i).text()
-                }
-                var id1=text_id[0].id
-                var id2=text_id[1].id
-                var id3=text_id[2].id
-                var id4=text_id[3].id
-                var id5=text_id[4].id
-                var id6=text_id[5].id
-
-
-               /* for(var i=0;i<text_id.length;i++ ){
-                    if(text_id[i].text.toString()==text1)
-                        id1=text_id[i].id
-                }
-                for(var i=0;i<text_id.length;i++ ){
-                    if(text_id[i].text.toString()==text2)
-                        id2=text_id[i].id
-                }
-                for(var i=0;i<text_id.length;i++ ){
-                    if(text_id[i].text.toString()==text3)
-                        id3=text_id[i].id
-                }
-                for(var i=0;i<text_id.length;i++ ){
-                    if(text_id[i].text.toString()==text3)
-                        id3=text_id[i].id
-                }
-                for(var i=0;i<text_id.length;i++ ){
-                    if(text_id[i].text.toString()==text4)
-                        id4=text_id[i].id
-                }
-                for(var i=0;i<text_id.length;i++ ){
-                    if(text_id[i].text.toString()==text5)
-                        id5=text_id[i].id
-                }
-                for(var i=0;i<text_id.length;i++ ){
-                    if(text_id[i].text.toString()==text6)
-                        id6=text_id[i].id
-                }*/
-
-                xml2=createXMLHttpRequest()
-                xml2.open('POST','commit_label_data',false);
-                xml2.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-                xml2.send("file_id="+file_id+"&id1="+id1+"&text1="+text1+"&labeled_relation1="+labeled_relation1+"&labeled1_e1="+labeled1_e1+"&labeled1_e2="+labeled1_e2+"&id2="+id2+"&text2="+text2+"&labeled_relation2="+labeled_relation2+"&labeled2_e1="+labeled2_e1+"&labeled2_e2="+labeled2_e2+"&id3="+id3+"&text3="+text3+"&labeled_relation3="+labeled_relation3+"&labeled3_e1="+labeled3_e1+"&labeled3_e2="+labeled3_e2+"&id4="+id4+"&text4="+text4+"&labeled_relation4="+labeled_relation4+"&labeled4_e1="+labeled4_e1+"&labeled4_e2="+labeled4_e2+"&id5="+id5+"&text5="+text5+"&labeled_relation5="+labeled_relation5+"&labeled5_e1="+labeled5_e1+"&labeled5_e2="+labeled5_e2+"&id6="+id6+"&text6="+text6+"&labeled_relation6="+labeled_relation6+"&labeled6_e1="+labeled6_e1+"&labeled6_e2="+labeled6_e2)
-                set()
-                setbutton();
-                console.log(111);
             }
-
-
-
+        }else{
+            alert("无数据！")
         }
+
+        submit = 0;
+
+
     }
-
-    submit=0;
-
-
-
-}
 
 function myClose() {
     var a=5-submit;

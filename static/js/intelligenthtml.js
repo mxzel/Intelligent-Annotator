@@ -258,6 +258,7 @@ function confirmCreateProject() {
                  xml_add=createXMLHttpRequest();
                  xml_add.open('POST','add_tags_to_project',true);
                  xml_add.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+
                  xml_add.send("project_id="+id+"&tags="+tags_string);
                  xml_add.onreadystatechange=function () {     //如果是post,那么里面就设置值
                     if(xml_add.readyState == 4 && xml_add.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面

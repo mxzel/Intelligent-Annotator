@@ -27,7 +27,7 @@ def upload_file(request):
 def override_tags(request):
     if request.method == "POST":
         project_id = int(request.POST.get("project_id", -1))
-        tags = request.POST.get("tags", [])
+        tags = request.POST.get("tags", '').split(',')
 
         return JsonResponse(manager.override_tags(
             project_id=project_id, tags=tags))

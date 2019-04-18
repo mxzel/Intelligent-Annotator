@@ -7,6 +7,30 @@ HTMLElement.prototype.__defineGetter__("currentStyle", function () {
 return this.ownerDocument.defaultView.getComputedStyle(this, null);
 });//获取背景色兼容代码
 
+window.onload=function(){
+        var projects_array=new Array()
+        xml=createXMLHttpRequest();
+        xml.open('POST','get_projects',true);
+        xml.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+        xml.send()
+        xml.onreadystatechange = function () {     //如果是post,那么里面就设置值
+        if (xml.readyState == 4 && xml.status == 200) {
+             var projectscontent = xml.responseText
+        var projectsJson = eval("(" + projectscontent + ")")
+        projects_array=projectsJson.projects
+    // projects_array = ["name1","name2"]
+        for (var i=0;i<projects_array.length;i++){
+            var projects_name = projects_array[i]
+            var aText = "<li><a onclick=\"changeproject(this)\">"+projects_name[1]+"</a></li>";
+            var Text = document.getElementById("selectproject").innerHTML
+            document.getElementById("selectproject").innerHTML=Text+aText;
+        }
+    }
+
+    }
+    }
+
+
 //新建项目模态框添加标签
 function addTag() {
     var text=$('#tag').val();
@@ -270,6 +294,11 @@ function confirmCreateProject() {
 }
 //确认标签（更改项目配置
 function confirmChangeTags() {
+    var a2=document.getElementById("tags1");
+    var childs = a2.childNodes;
+    for(var i = childs .length - 1; i >= 0; i--) {
+        a2.removeChild(childs[i]);
+    }
     $("#buttons0").empty();
     $("#buttons1").empty();
     $("#buttons2").empty();

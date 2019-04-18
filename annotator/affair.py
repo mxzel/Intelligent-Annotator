@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.shortcuts import HttpResponse
 from django.http import JsonResponse
 import annotator.manager as manager
+import pdb
+
 
 def get_projects(request):
     """获取数据库中所有项目的名字"""
@@ -9,6 +11,7 @@ def get_projects(request):
 
 
 def create_project(request):
+    """创建项目"""
     if request.method == "POST":
         project_name = request.POST.get("projectname", '')
         project_tags = request.POST.get("tags", [])
@@ -18,10 +21,11 @@ def create_project(request):
 
 
 def upload_file(request):
+    """上传文件"""
     if request.method == "POST":
-        default_content = "Today is a good day.\nToday is a good day.\n"
-        file_content = request.POST.get("file_contents", default_content)
+        file_content = request.POST.get("file_contents")
         file_contents = file_content.strip().split('\n')
+        file_contents = list(filter(lambda content: len(content) > 10, file_contents))
         project_id = int(request.POST.get("project_id", -1))
 
         return JsonResponse(manager.upload_file(
@@ -29,6 +33,7 @@ def upload_file(request):
 
 
 def override_tags(request):
+    """覆盖项目的标签"""
     if request.method == "POST":
         project_id = int(request.POST.get("project_id", -1))
         tags = request.POST.get("tags", '').split(',')
@@ -38,14 +43,17 @@ def override_tags(request):
 
 
 def fetch_unlabeled_data(request):
+    """获取未标注数据"""
     if request.method == "POST":
         project_id = int(request.POST.get("project_id", -1))
         num = int(request.POST.get("num", -1))
+        pdb.set_trace()
 
         return JsonResponse(manager.fetch_unlabeled_data(project_id=project_id, num=num))
 
 
 def commit_label_data(request):
+    """提交已标注的数据"""
     if request.method == "POST":
         file_id = int(request.POST.get("file_id", -1))
         project_id = int(request.POST.get("project_id", -1))
@@ -104,6 +112,7 @@ def commit_label_data(request):
 
 
 def export_project(request):
+    """导出项目"""
     if request.method == "POST":
         project_id = int(request.POST.get("project_id", -1))
 

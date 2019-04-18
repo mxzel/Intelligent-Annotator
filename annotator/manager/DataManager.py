@@ -36,8 +36,7 @@ class DataManager:
                         {
                             "id": 1,
                             # 1993年2月15日，李彤出生在吉林某城市。
-                            "text": ['1', '9', '9', '3', '年', '2', '月', '1', '5', '日', '，',
-                             '李', '彤', '出', '生', '在', '吉', '林', '某', '城', '市', '。'],
+                            "text": ['This', 'is', 'a', 'test', 'file.'],
                             "predicted_relation": "人-出生地",
                             "predicted_e1": "李彤",
                             "predicted_e2": "吉林",
@@ -65,14 +64,14 @@ class DataManager:
                         # TODO: 对数据进行预标注，将预标注后的数据包装成 dict
                         {
                             "id": meta_data["unlabeled_id"],
-                            "text": list(meta_data["data_content"]),
+                            "text": meta_data["data_content"].split(' '),
                             "predicted_relation": "relation",
                             "predicted_e1": "e1",
                             "predicted_e2": "e2",
                             "predicted_e1_start": 0,
-                            "predicted_e1_end": 4,
-                            "predicted_e2_start": 6,
-                            "predicted_e2_end": 7,
+                            "predicted_e1_end": 1,
+                            "predicted_e2_start": 3,
+                            "predicted_e2_end": 4,
                         }
                         for meta_data in unlabeled_data
                     ],

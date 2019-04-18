@@ -206,11 +206,12 @@ class ProjectManager:
 
         # 检查文件格式
         for sentence in file_contents:
-            if len(sentence) > 100:
+            if len(sentence) > SENTENCE_MAX_LENGTH:
                 ret_data = {
                     "status": False,
                     "code": -1,
-                    "message": "文件格式错误！\n每行表示一句话，且不多于100个字符。"
+                    "message": "文件格式错误！\n每行表示一句话，且不多于{}个字符。"
+                        .format(SENTENCE_MAX_LENGTH)
                 }
                 return ret_data
 

@@ -1,6 +1,7 @@
 var state=new Array();
 var tags=new Array();//存储标签tag
 var textshow="";
+var predicted_data=new Array()
 
 HTMLElement.prototype.__defineGetter__("currentStyle", function () {
 return this.ownerDocument.defaultView.getComputedStyle(this, null);
@@ -130,16 +131,44 @@ function  changeproject(cp) {
     //var vs = $('#selectproject option:selected').val();
     document.getElementById("dropdown").innerHTML="当前项目："+vs;
     var a=0;
-    a=6-submit;
-    if(submit<6){
+    a=hasData-submit;
+    if(submit<hasData){
         var con=confirm("您还有"+a+"条记录没有标注，确定更换吗？");
         if(con==true){
-            var temp=confirm("你已经提交成功！");
-            if(temp==true){
-                initButton();
+            id=project_info.get(vs)
+            initButton();
+             xml=createXMLHttpRequest();
+             xml.open('POST','get_project_tags',true);
+             xml.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+             xml.send("project_id="+id);
+             xml.onreadystatechange=function () {     //如果是post,那么里面就设置值
+                if(xml.readyState == 4 && xml.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
+                    console.log(xml.responseText)
+                    content=xml.responseText
+                    var tagsJson = eval("(" + content + ")")
+                    tags=tagsJson.tags
+                }
             }
+            setButton()
         }
+    }else{
+            id=project_info.get(vs)
+            initButton();
+             xml=createXMLHttpRequest();
+             xml.open('POST','get_project_tags',true);
+             xml.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+             xml.send("project_id="+id);
+             xml.onreadystatechange=function () {     //如果是post,那么里面就设置值
+                if(xml.readyState == 4 && xml.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
+                    console.log(xml.responseText)
+                    content=xml.responseText
+                    var tagsJson = eval("(" + content + ")")
+                    tags=tagsJson.tags
+                }
+            }
+            setButton()
     }
+
 }
 
 var clickcount=0//用于判断是否是第一次进入
@@ -169,9 +198,9 @@ function newproject() {
     bo=document.getElementById('ok6');
     if (bo.checked)
         submit=submit+1;
-    a=6-submit;
+    a=hasData-submit;
     if(clickcount>0) {
-        if (submit < 6) {
+        if (submit < hasData) {
             var con = confirm("您还有" + a + "条记录没有标注，确定更换吗？");
             if (con == true) {
             confirm("该页数据已提交")
@@ -214,9 +243,8 @@ function confirmCreateProject() {
     $('#myModal').modal('hide');
     if(temp==true){
         setButton();
-        setButtonState();
+        setButtonState(false);
     }
-    var project_id;
     var tags_string = tags.join(",")
      xml=createXMLHttpRequest();
      xml.open('POST','create_project',true);
@@ -226,11 +254,12 @@ function confirmCreateProject() {
             if(xml.readyState == 4 && xml.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
                 console.log("projectname:"+xml.responseText)
                 project_info.set(project_name, xml.responseText.substring(31, 33))
-                project_id=xml.responseText.substring(31, 33);
+                id=xml.responseText.substring(31, 33);
                  xml_add=createXMLHttpRequest();
                  xml_add.open('POST','add_tags_to_project',true);
                  xml_add.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-                 xml_add.send("project_id="+project_id+"&tags="+tags_string);
+
+                 xml_add.send("project_id="+id+"&tags="+tags_string);
                  xml_add.onreadystatechange=function () {     //如果是post,那么里面就设置值
                     if(xml_add.readyState == 4 && xml_add.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
                         console.log("add_tags_to_project:"+xml_add.responseText)
@@ -252,7 +281,7 @@ function confirmChangeTags() {
     $('#myModal1').modal('hide');
     if(temp==true){
         setButton();
-        setButtonState();
+        setButtonState(true);
     }
     var projectName = document.getElementById("dropdown").innerHTML
     projectName=projectName.substr(5,projectName.length-1)
@@ -261,12 +290,11 @@ function confirmChangeTags() {
      xml_add.open('POST','add_tags_to_project',true);
      xml_add.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
      xml_add.send("project_id="+project_info.get(projectName)+"&tags="+tags_string);
-     xml_add.onreadystatechange=function () {     //如果是post,那么里面就设置值
+     xml_add.onreadystatechange=function () {//如果是post,那么里面就设置值
             if(xml_add.readyState == 4 && xml_add.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
                 console.log("add_tags_to_project:"+xml_add.responseText)
             }
         }
-
 }
 
 
@@ -341,7 +369,6 @@ function changecolor(self) {
 
 var text_id=[]
 var page=0;
-var page1=6;
 var mydata=new Array();
 var txtdata
 var project2file_id=new Map()
@@ -364,8 +391,6 @@ function fileImport() {
         var temp2=temp1[1]
         console.log(temp)
         id=parseInt(project_info.get(temp2))
-        var arrtest="[\'Today is a good day1.\', \'Today is a good day2\', \'Today is a good day3\', \'Today is a good day4\', \'Today is a good day5.\', \'Today is a good day6.\']"
-        //var fileinfo={file_name:name,file_contents:arrtest,project_id}
         xml=createXMLHttpRequest()
         xml.open('POST','upload_file',false);   //这边如果是get请求,可以不填,如果是异步提交也可以不填
         xml.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
@@ -399,87 +424,60 @@ function fileImport() {
                 text_id.push(row)
             }
 
-        var table1 = jsoncontent.data[0].text.join("");
-        var table2 = jsoncontent.data[1].text.join("");
-        var table3 = jsoncontent.data[2].text.join("");
-        var table4 = jsoncontent.data[3].text.join("");
-        var table5 = jsoncontent.data[4].text.join("");
-        var table6 = jsoncontent.data[5].text.join("");
-        var mytable = new Array(table1, table2, table3, table4, table5, table6);
+        var unlabeledDatas = [];
+        for (var i=0;i<jsoncontent.data.length;i++) {
+            var unlabeledData  = new UnlabeledData(jsoncontent.data[i].id,jsoncontent.data[i].predicted_e1, jsoncontent.data[i].predicted_e1_end,
+            jsoncontent.data[i].predicted_e1_start,jsoncontent.data[i].predicted_e2,jsoncontent.data[i].predicted_e2_end,
+            jsoncontent.data[i].predicted_e2_start,jsoncontent.data[i].predicted_relation,jsoncontent.data[i].text)
+        unlabeledDatas.push(unlabeledData)
+            }
+        predicted_data = unlabeledDatas
 
-        for (var m = 0; m < 6; m++) {
+        for (var m = 0; m < jsoncontent.data.length; m++) {
             var a0 = document.getElementById("index" + (m + 1));
             var a1 = document.createElement("div");
-            var length1 = jsoncontent.data[m].text.join("").length;
-            for (var i = 0; i < length1; i++) {
+            for (var i = 0; i < unlabeledDatas[m].text2String.length;i++) {
                 var a2 = document.createElement("span")
                 a2.id=m+"text"+i
                 a2.onclick = function () {
                         getdetail(this);
                 };
-                a2.innerText = mytable[m][i];
+                a2.innerText = unlabeledDatas[m].text2String[i]+" ";
                 a1.appendChild(a2);
             }
             a0.appendChild(a1);
+            hasData++
         }
 
-        $("#choose1").val(jsoncontent.data[0].predicted_relation)
-        for (var i=0;i<table1.length;i++) {
-            if (table1[i]==jsoncontent.data[0].predicted_e1)
-                table1[i].click;
-        }
-        for (var i=0;i<table1.length;i++) {
-            if (table1[i]==jsoncontent.data[0].predicted_e2)
-                table1[i].click;
-        }
-        $("#choose2").val(jsoncontent.data[1].predicted_relation)
-        for (var i=0;i<table1.length;i++) {
-            if (table1[i]==jsoncontent.data[1].predicted_e1)
-                table1[i].click;
-        }
-        for (var i=0;i<table1.length;i++) {
-            if (table1[i]==jsoncontent.data[1].predicted_e2)
-                table1[i].click;
-        }
-        $("#choose3").val(jsoncontent.data[2].predicted_relation)
-        for (var i=0;i<table1.length;i++) {
-            if (table1[i]==jsoncontent.data[2].predicted_e1)
-                table1[i].click;
-        }
-        for (var i=0;i<table1.length;i++) {
-            if (table1[i]==jsoncontent.data[2].predicted_e2)
-                table1[i].click;
-        }
-        $("#choose4").val(jsoncontent.data[3].predicted_relation)
-        for (var i=0;i<table1.length;i++) {
-            if (table1[i]==jsoncontent.data[3].predicted_e1)
-                table1[i].click;
-        }
-        for (var i=0;i<table1.length;i++) {
-            if (table1[i]==jsoncontent.data[3].predicted_e2)
-                table1[i].click;
-        }
-        $("#choose5").val(jsoncontent.data[4].predicted_relation)
-        for (var i=0;i<table1.length;i++) {
-            if (table1[i]==jsoncontent.data[4].predicted_e1)
-                table1[i].click;
-        }
-        for (var i=0;i<table1.length;i++) {
-            if (table1[i]==jsoncontent.data[4].predicted_e2)
-                table1[i].click;
-        }
-        $("#choose6").val(jsoncontent.data[5].predicted_relation)
-        for (var i=0;i<table1.length;i++) {
-            if (table1[i]==jsoncontent.data[5].predicted_e1)
-                table1[i].click;
-        }
-        for (var i=0;i<table1.length;i++) {
-            if (table1[i]==jsoncontent.data[5].predicted_e2)
-                table1[i].click;
-        }
+        for (var i=0;i<hasData;i++) {
+            var buttonNode = document.getElementById("buttons"+i.toString())
+            var childNodes = buttonNode.childNodes
+            for (var k=0;k<childNodes.length;k++){
+                if (childNodes[k].innerText==unlabeledDatas[i].predicted_relation) {
+                    document.getElementById(childNodes[k].id).click()
+                }
+            }
 
+            if (unlabeledDatas[i].text2String[0].length>=unlabeledDatas[i].predicted_e1_start&&unlabeledDatas[i].text2String[0].length<=unlabeledDatas[i].predicted_e1_end+1){
+                    document.getElementById(i+"text"+0).click()
+                }
+                if (unlabeledDatas[i].text2String[0].length>=unlabeledDatas[i].predicted_e2_start&&unlabeledDatas[i].text2String[0].length<=unlabeledDatas[i].predicted_e2_end+1){
+                    document.getElementById(i+"text"+0).click()
+                }
+            var len =unlabeledDatas[i].text2String[0].length
+            for (var j=1;j<unlabeledDatas[i].text2String.length;j++) {
+                len +=unlabeledDatas[i].text2String[j].length
+                if (len>unlabeledDatas[i].predicted_e1_start&&len<=unlabeledDatas[i].predicted_e1_end){
+                    document.getElementById(i+"text"+j).click()
+                }
+                if (len>unlabeledDatas[i].predicted_e2_start&&len<=unlabeledDatas[i].predicted_e2_end){
+                    document.getElementById(i+"text"+j).click()
+                }
+            }
+        }
+        setButtonState(true)
     }
-    hasData++
+
 }
 
 
@@ -523,13 +521,13 @@ var page1 = 6;
 var mydata = new Array();
 
 //初始化按钮状态（颜色 勾选
-function setButtonState() {
-    document.getElementById('ok1').checked=false;
-    document.getElementById('ok2').checked=false;
-    document.getElementById('ok3').checked=false;
-    document.getElementById('ok4').checked=false;
-    document.getElementById('ok5').checked=false;
-    document.getElementById('ok6').checked=false;
+function setButtonState(checkState) {
+    document.getElementById('ok1').checked=checkState;
+    document.getElementById('ok2').checked=checkState;
+    document.getElementById('ok3').checked=checkState;
+    document.getElementById('ok4').checked=checkState;
+    document.getElementById('ok5').checked=checkState;
+    document.getElementById('ok6').checked=checkState;
     var con = new Array(100);
     for (var m = 0; m < tags.length*6; m++) {
         con[m] = "changecolor" + m ;
@@ -540,15 +538,29 @@ function setButtonState() {
     }
     var con1 = new Array(19);
     for (var m = 0; m < 6; m++) {
-
         con[m] = "ok" + (m + 1);
-
     }
     for (var j = 0; j < 6; j++) {
         var mycolor = document.getElementById(con[j]);
         mycolor.style.color = "white";
     }
 }
+
+ function UnlabeledData(pre_id,predicted_e1,predicted_e1_end,predicted_e1_start,predicted_e2,predicted_e2_end,predicted_e2_start,predicted_relation,text){
+   var unlabeledData = new Object;
+   unlabeledData.pre_id = pre_id;
+   unlabeledData.predicted_e1 = predicted_e1;
+   unlabeledData.predicted_e1_end = predicted_e1_end;
+   unlabeledData.predicted_e1_start = predicted_e1_start;
+   unlabeledData.predicted_e2 = predicted_e2;
+   unlabeledData.predicted_e2_end = predicted_e2_end;
+   unlabeledData.predicted_e2_start = predicted_e2_start;
+   unlabeledData.predicted_relation = predicted_relation;
+   unlabeledData.text = [];
+   unlabeledData.text = text
+     unlabeledData.text2String = unlabeledData.text.join("").split(" ")
+   return unlabeledData;
+  }
 
 //初始化button
 function initButton() {
@@ -590,86 +602,61 @@ function initButton() {
                 console.log("json"+jsoncontent.data[0].text)
             }
 
-        var table1 = jsoncontent.data[0].text.join("");
-        var table2 = jsoncontent.data[1].text.join("");
-        var table3 = jsoncontent.data[2].text.join("");
-        var table4 = jsoncontent.data[3].text.join("");
-        var table5 = jsoncontent.data[4].text.join("");
-        var table6 = jsoncontent.data[5].text.join("");
-        var mytable = new Array(table1, table2, table3, table4, table5, table6);
+        var unlabeledDatas = [];
+        for (var i=0;i<jsoncontent.data.length;i++) {
+            var unlabeledData  = new UnlabeledData(jsoncontent.data[i].id,jsoncontent.data[i].predicted_e1, jsoncontent.data[i].predicted_e1_end,
+            jsoncontent.data[i].predicted_e1_start,jsoncontent.data[i].predicted_e2,jsoncontent.data[i].predicted_e2_end,
+            jsoncontent.data[i].predicted_e2_start,jsoncontent.data[i].predicted_relation,jsoncontent.data[i].text)
+        unlabeledDatas.push(unlabeledData)
+    }
+        predicted_data = unlabeledDatas
 
-        for (var m = 0; m < 6; m++) {
+        for (var m = 0; m < jsoncontent.data.length; m++) {
             var a0 = document.getElementById("index" + (m + 1));
             var a1 = document.createElement("div");
-            var length1 = jsoncontent.data[m].text.join("").length;
-            for (var i = 0; i < length1; i++) {
+            for (var i = 0; i < unlabeledDatas[m].text2String.length;i++) {
                 var a2 = document.createElement("span")
                 a2.id=m+"text"+i
                 a2.onclick = function () {
                         getdetail(this);
                 };
-                a2.innerText = mytable[m][i];
+                a2.innerText = unlabeledDatas[m].text2String[i]+" ";
                 a1.appendChild(a2);
             }
             a0.appendChild(a1);
+            hasData++
         }
 
-        $("#choose1").val(jsoncontent.data[0].predicted_relation)
-        for (var i=0;i<table1.length;i++) {
-            if (table1[i]==jsoncontent.data[0].predicted_e1)
-                table1[i].click;
-        }
-        for (var i=0;i<table1.length;i++) {
-            if (table1[i]==jsoncontent.data[0].predicted_e2)
-                table1[i].click;
-        }
-        $("#choose2").val(jsoncontent.data[1].predicted_relation)
-        for (var i=0;i<table1.length;i++) {
-            if (table1[i]==jsoncontent.data[1].predicted_e1)
-                table1[i].click;
-        }
-        for (var i=0;i<table1.length;i++) {
-            if (table1[i]==jsoncontent.data[1].predicted_e2)
-                table1[i].click;
-        }
-        $("#choose3").val(jsoncontent.data[2].predicted_relation)
-        for (var i=0;i<table1.length;i++) {
-            if (table1[i]==jsoncontent.data[2].predicted_e1)
-                table1[i].click;
-        }
-        for (var i=0;i<table1.length;i++) {
-            if (table1[i]==jsoncontent.data[2].predicted_e2)
-                table1[i].click;
-        }
-        $("#choose4").val(jsoncontent.data[3].predicted_relation)
-        for (var i=0;i<table1.length;i++) {
-            if (table1[i]==jsoncontent.data[3].predicted_e1)
-                table1[i].click;
-        }
-        for (var i=0;i<table1.length;i++) {
-            if (table1[i]==jsoncontent.data[3].predicted_e2)
-                table1[i].click;
-        }
-        $("#choose5").val(jsoncontent.data[4].predicted_relation)
-        for (var i=0;i<table1.length;i++) {
-            if (table1[i]==jsoncontent.data[4].predicted_e1)
-                table1[i].click;
-        }
-        for (var i=0;i<table1.length;i++) {
-            if (table1[i]==jsoncontent.data[4].predicted_e2)
-                table1[i].click;
-        }
-        $("#choose6").val(jsoncontent.data[5].predicted_relation)
-        for (var i=0;i<table1.length;i++) {
-            if (table1[i]==jsoncontent.data[5].predicted_e1)
-                table1[i].click;
-        }
-        for (var i=0;i<table1.length;i++) {
-            if (table1[i]==jsoncontent.data[5].predicted_e2)
-                table1[i].click;
+        for (var i=0;i<hasData;i++) {
+            var buttonNode = document.getElementById("buttons"+i.toString())
+            var childNodes = buttonNode.childNodes
+            for (var k=0;k<childNodes.length;k++){
+                if (childNodes[k].innerText==unlabeledDatas[i].predicted_relation) {
+                    document.getElementById(childNodes[k].id).click()
+                }
+            }
+
+            if (unlabeledDatas[i].text2String[0].length>=unlabeledDatas[i].predicted_e1_start&&unlabeledDatas[i].text2String[0].length<=unlabeledDatas[i].predicted_e1_end+1){
+                    document.getElementById(i+"text"+0).click()
+                }
+                if (unlabeledDatas[i].text2String[0].length>=unlabeledDatas[i].predicted_e2_start&&unlabeledDatas[i].text2String[0].length<=unlabeledDatas[i].predicted_e2_end+1){
+                    document.getElementById(i+"text"+0).click()
+                }
+            var len =unlabeledDatas[i].text2String[0].length
+            for (var j=1;j<unlabeledDatas[i].text2String.length;j++) {
+                len +=unlabeledDatas[i].text2String[j].length
+                if (len>unlabeledDatas[i].predicted_e1_start&&len<=unlabeledDatas[i].predicted_e1_end){
+                    document.getElementById(i+"text"+j).click()
+                }
+                if (len>unlabeledDatas[i].predicted_e2_start&&len<=unlabeledDatas[i].predicted_e2_end){
+                    document.getElementById(i+"text"+j).click()
+                }
+            }
         }
         text_id=[]
 }
+
+
      // 提交一页标注文本
     function confirmLabeledData() {
 
@@ -695,159 +682,146 @@ function initButton() {
         if (bo.checked)
             submit = submit + 1;
 
-        a = 6 - submit;
-        if (submit < 6&&hasData!=0) {
+        a = hasData - submit;
+        commitDataList = []
+        if (submit < hasData) {
             var con = confirm("您还有" + a + "条记录没有标注，确定提交吗？");
             if (con == true) {
                 var temp = confirm("你已经提交成功！");
 
                 if (temp == true) {
-
-                    var text1 = text_id[0].text
-                    var text2 = text_id[1].text
-                    var text3 = text_id[2].text
-                    var text4 = text_id[3].text
-                    var text5 = text_id[4].text
-                    var text6 = text_id[5].text
-                    var labeled_relation11 = $("#choose1").text().split("：")
-                    var labeled_relation1 = labeled_relation11[1]
-                    var labeled_relation21 = $("#choose2").text().split("：")
-                    var labeled_relation2 = labeled_relation21[1]
-                    var labeled_relation31 = $("#choose3").text().split("：")
-                    var labeled_relation3 = labeled_relation31[1]
-                    var labeled_relation41 = $("#choose4").text().split("：")
-                    var labeled_relation4 = labeled_relation41[1]
-                    var labeled_relation51 = $("#choose5").text().split("：")
-                    var labeled_relation5 = labeled_relation51[1]
-                    var labeled_relation61 = $("#choose6").text().split("：")
-                    var labeled_relation6 = labeled_relation61[1]
-                    var length2 = $("#index1").text().split(" ")
-                    var labeled1_e1
-                    var labeled1_e2
-                    for (var i = 0; i < length2.length - 1; i++) {
-                        var color = document.getElementById("0text" + i)
+                    for (var i=0;i<hasData;i++) {
+                        var labeled_relation1 = document.getElementById("choose" +(i+1).toString()).innerText.split("：")
+                        var labeled_relation = labeled_relation1[1].replace(/\([^\)]*\)/g,"")
+                        var labeled_e1,labeled_e2,labeled_e1_start,labeled_e1_end,labeled_e2_start,labeled_e2_end
+                        var len=0
+                        var pos = 0
+                        var isBegin = false
+                        var tempcolor = document.getElementById(i+"text0")
+                            len += tempcolor.innerText.length
+                        if (tempcolor.style.backgroundColor == 'orange') {
+                            labeled_e1 = document.getElementById(i+"text0").innerText
+                            labeled_e1_start = 0
+                            labeled_e1_end =labeled_e1.length-2
+                            isBegin = true
+                        }
+                        for (var j = 1; j < predicted_data[i].text2String.length; j++) {
+                            if (isBegin){
+                                pos=1
+                                break
+                            }
+                        var color = document.getElementById(i+"text" + j)
+                            len += color.innerText.length
                         if (color.style.backgroundColor == 'orange') {
-                            labeled1_e1 = $("#0text" + i).text()
+                            labeled_e1 = document.getElementById(i+"text" + j).innerText
+                            labeled_e1_start = len-color.innerText.length
+                            labeled_e1_end = labeled_e1_start + labeled_e1.length-2
+                            pos = j++
+                            break
+                        }
+                        }
+                       for (var j = pos; j < predicted_data[i].text2String.length; j++) {
+                        var color = document.getElementById(i+"text" + j)
+                            len += color.innerText.length
+                        if (color.style.backgroundColor == 'orange') {
+                            labeled_e2 = document.getElementById(i+"text" + j).innerText
+                            labeled_e2_start = len-color.innerText.length
+                            labeled_e2_end = labeled_e2_start + labeled_e2.length-2
                             break
                         }
                     }
-                    for (var i = 0; i < length2.length - 1; i++) {
-                        var color = document.getElementById("0text" + i)
-                        if (color.style.backgroundColor == 'orange') {
-                            labeled1_e2 = $("#0text" + i).text()
-                        }
+                        var labeled_data=new LabeledData(predicted_data[i].text,predicted_data[i].predicted_relation,predicted_data[i].predicted_e1,predicted_data[i].predicted_e2,
+                           predicted_data[i].predicted_e1_start,predicted_data[i].predicted_e1_end,predicted_data[i].predicted_e2_start,predicted_data[i].predicted_e2_end,
+                           labeled_relation,labeled_e1,labeled_e2,labeled_e1_start,labeled_e1_end,labeled_e2_start,labeled_e2_end,"")
+                        commitDataList.push(labeled_data)
                     }
-
-                    length2 = $("#index2").text().split(" ")
-                    var labeled2_e1
-                    var labeled2_e2
-                    for (var i = 0; i < length2.length - 1; i++) {
-                        var color = document.getElementById("1text" + i)
-                        if (color.style.backgroundColor == 'orange') {
-                            labeled2_e1 = $("#1text" + i).text()
-                            break
-                        }
-                    }
-                    for (var i = 0; i < length2.length - 1; i++) {
-                        var color = document.getElementById("1text" + i)
-                        if (color.style.backgroundColor == 'orange') {
-                            labeled2_e2 = $("#1text" + i).text()
-                        }
-                    }
-
-                    length2 = $("#index3").text().split(" ")
-                    var labeled3_e1
-                    var labeled3_e2
-                    for (var i = 0; i < length2.length - 1; i++) {
-                        var color = document.getElementById("2text" + i)
-                        if (color.style.backgroundColor == 'orange') {
-                            labeled3_e1 = $("#2text" + i).text()
-                            break
-                        }
-                    }
-                    for (var i = 0; i < length2.length - 1; i++) {
-                        var color = document.getElementById("2text" + i)
-                        if (color.style.backgroundColor == 'orange') {
-                            labeled3_e2 = $("#2text" + i).text()
-                        }
-                    }
-
-                    length2 = $("#index4").text().split(" ")
-                    var labeled4_e1
-                    var labeled4_e2
-                    for (var i = 0; i < length2.length - 1; i++) {
-                        var color = document.getElementById("3text" + i)
-                        if (color.style.backgroundColor == 'orange') {
-                            labeled4_e1 = $("#3text" + i).text()
-                            break
-                        }
-                    }
-                    for (var i = 0; i < length2.length - 1; i++) {
-                        var color = document.getElementById("3text" + i)
-                        if (color.style.backgroundColor == 'orange')
-                            labeled4_e2 = $("#3text" + i).text()
-                    }
-
-                    length2 = $("#index5").text().split(" ")
-                    var labeled5_e1
-                    var labeled5_e2
-                    for (var i = 0; i < length2.length - 1; i++) {
-                        var color = document.getElementById("4text" + i)
-                        if (color.style.backgroundColor == 'orange') {
-                            labeled5_e1 = $("#4text" + i).text()
-                            break
-                        }
-                    }
-                    for (var i = 0; i < length2.length - 1; i++) {
-                        var color = document.getElementById("4text" + i)
-                        if (color.style.backgroundColor == 'orange')
-                            labeled5_e2 = $("#4text" + i).text()
-                    }
-
-                    length2 = $("#index6").text().split(" ")
-                    var labeled6_e1
-                    var labeled6_e2
-                    for (var i = 0; i < length2.length - 1; i++) {
-                        var color = document.getElementById("5text" + i)
-                        if (color.style.backgroundColor == 'orange') {
-                            labeled6_e1 = $("#5text" + i).text()
-                            break
-                        }
-                    }
-                    for (var i = 0; i < length2.length - 1; i++) {
-                        var color = document.getElementById("5text" + i)
-                        if (color.style.backgroundColor == 'orange')
-                            labeled6_e2 = $("#5text" + i).text()
-                    }
-                    var id1 = text_id[0].id
-                    var id2 = text_id[1].id
-                    var id3 = text_id[2].id
-                    var id4 = text_id[3].id
-                    var id5 = text_id[4].id
-                    var id6 = text_id[5].id
-=
-
-                    xml2 = createXMLHttpRequest()
-                    xml2.open('POST', 'commit_label_data', false);
-                    xml2.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                    xml2.send("file_id=" + file_id + "&id1=" + id1 + "&text1=" + text1 + "&labeled_relation1=" + labeled_relation1 + "&labeled1_e1=" + labeled1_e1 + "&labeled1_e2=" + labeled1_e2 + "&id2=" + id2 + "&text2=" + text2 + "&labeled_relation2=" + labeled_relation2 + "&labeled2_e1=" + labeled2_e1 + "&labeled2_e2=" + labeled2_e2 + "&id3=" + id3 + "&text3=" + text3 + "&labeled_relation3=" + labeled_relation3 + "&labeled3_e1=" + labeled3_e1 + "&labeled3_e2=" + labeled3_e2 + "&id4=" + id4 + "&text4=" + text4 + "&labeled_relation4=" + labeled_relation4 + "&labeled4_e1=" + labeled4_e1 + "&labeled4_e2=" + labeled4_e2 + "&id5=" + id5 + "&text5=" + text5 + "&labeled_relation5=" + labeled_relation5 + "&labeled5_e1=" + labeled5_e1 + "&labeled5_e2=" + labeled5_e2 + "&id6=" + id6 + "&text6=" + text6 + "&labeled_relation6=" + labeled_relation6 + "&labeled6_e1=" + labeled6_e1 + "&labeled6_e2=" + labeled6_e2)
-                    initButton()
-                    setButtonState();
-                    updata_progress();
-                    console.log("commit_label_data");
                 }
-
-
             }
         }else{
-            alert("无数据！")
+           for (var i=0;i<hasData;i++) {
+                        var labeled_relation1 = document.getElementById("choose" +(i+1).toString()).innerText.split("：")
+                        var labeled_relation = labeled_relation1[1].replace(/\([^\)]*\)/g,"")
+                        var labeled_e1,labeled_e2,labeled_e1_start,labeled_e1_end,labeled_e2_start,labeled_e2_end
+                        var len=0
+                        var pos = 0
+                        var isBegin = false
+                        var tempcolor = document.getElementById(i+"text0")
+                            len += tempcolor.innerText.length
+                        if (tempcolor.style.backgroundColor == 'orange') {
+                            labeled_e1 = document.getElementById(i+"text0").innerText
+                            labeled_e1_start = 0
+                            labeled_e1_end =labeled_e1.length-2
+                            isBegin = true
+                        }
+                        for (var j = 1; j < predicted_data[i].text2String.length; j++) {
+                            if (isBegin){
+                                pos=1
+                                break
+                            }
+                        var color = document.getElementById(i+"text" + j)
+                            len += color.innerText.length
+                        if (color.style.backgroundColor == 'orange') {
+                            labeled_e1 = document.getElementById(i+"text" + j).innerText
+                            labeled_e1_start = len-color.innerText.length
+                            labeled_e1_end = labeled_e1_start + labeled_e1.length-2
+                            pos = j++
+                            break
+                        }
+                        }
+                       for (var j = pos; j < predicted_data[i].text2String.length; j++) {
+                        var color = document.getElementById(i+"text" + j)
+                            len += color.innerText.length
+                        if (color.style.backgroundColor == 'orange') {
+                            labeled_e2 = document.getElementById(i+"text" + j).innerText
+                            labeled_e2_start = len-color.innerText.length
+                            labeled_e2_end = labeled_e2_start + labeled_e2.length-2
+                            break
+                        }
+                    }
+                        var labeled_data=new LabeledData(predicted_data[i].text,predicted_data[i].predicted_relation,predicted_data[i].predicted_e1,predicted_data[i].predicted_e2,
+                           predicted_data[i].predicted_e1_start,predicted_data[i].predicted_e1_end,predicted_data[i].predicted_e2_start,predicted_data[i].predicted_e2_end,
+                           labeled_relation,labeled_e1,labeled_e2,labeled_e1_start,labeled_e1_end,labeled_e2_start,labeled_e2_end,"")
+                        commitDataList.push(labeled_data)
+                    }
         }
-
+                    xml2 = createXMLHttpRequest()
+                    xml2.open('POST', 'commit_labeled_data', false);
+                    xml2.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                    xml2.send("file_id=" + file_id + "&project_id=" + id + "&labeled_data=" + commitDataList.join(","))
+                        if(xml2.readyState == 4 && xml2.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
+                            console.log("content: "+content)
+                         }
+                    hasData=0
+                    initButton()
+                    setButtonState(true);
+                    updata_progress();
+                    console.log("commit_labeled_data");
         submit = 0;
 
 
     }
 
+    function LabeledData(text,predicted_relation,predicted_e1,predicted_e2,predicted_e1_start,predicted_e1_end,predicted_e2_start,predicted_e2_end,
+                         labeled_relation,labeled_e1,labeled_e2,labeled_e1_start,labeled_e1_end,labeled_e2_start,labeled_e2_end,additional_info){
+   var labeledData = new Object;
+   labeledData.predicted_e1 = predicted_e1;
+   labeledData.predicted_e1_end = predicted_e1_end;
+   labeledData.predicted_e1_start = predicted_e1_start;
+   labeledData.predicted_e2 = predicted_e2;
+   labeledData.predicted_e2_end = predicted_e2_end;
+   labeledData.predicted_e2_start = predicted_e2_start;
+   labeledData.predicted_relation = predicted_relation;
+   labeledData.text = text;
+   labeledData.labeled_relation=labeled_relation;
+   labeledData.labeled_e1=labeled_e1;
+   labeledData.labeled_e2=labeled_e2;
+   labeledData.labeled_e1_start=labeled_e1_start;
+   labeledData.labeled_e1_end=labeled_e1_end;
+   labeledData.labeled_e2_start=labeled_e2_start;
+   labeledData.labeled_e2_end=labeled_e2_end;
+   labeledData.additional_info=additional_info;
+   return labeledData;
+  }
 
 
 function trim(s){
@@ -884,62 +858,3 @@ function trimRight(s){
     }
     return str;
 }
-
-
-// function Map(){
-//  var struct=function(key,value,add){
-//   this.key=key;
-//   this.value=value;
-//  };
-//  //添加map键值对
-//  var set =function(key,value,add){
-//   for(var i=0;i<this.arr.length;i++){
-//    if(this.arr[i].key===key){
-//        if(typeof(add) == "undefined"){
-//         add = false;
-//     }
-//     if(add){//add=true 追加值
-//      this.arr[i].value+=","+value;//有相同的key,这value的值往后最加,用逗号(,)隔开而不是替换原先的值
-//     }else{
-//      this.arr[i].value=value;//替换原先的值
-//     }
-//      return;
-//    }
-//   };
-//   this.arr[this.arr.length]=new struct(key,value);
-//  };
-//  //根据key获取value
-//  var get=function(key){
-//   for(var i=0;i<this.arr.length;i++){
-//    if(this.arr[i].key==key){
-//     return this.arr[i].value;
-//    }
-//   }
-//   return null;
-//  };
-//  //根据key删除
-//  var remove=function(key){
-//   var v;
-//   for(var i=0;i<this.arr.length;i++){
-//    v=this.arr.pop();
-//    if(v.key==key){
-//     continue;
-//    }
-//    this.arr.unshift(v);
-//   }
-//  };
-//  //获取map键值对个数
-//  var size=function(){
-//   return this.arr.length;
-//  };
-//  //判断map是否为空
-//  var isEmpty=function(){
-//   return this.arr.length<=0;
-//  };
-//  this.arr=new Array();
-//  this.get=get;
-//  this.set=set;
-//  this.remove=remove;
-//  this.size=size;
-//  this.isEmpty=isEmpty;
-// }

@@ -69,10 +69,10 @@ class DataManager:
                             "predicted_relation": "relation",
                             "predicted_e1": "e1",
                             "predicted_e2": "e2",
-                            "predicted_e1_start": 1,
-                            "predicted_e1_end": 2,
-                            "predicted_e2_start": 4,
-                            "predicted_e2_end": 5,
+                            "predicted_e1_start": 0,
+                            "predicted_e1_end": 4,
+                            "predicted_e2_start": 6,
+                            "predicted_e2_end": 7,
                         }
                         for meta_data in unlabeled_data
                     ],

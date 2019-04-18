@@ -3,6 +3,10 @@ from django.shortcuts import HttpResponse
 from django.http import JsonResponse
 import annotator.manager as manager
 
+def get_projects(request):
+    """获取数据库中所有项目的名字"""
+    return JsonResponse(manager.get_projects())
+
 
 def create_project(request):
     if request.method == "POST":
@@ -56,7 +60,7 @@ def commit_label_data(request):
             predicted_e2 = request.POST.get("predicted" + idx + "_e2", None)
             predicted_e1_start = int(request.POST.get("predicted_e1_start" + idx, -1))
             predicted_e1_end = int(request.POST.get("predicted_e1_end" + idx, -1))
-            predicted_e2_start = int(request.POST.get("predicted_e2_start+idx", -1))
+            predicted_e2_start = int(request.POST.get("predicted_e2_start" + idx, -1))
             predicted_e2_end = int(request.POST.get("predicted_e2_end" + idx, -1))
 
             labeled_relation = request.POST.get("labeled_relation" + idx, None)

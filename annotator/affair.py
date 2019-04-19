@@ -47,7 +47,7 @@ def fetch_unlabeled_data(request):
     if request.method == "POST":
         project_id = int(request.POST.get("project_id", -1))
         num = int(request.POST.get("num", -1))
-        pdb.set_trace()
+        # pdb.set_trace()
 
         return JsonResponse(manager.fetch_unlabeled_data(project_id=project_id, num=num))
 

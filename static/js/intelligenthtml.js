@@ -585,9 +585,9 @@ function setButtonState(checkState) {
    unlabeledData.predicted_e2_end = predicted_e2_end;
    unlabeledData.predicted_e2_start = predicted_e2_start;
    unlabeledData.predicted_relation = predicted_relation;
+   unlabeledData.text2String = text
    unlabeledData.text = [];
-   unlabeledData.text = text
-     unlabeledData.text2String = unlabeledData.text.join("").split(" ")
+   unlabeledData.text = unlabeledData.text2String.split("")
    return unlabeledData;
   }
 

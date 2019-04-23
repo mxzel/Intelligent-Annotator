@@ -16,8 +16,8 @@ def create_project(request):
     """创建项目"""
     if request.method == "POST":
         project_name = request.POST.get("projectname", '')
-        project_tags = request.POST.get("tags", [])
-        # project_tags = BaseTags.BASE_TAGS
+        # project_tags = request.POST.get("tags", [])
+        project_tags = BaseTags.BASE_TAGS
         ret_dict = manager.create_project(
             project_name=project_name, project_tags=project_tags)
         return JsonResponse(ret_dict)

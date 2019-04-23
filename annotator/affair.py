@@ -16,8 +16,8 @@ def create_project(request):
     """创建项目"""
     if request.method == "POST":
         project_name = request.POST.get("projectname", '')
-        # project_tags = request.POST.get("tags", [])
-        project_tags = BaseTags.BASE_TAGS
+        project_tags = request.POST.get("tags", [])
+        # project_tags = BaseTags.BASE_TAGS
         ret_dict = manager.create_project(
             project_name=project_name, project_tags=project_tags)
         return JsonResponse(ret_dict)
@@ -39,7 +39,8 @@ def override_tags(request):
     """覆盖项目的标签"""
     if request.method == "POST":
         project_id = int(request.POST.get("project_id", -1))
-        tags = request.POST.get("tags", '').split(',')
+        tags = BaseTags.BASE_TAGS
+        # tags = request.POST.get("tags", '').split(',')
 
         return JsonResponse(manager.override_tags(
             project_id=project_id, tags=tags))

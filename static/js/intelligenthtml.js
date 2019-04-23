@@ -587,7 +587,7 @@ function setButtonState(checkState) {
    unlabeledData.predicted_relation = predicted_relation;
    unlabeledData.text2String = text
    unlabeledData.text = [];
-   unlabeledData.text = unlabeledData.text2String.split("")
+   unlabeledData.text = unlabeledData.text2String.join("").split("")
    return unlabeledData;
   }
 

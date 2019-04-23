@@ -53,7 +53,10 @@ class File(models.Model):
 
 class BaseTags(models.Model):
     """基础标签"""
-    tag_name = models.CharField(max_length=TAG_MAX_LENGTH, unique=True)
+    # tag_name = models.CharField(max_length=TAG_MAX_LENGTH, unique=True)
+    BASE_TAGS = ['Other', 'Cause-Effect', 'Component-Whole', 'Entity-Destination',
+                 'Product-Producer', 'Entity-Origin', 'Member-Collection',
+                 'Message-Topic', 'Content-Container', 'Instrument-Agency']
 
 
 class UnlabeledData(models.Model):

@@ -189,12 +189,10 @@ class DataManager:
                     labeled_content=sentence,
 
                     predicted_relation=meta_data["predicted_relation"],
-                    predicted_e1=meta_data["predicted_e1"],
-                    predicted_e2=meta_data["predicted_e2"],
-                    predicted_e1_start=meta_data["predicted_e1_start"],
-                    predicted_e1_end=meta_data["predicted_e1_end"],
-                    predicted_e2_start=meta_data["predicted_e2_start"],
-                    predicted_e2_end=meta_data["predicted_e2_end"],
+                    e1_start=meta_data["e1_start"],
+                    e1_end=meta_data["e1_end"],
+                    e2_start=meta_data["e2_start"],
+                    e2_end=meta_data["e2_end"],
 
                     labeled_relation=meta_data["labeled_relation"],
                     labeled_e1=meta_data["labeled_e1"],

@@ -83,28 +83,30 @@ class LabeledData(models.Model):
     # 人-出生地
     predicted_relation = models.CharField(max_length=RELATION_MAX_LENGTH, unique=False)
     # 李彤
-    predicted_e1 = models.CharField(max_length=ENTITY_MAX_LENGTH, unique=False)
+    # e1 = models.CharField(max_length=ENTITY_MAX_LENGTH, unique=False)
     # 吉林
-    predicted_e2 = models.CharField(max_length=ENTITY_MAX_LENGTH, unique=False)
+    # e2 = models.CharField(max_length=ENTITY_MAX_LENGTH, unique=False)
     """
     实体在句中可能多次出现，需要标定实体在<strong>原句</strong>中的起始和终止位置。
     如果是中文语料，将字符串以字符切分为列表；
     如果是英文的，则以空格为分隔符切分为列表。
     两者在年份、时间等表示上有所不同。
-    起始和终止位置即为该实体在列表中等起始和终止位置，区间左右闭合。
+    起始和终止位置即为该实体在列表中等起始和终止位置，区间左闭右开。
     """
+    # FIXME: 区间由左右闭合改成了左闭右开，前端需要做一定的更改
+    # FIXME: 标注过程的妥协导致一些变量的意义被改变，需要因此修改变量名字
     # 11
-    predicted_e1_start = models.IntegerField(default=0)
-    # 12
-    predicted_e1_end = models.IntegerField(default=0)
+    e1_start = models.IntegerField(default=-1)
+    # 13
+    e1_end = models.IntegerField(default=-1)
     # 16
-    predicted_e2_start = models.IntegerField(default=0)
-    # 17
-    predicted_e2_end = models.IntegerField(default=0)
+    e2_start = models.IntegerField(default=-1)
+    # 18
+    e2_end = models.IntegerField(default=-1)
 
     labeled_relation = models.CharField(max_length=RELATION_MAX_LENGTH, unique=False)
-    labeled_e1 = models.CharField(max_length=ENTITY_MAX_LENGTH, unique=False)
-    labeled_e2 = models.CharField(max_length=ENTITY_MAX_LENGTH, unique=False)
+    # labeled_e1 = models.CharField(max_length=ENTITY_MAX_LENGTH, unique=False)
+    # labeled_e2 = models.CharField(max_length=ENTITY_MAX_LENGTH, unique=False)
     labeled_e1_start = models.IntegerField(default=0)
     labeled_e1_end = models.IntegerField(default=0)
     labeled_e2_start = models.IntegerField(default=0)

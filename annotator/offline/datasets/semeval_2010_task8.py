@@ -77,7 +77,7 @@ class SemEval2010Task8:
 
     @staticmethod
     def _load_from_jsonl(path_to_file, is_test=True, masking_mode=None):
-        import pudb
+        # import pudb
         # pudb.set_trace()
         sentences = []
         entities = []

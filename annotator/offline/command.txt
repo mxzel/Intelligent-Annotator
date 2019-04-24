@@ -1,0 +1,54 @@
+train
+python relation_extraction.py train \
+  --write-model True \
+  --masking-mode unk \
+  --batch-size 8 \
+  --max-epochs 3 \
+  --lm-coef 0.5 \
+  --learning-rate 5.25e-5 \
+  --learning-rate-warmup 0.002 \
+  --clf-pdrop 0.1 \
+  --attn-pdrop 0.1 \
+  --word-pdrop 0.0 \
+  --dataset tacred \
+  --data-dir ./datasets/SemEval2010_task8/ \
+  --seed=0 \
+  --log-dir ./logs/
+
+evaluate
+python relation_extraction.py evaluate \
+  --dataset semeval_2010_task8 \
+  --masking_mode unk \
+  --test_file ./annotator/offline/datasets/SemEval2010_task8/test.jsonl \
+  --save_dir ./annotator/offline/logs/complete/models \
+  --model_file model_epoch-3_dev-macro-f1-0.4716132465835384_dev-loss-16.142220458984376_2019-04-23__08-51__925007.pt \
+  --batch_size 8 \
+  --log_dir ./annotator/offline/logs/
+
+
+
+colab
+!修改设置为 gpu 加速
+!git clone https://github.com/DFKI-NLP/TRE.git
+!cd TRE;./download-model.sh
+!cd TRE; pip install -r requirements.txt
+!python -m spacy download en
+!cd TRE/datasets; wget https://bashupload.com/sXuoH/SemEval2010_task8.zip
+!cd TRE/datasets; unzip SemEval2010_task8.zip
+!cd TRE; python relation_extraction.py train \
+  --write-model True \
+  --masking-mode unk \
+  --batch-size 8 \
+  --max-epochs 3 \
+  --lm-coef 0.5 \
+  --learning-rate 5.25e-5 \
+  --learning-rate-warmup 0.002 \
+  --clf-pdrop 0.1 \
+  --attn-pdrop 0.1 \
+  --word-pdrop 0.0 \
+  --dataset tacred \
+  --data-dir ./datasets/SemEval2010_task8/ \
+  --seed=0 \
+  --log-dir ./logs/
+!cd TRE; zip -r logs.zip logs; du -h logs.zip
+!cd TRE; curl https://bashupload.com/logs.zip --data-binary @logs.zip

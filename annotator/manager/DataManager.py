@@ -111,14 +111,14 @@ class DataManager:
                 "code": 200,
                 "message": "Successfully took out " + str(len(objects)) + " pieces of data.",
             }
-            print("成功取出" + str(len(objects)) + "条未标注数据")
+            print("Successfully took out " + str(len(objects)) + " pieces of data.")
         except IntegrityError as e:
             ret_dict = {
                 "status": False,
                 "code": -1,
                 "message": str(e),
             }
-            print("取出未标注数据失败！" + str(e))
+            print("Failed to take out unlabeled data! " + str(e))
 
         return ret_dict
 
@@ -214,14 +214,14 @@ class DataManager:
                 "code": 200,
                 "message": "Labeled data submitted successfully."
             }
-            print("成功提交标注数据")
+            print("Labeled data submitted successfully.")
         except IntegrityError as e:
             ret_dict = {
                 "status": False,
                 "code": -1,
                 "message": str(e),
             }
-            print("提交标注数据失败！" + str(e))
+            print("Failed to commit labeled data! " + str(e))
 
         return ret_dict
 

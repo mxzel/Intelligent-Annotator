@@ -42,14 +42,14 @@ class ProjectManager:
                 "code": 200,
                 "message": u"Successfully create project!"
             }
-            print("项目创建成功")
+            print("Successfully create project!")
         except IntegrityError as e:
             ret_data = {
                 "status": False,
                 "code": -1,
                 "message": str(e)
             }
-            print("项目创建失败！" + str(e))
+            print("Failed to create project! " + str(e))
 
         return ret_data
 
@@ -67,14 +67,14 @@ class ProjectManager:
                 "code": 200,
                 "message": u"Rename project name successfully!"
             }
-            print("项目重命名为 " + new_name)
+            print("Rename project name successfully! " + new_name)
         except IntegrityError as e:
             ret_data = {
                 "status": False,
                 "code": -1,
                 "message": str(e)
             }
-            print("重命名项目失败！")
+            print("Failed to rename project! " + str(e))
         return ret_data
 
     @staticmethod
@@ -90,14 +90,14 @@ class ProjectManager:
                 "projects": [(p.project_id, p.project_name) for p in projects],
                 "message": u"Successfully fetch projects!"
             }
-            print("项目列表获取成功")
+            print("Successfully fetch projects!")
         except IntegrityError as e:
             ret_data = {
                 "status": False,
                 "code": -1,
                 "message": str(e)
             }
-            print("项目列表获取失败！" + str(e))
+            print("Failed to fetch projects! " + str(e))
         return ret_data
 
     @staticmethod
@@ -112,14 +112,14 @@ class ProjectManager:
                 "code": 200,
                 "message": u"Successfully delete project!"
             }
-            print("删除项目成功")
+            print("Successfully delete project!")
         except IntegrityError as e:
             ret_data = {
                 "status": False,
                 "code": -1,
                 "message": str(e)
             }
-            print("删除项目失败！" + str(e))
+            print("Failed to delete project! " + str(e))
         return ret_data
 
     @staticmethod
@@ -168,7 +168,7 @@ class ProjectManager:
                 "code": 200,
                 "message": "Project exported successfully."
             }
-            print("项目导出成功")
+            print("Project exported successfully.")
         except IntegrityError as e:
             ret_dict = {
                 "status": False,
@@ -176,7 +176,7 @@ class ProjectManager:
                 "code": -1,
                 "message": "Project export failed."
             }
-            print("项目导出失败！" + str(e))
+            print("Failed to export project! " + str(e))
 
         return ret_dict
 
@@ -234,14 +234,14 @@ class ProjectManager:
                 "code": 200,
                 "message": u"Successfully upload file."
             }
-            print("上传文件成功")
+            print("Successfully upload file.")
         except IntegrityError as e:
             ret_data = {
                 "status": False,
                 "code": -1,
                 "message": str(e)
             }
-            print("上传文件失败！" + str(e))
+            print("Failed to upload file! " + str(e))
         return ret_data
 
     @staticmethod
@@ -258,12 +258,12 @@ class ProjectManager:
                 "progress": ret,
                 "message": u"Successfully fetch labeling process!"
             }
-            print("获取标注进度成功！标注进度为: " + "%.2f" % ret)
+            print("Successfully fetch labeling process! " + "%.2f" % ret)
         except IntegrityError as e:
             ret_data = {
                 "status": False,
                 "code": -1,
                 "message": str(e)
             }
-            print("获取标注进度失败！" + str(e))
+            print("Failed to fetch labeling process! " + str(e))
         return ret_data

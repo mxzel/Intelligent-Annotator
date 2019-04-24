@@ -1,5 +1,7 @@
 var state=new Array();
-var tags=new Array();//存储标签tag
+var tags=['Other', 'Cause-Effect', 'Component-Whole', 'Entity-Destination',
+                 'Product-Producer', 'Entity-Origin', 'Member-Collection',
+                 'Message-Topic', 'Content-Container', 'Instrument-Agency'];//存储标签tag
 var textshow="";
 var predicted_data=new Array()
 
@@ -26,7 +28,24 @@ window.onload=function(){
             document.getElementById("selectproject").innerHTML=Text+aText;
         }
     }
+    }
+    var temp=tags.length;
 
+    for(var j=0;j<6;j++){
+        var a1=document.getElementById("buttons"+j);
+        for(var i=0;i<temp;i++){
+            var a2 = document.createElement("button")
+            a2.id="changecolor"+(j*tags.length+i);
+            a2.innerText=tags[i];
+            a2.className="btn";
+            a2.setAttribute("style","margin-left: 8px;margin-bottom:12px;height: 30px;line-height: 10px;");
+            a2.onclick=function(){
+                changecolor(this);
+                defaultcheck(this.parentElement.id);
+                console.log(this.parentElement.id)
+            };
+            a1.appendChild(a2);
+        }
     }
     }
 
@@ -155,6 +174,26 @@ function  changeproject(cp) {
     //var vs = $('#selectproject option:selected').val();
     document.getElementById("dropdown").innerHTML="当前项目："+vs;
     var a=0;
+    var submit=0;
+    var bo=document.getElementById('ok1');
+    if (bo.checked)
+        submit++;
+
+    bo=document.getElementById('ok2');
+    if (bo.checked)
+        submit=submit+1;
+    bo=document.getElementById('ok3');
+    if (bo.checked)
+        submit=submit+1;
+    bo=document.getElementById('ok4');
+    if (bo.checked)
+        submit=submit+1;
+    bo=document.getElementById('ok5');
+    if (bo.checked)
+        submit=submit+1;
+    bo=document.getElementById('ok6');
+    if (bo.checked)
+        submit=submit+1;
     a=hasData-submit;
     if(submit<hasData){
         var con=confirm("您还有"+a+"条记录没有标注，确定更换吗？");
@@ -247,12 +286,6 @@ var project_info= new Map();//存储项目信息（编号
 
 //新建项目确认
 function confirmCreateProject() {
-    $("#buttons0").empty();
-    $("#buttons1").empty();
-    $("#buttons2").empty();
-    $("#buttons3").empty();
-    $("#buttons4").empty();
-    $("#buttons5").empty();
     var project_name=$('#newname').val();
     if (project_name!=null && project_name!="")
     {
@@ -263,13 +296,12 @@ function confirmCreateProject() {
     }
     var temp=confirm("你已经提交成功！");
     $("div[name='projectname']").val(project_name);
-    $("div[name='tags']").val(tags);
     $('#myModal').modal('hide');
     if(temp==true){
         setButton();
         setButtonState(false);
     }
-    var tags_string = tags.join(",")
+    // var tags_string = tags.join(",")
      xml=createXMLHttpRequest();
      xml.open('POST','create_project',true);
      xml.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
@@ -279,16 +311,16 @@ function confirmCreateProject() {
                 console.log("projectname:"+xml.responseText)
                 project_info.set(project_name, xml.responseText.substring(31, 33))
                 id=xml.responseText.substring(31, 33);
-                 xml_add=createXMLHttpRequest();
-                 xml_add.open('POST','add_tags_to_project',true);
-                 xml_add.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-
-                 xml_add.send("project_id="+id+"&tags="+tags_string);
-                 xml_add.onreadystatechange=function () {     //如果是post,那么里面就设置值
-                    if(xml_add.readyState == 4 && xml_add.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
-                        console.log("add_tags_to_project:"+xml_add.responseText)
-                    }
-                 }
+                 // xml_add=createXMLHttpRequest();
+                 // xml_add.open('POST','add_tags_to_project',true);
+                 // xml_add.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+                 //
+                 // xml_add.send("project_id="+id+"&tags="+tags_string);
+                 // xml_add.onreadystatechange=function () {     //如果是post,那么里面就设置值
+                 //    if(xml_add.readyState == 4 && xml_add.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
+                 //        console.log("add_tags_to_project:"+xml_add.responseText)
+                 //    }
+                 // }
             }
         }
 }

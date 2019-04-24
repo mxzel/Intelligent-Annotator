@@ -29,7 +29,6 @@ def create_project(request):
     #     log_dir=os.path.join(project_dir, './annotator/offline/logs/')
     # )
 
-
     if request.method == "POST":
         project_name = request.POST.get("projectname", '')
         # project_tags = request.POST.get("tags", [])
@@ -92,12 +91,10 @@ def commit_label_data(request):
             text = request.POST.get("text" + idx, None)
 
             predicted_relation = request.POST.get("predicted_relation" + idx, None)
-            predicted_e1 = request.POST.get("predicted" + idx + "_e1", None)
-            predicted_e2 = request.POST.get("predicted" + idx + "_e2", None)
-            predicted_e1_start = int(request.POST.get("predicted_e1_start" + idx, -1))
-            predicted_e1_end = int(request.POST.get("predicted_e1_end" + idx, -1))
-            predicted_e2_start = int(request.POST.get("predicted_e2_start" + idx, -1))
-            predicted_e2_end = int(request.POST.get("predicted_e2_end" + idx, -1))
+            e1_start = int(request.POST.get("e1_start" + idx, -1))
+            e1_end = int(request.POST.get("e1_end" + idx, -1))
+            e2_start = int(request.POST.get("e2_start" + idx, -1))
+            e2_end = int(request.POST.get("e2_end" + idx, -1))
 
             labeled_relation = request.POST.get("labeled_relation" + idx, None)
             labeled_e1 = request.POST.get("labeled" + idx + "_e1", None)
@@ -113,12 +110,10 @@ def commit_label_data(request):
                 "text": text,
 
                 "predicted_relation": predicted_relation,
-                "predicted_e1": predicted_e1,
-                "predicted_e2": predicted_e2,
-                "predicted_e1_start": predicted_e1_start,
-                "predicted_e1_end": predicted_e1_end,
-                "predicted_e2_start": predicted_e2_start,
-                "predicted_e2_end": predicted_e2_end,
+                "e1_start": e1_start,
+                "e1_end": e1_end,
+                "e2_start": e2_start,
+                "e2_end": e2_end,
 
                 "labeled_relation": labeled_relation,
                 "labeled_e1": labeled_e1,
@@ -137,6 +132,12 @@ def commit_label_data(request):
             labeled_data=labeled_data, file_id=file_id, project_id=project_id))
 
         # models.Labeled_DB_Manager.insert(labeled_id=labeledid,unlabeled_id=unlabeledid,file_id=fileid,data_content=datacontent,labeled_time=labeledtime,labeled_content=labeledcontent,predicted_relation=predictrelation,predicted_e1=predicte1,predicted_e2=predicte2,labeled_relation=labeledrelation,labeled_e1=labelede1,labeled_e2=labelede2,additional_info=additionalinfo)
+
+
+def get_label_progress(request):
+    """获取标注进度"""
+    project_id = int(request.POST.get("project_id", -1))
+    return JsonResponse(manager.get_label_progress(project_id))
 
 
 def export_project(request):

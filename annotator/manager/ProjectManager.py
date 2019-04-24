@@ -191,8 +191,8 @@ class ProjectManager:
             3. 后台接收到数据，判断项目 pid 下是否已含有同名的文件
             4. 如果有，告知前端文件上传失败，项目中已含有同名文件；
             否则在文件信息表中新建条目，将文件中的内容导入到未标注数据表中
-
-        :param file_contents: 文件内容 ["Today is a good day.", "Today is a good day", ...]
+        FIXME: 文件内容更改，需要标注出e1与e2
+        :param file_contents: 文件内容 ["The system as described above has its greatest application in an arrayed <e1>configuration</e1> of antenna <e2>elements</e2>.", ...]
 
 
         :return:
@@ -221,8 +221,10 @@ class ProjectManager:
             file = File(project_id=project)
             file.save()
             for sentence in file_contents:
-                unlabeled_data = UnlabeledData(file_id=file, data_content=sentence,
-                                               upload_time=datetime.now(), project_id=project)
+                unlabeled_data = UnlabeledData(
+                    file_id=file, data_content=sentence,
+                    upload_time=datetime.now(), project_id=project
+                )
                 unlabeled_data.save()
                 project.sentence_unlabeled += 1
             project.save()

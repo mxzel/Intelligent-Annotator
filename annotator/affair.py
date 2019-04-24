@@ -2,9 +2,11 @@ from django.shortcuts import render
 from django.shortcuts import HttpResponse
 from django.http import JsonResponse
 import annotator.manager as manager
-import pdb
-
+import pdb, os
+import annotator.offline as offline
+from annotator.manager.DataManager import test
 from annotator.models import BaseTags
+from manage import project_dir
 
 
 def get_projects(request):
@@ -14,6 +16,20 @@ def get_projects(request):
 
 def create_project(request):
     """创建项目"""
+    # import pudb
+    # pudb.set_trace()
+
+    # offline.evaluate(
+    #     dataset='semeval_2010_task8',
+    #     masking_mode='unk',
+    #     test_file=os.path.join(project_dir, './annotator/offline/datasets/SemEval2010_task8/test.jsonl'),
+    #     save_dir=os.path.join(project_dir, './annotator/offline/logs/complete/models'),
+    #     model_file='model_epoch-3_dev-macro-f1-0.4716132465835384_dev-loss-16.142220458984376_2019-04-23__08-51__925007.pt',
+    #     batch_size=8,
+    #     log_dir=os.path.join(project_dir, './annotator/offline/logs/')
+    # )
+
+
     if request.method == "POST":
         project_name = request.POST.get("projectname", '')
         # project_tags = request.POST.get("tags", [])
@@ -22,9 +38,17 @@ def create_project(request):
             project_name=project_name, project_tags=project_tags)
         return JsonResponse(ret_dict)
 
+    # test(
+    #     file_name='TEST_FILE.TXT',
+    #     input_dir='/Users/seapatrol/Desktop',
+    #     output_dir='/Users/seapatrol/Desktop'
+    # )
+
 
 def upload_file(request):
     """上传文件"""
+    # import pudb
+    # pudb.set_trace()
     if request.method == "POST":
         file_content = request.POST.get("file_contents")
         file_contents = file_content.strip().split('\n')

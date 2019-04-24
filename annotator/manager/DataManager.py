@@ -1,7 +1,11 @@
 import json
 from datetime import datetime
 from sqlite3 import IntegrityError
+
+from annotator import offline
 from annotator.models import *
+from annotator.offline.datasets.dataset_converter import DatasetConverter
+from manage import project_dir
 
 """
 Data:
@@ -11,8 +15,29 @@ Data:
     commit_labeled_data(labeled_data, project_id): 提交已标注数据
 """
 
+import argparse
+import json
+import os
+from operator import itemgetter
+
+import numpy as np
+from sklearn.model_selection import train_test_split
+
 
 class DataManager:
+
+    @staticmethod
+    def _write_unlabeled_data_to_file(objects, filepath):
+        with open(filepath, mode='w', encoding='utf8') as fw:
+            for o in objects:
+                tokens, first_args, second_args = DatasetConverter.split_tokens_and_entities(o.data_content)
+                example = {
+                    "id": o.unlabeled_id,
+                    "tokens": tokens,
+                    "entities": [first_args, second_args]
+                }
+                fw.write(json.dumps(example) + "\n")
+
     @staticmethod
     def fetch_unlabeled_data(project_id: int, num: int = -1) -> dict:
         """
@@ -38,12 +63,10 @@ class DataManager:
                             # 1993年2月15日，李彤出生在吉林某城市。
                             "text": ['This', 'is', 'a', 'test', 'file.'],
                             "predicted_relation": "人-出生地",
-                            "predicted_e1": "李彤",
-                            "predicted_e2": "吉林",
-                            "predicted_e1_start": 11,
-                            "predicted_e1_end": 12,
-                            "predicted_e2_start": 16,
-                            "predicted_e2_end": 17,
+                            "e1_start": 11,
+                            "e1_end": 13,
+                            "e2_start": 16,
+                            "e2_end": 18,
                         },
                         ...
                     ]
@@ -55,30 +78,40 @@ class DataManager:
         try:
             objects = UnlabeledData.objects.filter(project_id=Project.objects.get(pk=project_id))
             objects = objects if num == -1 else objects[:num]
-            unlabeled_data = [{"unlabeled_id": o.unlabeled_id, "data_content": o.data_content}
-                              for o in objects]
+
+            # import pudb
+            # pudb.set_trace()
+
+            DataManager._write_unlabeled_data_to_file(
+                objects, os.path.join(project_dir, 'temp', 'predict_data.jsonl'))
+
+            predicted_relations = offline.predict_data(
+                test_file=os.path.join(project_dir, 'temp', 'predict_data.jsonl'),
+                save_dir=os.path.join(project_dir, './annotator/offline/logs/complete/models'),
+                model_file='model_epoch-3_dev-macro-f1-0.4716132465835384_dev-loss-16.142220458984376_2019-04-23__08-51__925007.pt',
+                batch_size=8
+            )
+
+            data = []
+            for idx, o in enumerate(objects):
+                tokens, first_args, second_args = DatasetConverter.split_tokens_and_entities(o.data_content)
+                data.append({
+                    "id": o.unlabeled_id,
+                    "text": tokens,
+                    "predicted_relation": predicted_relations[idx],
+                    "e1_start": first_args[0],
+                    "e1_end": first_args[1],
+                    "e2_start": second_args[0],
+                    "e2_end": second_args[1],
+                })
+
             ret_dict = {
                 "status": True,
-                "data":
-                    [
-                        # TODO: 对数据进行预标注，将预标注后的数据包装成 dict
-                        {
-                            "id": meta_data["unlabeled_id"],
-                            "text": meta_data["data_content"].split(' '),
-                            "predicted_relation": "relation",
-                            "predicted_e1": "e1",
-                            "predicted_e2": "e2",
-                            "predicted_e1_start": 0,
-                            "predicted_e1_end": 1,
-                            "predicted_e2_start": 3,
-                            "predicted_e2_end": 4,
-                        }
-                        for meta_data in unlabeled_data
-                    ],
+                "data": data,
                 "code": 200,
-                "message": "Successfully took out " + str(len(unlabeled_data)) + " pieces of data.",
+                "message": "Successfully took out " + str(len(objects)) + " pieces of data.",
             }
-            print("成功取出" + str(len(unlabeled_data)) + "条未标注数据")
+            print("成功取出" + str(len(objects)) + "条未标注数据")
         except IntegrityError as e:
             ret_dict = {
                 "status": False,
@@ -191,3 +224,9 @@ class DataManager:
             print("提交标注数据失败！" + str(e))
 
         return ret_dict
+
+
+def test(**kwargs):
+    converter = DatasetConverter(file_name=kwargs['file_name'],
+                                 input_dir=kwargs['input_dir'], output_dir=kwargs['output_dir'])
+    converter.run()

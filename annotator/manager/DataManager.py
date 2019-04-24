@@ -6,6 +6,7 @@ from annotator import offline
 from annotator.models import *
 from annotator.offline.datasets.dataset_converter import DatasetConverter
 from manage import project_dir
+import annotator.offline.offline_model as offline
 
 """
 Data:
@@ -85,12 +86,14 @@ class DataManager:
             DataManager._write_unlabeled_data_to_file(
                 objects, os.path.join(project_dir, 'temp', 'predict_data.jsonl'))
 
+            print('Predicting...')
+
             predicted_relations = offline.predict_data(
                 test_file=os.path.join(project_dir, 'temp', 'predict_data.jsonl'),
-                save_dir=os.path.join(project_dir, './annotator/offline/logs/complete/models'),
-                model_file='model_epoch-3_dev-macro-f1-0.4716132465835384_dev-loss-16.142220458984376_2019-04-23__08-51__925007.pt',
                 batch_size=8
             )
+
+            print('Complete.')
 
             data = []
             for idx, o in enumerate(objects):

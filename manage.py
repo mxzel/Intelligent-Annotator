@@ -2,8 +2,10 @@
 import os
 import sys
 import warnings
+
 warnings.filterwarnings('ignore')
-project_dir = os.path.dirname(os.path.abspath(__file__))
+
+from model_preloader import *
 
 if __name__ == '__main__':
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'IntelligentAnnotator.settings')

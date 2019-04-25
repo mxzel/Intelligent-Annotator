@@ -1,5 +1,7 @@
 var state=new Array();
-var tags=new Array();//存储标签tag
+var tags=['Other', 'Cause-Effect', 'Component-Whole', 'Entity-Destination',
+                 'Product-Producer', 'Entity-Origin', 'Member-Collection',
+                 'Message-Topic', 'Content-Container', 'Instrument-Agency'];//存储标签tag
 var textshow="";
 var predicted_data=new Array()
 
@@ -26,7 +28,24 @@ window.onload=function(){
             document.getElementById("selectproject").innerHTML=Text+aText;
         }
     }
+    }
+    var temp=tags.length;
 
+    for(var j=0;j<6;j++){
+        var a1=document.getElementById("buttons"+j);
+        for(var i=0;i<temp;i++){
+            var a2 = document.createElement("button")
+            a2.id="changecolor"+(j*tags.length+i);
+            a2.innerText=tags[i];
+            a2.className="btn";
+            a2.setAttribute("style","margin-left: 8px;margin-bottom:12px;height: 30px;line-height: 10px;");
+            a2.onclick=function(){
+                changecolor(this);
+                defaultcheck(this.parentElement.id);
+                console.log(this.parentElement.id)
+            };
+            a1.appendChild(a2);
+        }
     }
     }
 
@@ -148,49 +167,203 @@ function importClick()
 
 }
 
+function setTextArea() {
+    for (var i=1;i<7;i++) {
+        var el = document.getElementById("index"+i);
+        var childs
+        if (el!=null)
+         childs= el.childNodes
+        else
+            childs=null
+        if (childs!=null) {
+            for (var i = childs.length - 1; i >= 0; i--) {
+                el.removeChild(childs[i]);
+            }
+        }
+    }
+}
 
 //切换项目
 function  changeproject(cp) {
     var vs=cp.innerText
     //var vs = $('#selectproject option:selected').val();
-    document.getElementById("dropdown").innerHTML="当前项目："+vs;
+    
     var a=0;
+    var submit=0;
+    var bo=document.getElementById('ok1');
+    if (bo.checked)
+        submit++;
+
+    bo=document.getElementById('ok2');
+    if (bo.checked)
+        submit=submit+1;
+    bo=document.getElementById('ok3');
+    if (bo.checked)
+        submit=submit+1;
+    bo=document.getElementById('ok4');
+    if (bo.checked)
+        submit=submit+1;
+    bo=document.getElementById('ok5');
+    if (bo.checked)
+        submit=submit+1;
+    bo=document.getElementById('ok6');
+    if (bo.checked)
+        submit=submit+1;
     a=hasData-submit;
     if(submit<hasData){
         var con=confirm("您还有"+a+"条记录没有标注，确定更换吗？");
         if(con==true){
-            id=project_info.get(vs)
-            initButton();
-             xml=createXMLHttpRequest();
-             xml.open('POST','get_project_tags',true);
-             xml.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-             xml.send("project_id="+id);
-             xml.onreadystatechange=function () {     //如果是post,那么里面就设置值
-                if(xml.readyState == 4 && xml.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
-                    console.log(xml.responseText)
-                    content=xml.responseText
-                    var tagsJson = eval("(" + content + ")")
-                    tags=tagsJson.tags
+            setTextArea();
+            document.getElementById("dropdown").innerHTML="当前项目："+vs;
+            var jsoncontent
+        var content
+        xml1=createXMLHttpRequest()
+        xml1.open('POST','fetch_unlabeled_data',false);
+        xml1.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+        xml1.send("project_id="+id+"&num="+Number(6))
+        //xml1.onreadystatechange=function () {     //如果是post,那么里面就设置值
+            if(xml1.readyState == 4 && xml1.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
+                console.log("content: "+content)
+                content=xml1.responseText
+                jsoncontent=eval("("+content+")");
+                console.log("json: "+jsoncontent.data[0].text)
+            }else{
+                hasData=0
+            }
+
+            for(var l=0;l<jsoncontent.data.length;l++){
+                var row={id:jsoncontent.data[l].id,text:jsoncontent.data[l].text}
+                text_id.push(row)
+            }
+
+        var unlabeledDatas = [];
+        for (var i=0;i<jsoncontent.data.length;i++) {
+            var unlabeledData  = new UnlabeledData(jsoncontent.data[i].id,jsoncontent.data[i].predicted_e1, jsoncontent.data[i].predicted_e1_end,
+            jsoncontent.data[i].predicted_e1_start,jsoncontent.data[i].predicted_e2,jsoncontent.data[i].predicted_e2_end,
+            jsoncontent.data[i].predicted_e2_start,jsoncontent.data[i].predicted_relation,jsoncontent.data[i].text)
+        unlabeledDatas.push(unlabeledData)
+            }
+        predicted_data = unlabeledDatas
+
+        for (var m = 0; m < jsoncontent.data.length; m++) {
+            var a0 = document.getElementById("index" + (m + 1));
+            var a1 = document.createElement("div");
+            for (var i = 0; i < unlabeledDatas[m].text2String.length;i++) {
+                var a2 = document.createElement("span")
+                a2.id=m+"text"+i
+                a2.onclick = function () {
+                        getdetail(this);
+                };
+                a2.innerText = unlabeledDatas[m].text2String[i]+" ";
+                a1.appendChild(a2);
+            }
+            a0.appendChild(a1);
+            hasData++
+        }
+
+        for (var i=0;i<hasData;i++) {
+            var buttonNode = document.getElementById("buttons"+i.toString())
+            var childNodes = buttonNode.childNodes
+            for (var k=0;k<childNodes.length;k++){
+                if (childNodes[k].innerText==unlabeledDatas[i].predicted_relation) {
+                    document.getElementById(childNodes[k].id).click()
                 }
             }
-            setButton()
+
+            if (unlabeledDatas[i].text2String[0].length>=unlabeledDatas[i].predicted_e1_start&&unlabeledDatas[i].text2String[0].length<=unlabeledDatas[i].predicted_e1_end+1){
+                    document.getElementById(i+"text"+0).click()
+                }
+                if (unlabeledDatas[i].text2String[0].length>=unlabeledDatas[i].predicted_e2_start&&unlabeledDatas[i].text2String[0].length<=unlabeledDatas[i].predicted_e2_end+1){
+                    document.getElementById(i+"text"+0).click()
+                }
+            var len =unlabeledDatas[i].text2String[0].length
+            for (var j=1;j<unlabeledDatas[i].text2String.length;j++) {
+                len +=unlabeledDatas[i].text2String[j].length
+                if (len>unlabeledDatas[i].predicted_e1_start&&len<=unlabeledDatas[i].predicted_e1_end){
+                    document.getElementById(i+"text"+j).click()
+                }
+                if (len>unlabeledDatas[i].predicted_e2_start&&len<=unlabeledDatas[i].predicted_e2_end){
+                    document.getElementById(i+"text"+j).click()
+                }
+            }
+        }
+        setButtonState(true)
         }
     }else{
-            id=project_info.get(vs)
-            initButton();
-             xml=createXMLHttpRequest();
-             xml.open('POST','get_project_tags',true);
-             xml.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-             xml.send("project_id="+id);
-             xml.onreadystatechange=function () {     //如果是post,那么里面就设置值
-                if(xml.readyState == 4 && xml.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
-                    console.log(xml.responseText)
-                    content=xml.responseText
-                    var tagsJson = eval("(" + content + ")")
-                    tags=tagsJson.tags
+            var jsoncontent
+        var content
+        setTextArea();
+        xml1=createXMLHttpRequest()
+        xml1.open('POST','fetch_unlabeled_data',false);
+        xml1.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+        xml1.send("project_id="+id+"&num="+Number(6))
+        //xml1.onreadystatechange=function () {     //如果是post,那么里面就设置值
+            if(xml1.readyState == 4 && xml1.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
+                console.log("content: "+content)
+                content=xml1.responseText
+                jsoncontent=eval("("+content+")");
+                console.log("json: "+jsoncontent.data[0].text)
+            }else{
+                hasData=0
+            }
+
+            for(var l=0;l<jsoncontent.data.length;l++){
+                var row={id:jsoncontent.data[l].id,text:jsoncontent.data[l].text}
+                text_id.push(row)
+            }
+
+        var unlabeledDatas = [];
+        for (var i=0;i<jsoncontent.data.length;i++) {
+            var unlabeledData  = new UnlabeledData(jsoncontent.data[i].id,jsoncontent.data[i].predicted_e1, jsoncontent.data[i].predicted_e1_end,
+            jsoncontent.data[i].predicted_e1_start,jsoncontent.data[i].predicted_e2,jsoncontent.data[i].predicted_e2_end,
+            jsoncontent.data[i].predicted_e2_start,jsoncontent.data[i].predicted_relation,jsoncontent.data[i].text)
+        unlabeledDatas.push(unlabeledData)
+            }
+        predicted_data = unlabeledDatas
+
+        for (var m = 0; m < jsoncontent.data.length; m++) {
+            var a0 = document.getElementById("index" + (m + 1));
+            var a1 = document.createElement("div");
+            for (var i = 0; i < unlabeledDatas[m].text2String.length;i++) {
+                var a2 = document.createElement("span")
+                a2.id=m+"text"+i
+                a2.onclick = function () {
+                        getdetail(this);
+                };
+                a2.innerText = unlabeledDatas[m].text2String[i]+" ";
+                a1.appendChild(a2);
+            }
+            a0.appendChild(a1);
+            hasData++
+        }
+
+        for (var i=0;i<hasData;i++) {
+            var buttonNode = document.getElementById("buttons"+i.toString())
+            var childNodes = buttonNode.childNodes
+            for (var k=0;k<childNodes.length;k++){
+                if (childNodes[k].innerText==unlabeledDatas[i].predicted_relation) {
+                    document.getElementById(childNodes[k].id).click()
                 }
             }
-            setButton()
+
+            if (unlabeledDatas[i].text2String[0].length>=unlabeledDatas[i].predicted_e1_start&&unlabeledDatas[i].text2String[0].length<=unlabeledDatas[i].predicted_e1_end+1){
+                    document.getElementById(i+"text"+0).click()
+                }
+                if (unlabeledDatas[i].text2String[0].length>=unlabeledDatas[i].predicted_e2_start&&unlabeledDatas[i].text2String[0].length<=unlabeledDatas[i].predicted_e2_end+1){
+                    document.getElementById(i+"text"+0).click()
+                }
+            var len =unlabeledDatas[i].text2String[0].length
+            for (var j=1;j<unlabeledDatas[i].text2String.length;j++) {
+                len +=unlabeledDatas[i].text2String[j].length
+                if (len>unlabeledDatas[i].predicted_e1_start&&len<=unlabeledDatas[i].predicted_e1_end){
+                    document.getElementById(i+"text"+j).click()
+                }
+                if (len>unlabeledDatas[i].predicted_e2_start&&len<=unlabeledDatas[i].predicted_e2_end){
+                    document.getElementById(i+"text"+j).click()
+                }
+            }
+        }
+        setButtonState(true)
     }
 
 }
@@ -247,12 +420,6 @@ var project_info= new Map();//存储项目信息（编号
 
 //新建项目确认
 function confirmCreateProject() {
-    $("#buttons0").empty();
-    $("#buttons1").empty();
-    $("#buttons2").empty();
-    $("#buttons3").empty();
-    $("#buttons4").empty();
-    $("#buttons5").empty();
     var project_name=$('#newname').val();
     if (project_name!=null && project_name!="")
     {
@@ -263,13 +430,12 @@ function confirmCreateProject() {
     }
     var temp=confirm("你已经提交成功！");
     $("div[name='projectname']").val(project_name);
-    $("div[name='tags']").val(tags);
     $('#myModal').modal('hide');
     if(temp==true){
         setButton();
         setButtonState(false);
     }
-    var tags_string = tags.join(",")
+    // var tags_string = tags.join(",")
      xml=createXMLHttpRequest();
      xml.open('POST','create_project',true);
      xml.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
@@ -279,16 +445,16 @@ function confirmCreateProject() {
                 console.log("projectname:"+xml.responseText)
                 project_info.set(project_name, xml.responseText.substring(31, 33))
                 id=xml.responseText.substring(31, 33);
-                 xml_add=createXMLHttpRequest();
-                 xml_add.open('POST','add_tags_to_project',true);
-                 xml_add.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-
-                 xml_add.send("project_id="+id+"&tags="+tags_string);
-                 xml_add.onreadystatechange=function () {     //如果是post,那么里面就设置值
-                    if(xml_add.readyState == 4 && xml_add.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
-                        console.log("add_tags_to_project:"+xml_add.responseText)
-                    }
-                 }
+                 // xml_add=createXMLHttpRequest();
+                 // xml_add.open('POST','add_tags_to_project',true);
+                 // xml_add.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+                 //
+                 // xml_add.send("project_id="+id+"&tags="+tags_string);
+                 // xml_add.onreadystatechange=function () {     //如果是post,那么里面就设置值
+                 //    if(xml_add.readyState == 4 && xml_add.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
+                 //        console.log("add_tags_to_project:"+xml_add.responseText)
+                 //    }
+                 // }
             }
         }
 }
@@ -434,6 +600,7 @@ function fileImport() {
 
         var jsoncontent
         var content
+        setTextArea();
         xml1=createXMLHttpRequest()
         xml1.open('POST','fetch_unlabeled_data',false);
         xml1.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
@@ -619,6 +786,7 @@ function initButton() {
     }
         var jsoncontent
         var content
+        setTextArea();
         xml1=createXMLHttpRequest()
         xml1.open('POST','fetch_unlabeled_data',false);
         xml1.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
@@ -827,6 +995,80 @@ function initButton() {
                     console.log("commit_labeled_data");
         submit = 0;
 
+        var jsoncontent
+        var content
+        setTextArea();
+        xml1=createXMLHttpRequest()
+        xml1.open('POST','fetch_unlabeled_data',false);
+        xml1.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+        xml1.send("project_id="+id+"&num="+Number(6))
+        //xml1.onreadystatechange=function () {     //如果是post,那么里面就设置值
+            if(xml1.readyState == 4 && xml1.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
+                console.log("content: "+content)
+                content=xml1.responseText
+                jsoncontent=eval("("+content+")");
+                console.log("json: "+jsoncontent.data[0].text)
+            }else{
+                hasData=0
+            }
+
+            for(var l=0;l<jsoncontent.data.length;l++){
+                var row={id:jsoncontent.data[l].id,text:jsoncontent.data[l].text}
+                text_id.push(row)
+            }
+
+        var unlabeledDatas = [];
+        for (var i=0;i<jsoncontent.data.length;i++) {
+            var unlabeledData  = new UnlabeledData(jsoncontent.data[i].id,jsoncontent.data[i].predicted_e1, jsoncontent.data[i].predicted_e1_end,
+            jsoncontent.data[i].predicted_e1_start,jsoncontent.data[i].predicted_e2,jsoncontent.data[i].predicted_e2_end,
+            jsoncontent.data[i].predicted_e2_start,jsoncontent.data[i].predicted_relation,jsoncontent.data[i].text)
+        unlabeledDatas.push(unlabeledData)
+            }
+        predicted_data = unlabeledDatas
+
+        for (var m = 0; m < jsoncontent.data.length; m++) {
+            var a0 = document.getElementById("index" + (m + 1));
+            var a1 = document.createElement("div");
+            for (var i = 0; i < unlabeledDatas[m].text2String.length;i++) {
+                var a2 = document.createElement("span")
+                a2.id=m+"text"+i
+                a2.onclick = function () {
+                        getdetail(this);
+                };
+                a2.innerText = unlabeledDatas[m].text2String[i]+" ";
+                a1.appendChild(a2);
+            }
+            a0.appendChild(a1);
+            hasData++
+        }
+
+        for (var i=0;i<hasData;i++) {
+            var buttonNode = document.getElementById("buttons"+i.toString())
+            var childNodes = buttonNode.childNodes
+            for (var k=0;k<childNodes.length;k++){
+                if (childNodes[k].innerText==unlabeledDatas[i].predicted_relation) {
+                    document.getElementById(childNodes[k].id).click()
+                }
+            }
+
+            if (unlabeledDatas[i].text2String[0].length>=unlabeledDatas[i].predicted_e1_start&&unlabeledDatas[i].text2String[0].length<=unlabeledDatas[i].predicted_e1_end+1){
+                    document.getElementById(i+"text"+0).click()
+                }
+                if (unlabeledDatas[i].text2String[0].length>=unlabeledDatas[i].predicted_e2_start&&unlabeledDatas[i].text2String[0].length<=unlabeledDatas[i].predicted_e2_end+1){
+                    document.getElementById(i+"text"+0).click()
+                }
+            var len =unlabeledDatas[i].text2String[0].length
+            for (var j=1;j<unlabeledDatas[i].text2String.length;j++) {
+                len +=unlabeledDatas[i].text2String[j].length
+                if (len>unlabeledDatas[i].predicted_e1_start&&len<=unlabeledDatas[i].predicted_e1_end){
+                    document.getElementById(i+"text"+j).click()
+                }
+                if (len>unlabeledDatas[i].predicted_e2_start&&len<=unlabeledDatas[i].predicted_e2_end){
+                    document.getElementById(i+"text"+j).click()
+                }
+            }
+        }
+        setButtonState(true)
 
     }
 

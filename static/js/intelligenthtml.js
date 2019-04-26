@@ -267,7 +267,7 @@ function  changeproject(cp) {
             var buttonNode = document.getElementById("buttons"+i.toString())
             var childNodes = buttonNode.childNodes
             for (var k=0;k<childNodes.length;k++){
-                if (childNodes[k].innerText==unlabeledDatas[i].predicted_relation) {
+                if (childNodes[k].innerText== [i].predicted_relation) {
                     document.getElementById(childNodes[k].id).click()
                 }
             }
@@ -562,13 +562,20 @@ function changecolor(self) {
     var i= self.id.replace(/[^0-9]/ig,"");
     state[i] = !state[i];
         var changecolor_parent = document.getElementById("buttons" + Math.floor(i/tags.length));
+        for(var m= (Math.floor(i/tags.length))*10;m<i;m++){
+            state[m]=false;
+    }
+    for(var k=parseInt(i)+1;k<(Math.floor(i/tags.length)+1)*tags.length;k++){
+            state[k]=false;
+    }
         console.log(Math.floor(i/tags.length))
         var changecolors = changecolor_parent.childNodes;
+        console.log(changecolors);
         for (var j=0;j<changecolors.length;j++){
-            changecolors[j].style.color="white"
+            changecolors[j].style.backgroundColor = "rgb(221,221,221)";
 
         }
-        document.getElementById("choose" + (Math.floor(i / tags.length) + 1)).innerText=""
+        document.getElementById("choose" + (Math.floor(i / tags.length) + 1)).innerText="选中标签为："
 
     if (state[i] == true) {
         mycolor.style.backgroundColor = "orange";
@@ -1011,7 +1018,7 @@ function initButton() {
                     xml2 = createXMLHttpRequest()
                     xml2.open('POST', 'commit_label_data', false);
                     xml2.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                    xml2.send("project_id=" + id + "&labeled_data=" + commitDataList.join(","))
+                    xml2.send("project_id=" + id + "&predicted_relation=" + commitDataList[i].)
                         if(xml2.readyState == 4 && xml2.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
                             console.log("content: "+content)
                          }

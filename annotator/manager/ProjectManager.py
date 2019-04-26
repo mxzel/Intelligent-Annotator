@@ -217,8 +217,6 @@ class ProjectManager:
         # 文件格式正确，尝试写入数据库
         try:
             project = Project.objects.get(pk=project_id)
-            file = File(project_id=project)
-            file.save()
             for sentence in file_contents:
                 unlabeled_data = UnlabeledData(data_content=sentence,
                                                upload_time=datetime.now(), project_id=project)

@@ -49,9 +49,11 @@ def override_tags(request):
 def fetch_unlabeled_data(request):
     """获取未标注数据"""
     if request.method == "POST":
+        import pudb
+        pudb.set_trace()
         project_id = int(request.POST.get("project_id", -1))
         num = int(request.POST.get("num", -1))
-        # pdb.set_trace()
+
 
         return JsonResponse(manager.fetch_unlabeled_data(project_id=project_id, num=num))
 
@@ -59,7 +61,6 @@ def fetch_unlabeled_data(request):
 def commit_label_data(request):
     """提交已标注的数据"""
     if request.method == "POST":
-        file_id = int(request.POST.get("file_id", -1))
         project_id = int(request.POST.get("project_id", -1))
         labeled_data = []
 
@@ -110,9 +111,9 @@ def commit_label_data(request):
             labeled_data.append(data)
 
         return JsonResponse(manager.commit_labeled_data(
-            labeled_data=labeled_data, file_id=file_id, project_id=project_id))
+            labeled_data=labeled_data, project_id=project_id))
 
-        # models.Labeled_DB_Manager.insert(labeled_id=labeledid,unlabeled_id=unlabeledid,file_id=fileid,data_content=datacontent,labeled_time=labeledtime,labeled_content=labeledcontent,predicted_relation=predictrelation,predicted_e1=predicte1,predicted_e2=predicte2,labeled_relation=labeledrelation,labeled_e1=labelede1,labeled_e2=labelede2,additional_info=additionalinfo)
+        # models.Labeled_DB_Manager.insert(labeled_id=labeledid,unlabeled_id=unlabeledid,data_content=datacontent,labeled_time=labeledtime,labeled_content=labeledcontent,predicted_relation=predictrelation,predicted_e1=predicte1,predicted_e2=predicte2,labeled_relation=labeledrelation,labeled_e1=labelede1,labeled_e2=labelede2,additional_info=additionalinfo)
 
 
 def export_project(request):

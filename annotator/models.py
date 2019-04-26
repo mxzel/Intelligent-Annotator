@@ -44,13 +44,6 @@ class Project(models.Model):
         """将 list 形式的 tags 以 str 的形式保存到项目中"""
         self.project_tags = self.tag_spliter.join(tags)
 
-
-class File(models.Model):
-    """上传的文件信息"""
-    file_id = models.AutoField(primary_key=True)
-    project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
-
-
 class BaseTags(models.Model):
     """基础标签"""
     # tag_name = models.CharField(max_length=TAG_MAX_LENGTH, unique=True)
@@ -63,7 +56,6 @@ class UnlabeledData(models.Model):
     """未标注数据"""
 
     unlabeled_id = models.AutoField(primary_key=True)
-    file_id = models.ForeignKey(File, on_delete=models.CASCADE)
     project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
     # 1993年2月15日，李彤出生在吉林某城市。
     data_content = models.TextField(unique=False)
@@ -73,7 +65,6 @@ class UnlabeledData(models.Model):
 class LabeledData(models.Model):
     """已标注数据"""
     labeled_id = models.AutoField(primary_key=True)
-    file_id = models.ForeignKey(File, on_delete=models.CASCADE)
     project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
 
     labeled_time = models.DateTimeField()

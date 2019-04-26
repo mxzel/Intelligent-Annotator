@@ -90,7 +90,7 @@ class DataManager:
         return ret_dict
 
     @staticmethod
-    def commit_labeled_data(labeled_data: list, file_id: int, project_id: int) -> dict:
+    def commit_labeled_data(labeled_data: list, project_id: int) -> dict:
         """
         将已标注的数据提交到数据库
 
@@ -146,7 +146,6 @@ class DataManager:
                 sentence = ''.join(meta_data['text'])
 
                 data = LabeledData(
-                    file_id=File.objects.get(pk=file_id),
                     project_id=Project.objects.get(pk=project_id),
 
                     labeled_time=datetime.now(),

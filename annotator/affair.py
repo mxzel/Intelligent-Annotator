@@ -83,7 +83,7 @@ def override_tags(request):
 def fetch_unlabeled_data(request):
     """获取未标注数据"""
     if request.method == "POST":
-        pdb.set_trace()
+
         project_id = int(request.POST.get("project_id", -1))
         num = int(request.POST.get("num", -1))
 
@@ -142,13 +142,13 @@ def commit_labeld_data(request):
         return JsonResponse(manager.commit_labeled_data(
             labeled_data=labeled_data, project_id=project_id))
 
-        # models.Labeled_DB_Manager.insert(labeled_id=labeledid,unlabeled_id=unlabeledid,data_content=datacontent,labeled_time=labeledtime,labeled_content=labeledcontent,predicted_relation=predictrelation,predicted_e1=predicte1,predicted_e2=predicte2,labeled_relation=labeledrelation,labeled_e1=labelede1,labeled_e2=labelede2,additional_info=additionalinfo)
 
 
 def get_label_progress(request):
     """获取标注进度"""
     project_id = int(request.POST.get("project_id", -1))
     return JsonResponse(manager.get_label_progress(project_id))
+
 
 
 def export_project(request):

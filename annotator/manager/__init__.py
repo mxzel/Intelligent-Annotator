@@ -68,3 +68,4 @@ def commit_labeled_data(labeled_data: list,
 
 def get_label_progress(project_id: int):
     return ProjectManager.get_label_progress(project_id)
+

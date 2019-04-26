@@ -221,10 +221,12 @@ class ProjectManager:
         try:
             project = Project.objects.get(pk=project_id)
             for sentence in file_contents:
+
                 unlabeled_data = UnlabeledData(
                     data_content=sentence,
                     upload_time=datetime.now(), project_id=project
                 )
+
                 unlabeled_data.save()
                 project.sentence_unlabeled += 1
             project.save()

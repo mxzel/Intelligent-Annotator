@@ -1,12 +1,12 @@
 import json
 from datetime import datetime
-from sqlite3 import IntegrityError
+from django.db import IntegrityError
 
 from annotator import offline
 from annotator.models import *
 from annotator.offline.datasets.dataset_converter import DatasetConverter
-from manage import project_dir
 import annotator.offline.offline_model as offline
+from model_preloader import project_dir
 
 """
 Data:
@@ -88,7 +88,7 @@ class DataManager:
 
             print('Predicting...')
 
-            predicted_relations = offline.predict_data(
+            predicted_relations, probs = offline.predict_data(
                 test_file=os.path.join(project_dir, 'temp', 'predict_data.jsonl'),
                 batch_size=8
             )
@@ -126,7 +126,7 @@ class DataManager:
         return ret_dict
 
     @staticmethod
-    def commit_labeled_data(labeled_data: list, file_id: int, project_id: int) -> dict:
+    def commit_labeled_data(labeled_data: list, project_id: int) -> dict:
         """
         将已标注的数据提交到数据库
 
@@ -182,7 +182,6 @@ class DataManager:
                 sentence = ''.join(meta_data['text'])
 
                 data = LabeledData(
-                    file_id=File.objects.get(pk=file_id),
                     project_id=Project.objects.get(pk=project_id),
 
                     labeled_time=datetime.now(),

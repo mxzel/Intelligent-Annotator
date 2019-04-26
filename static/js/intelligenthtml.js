@@ -593,7 +593,6 @@ var mydata=new Array();
 var txtdata
 var project2file_id=new Map()
 var id
-var file_id
 var hasData=0;
 //文件读取
 function fileImport() {
@@ -620,8 +619,6 @@ function fileImport() {
             if (xml.readyState == 4 && xml.status == 200) {     //当xml.readyState == 4的时候,相当于jquery的success页面
                 content = xml.responseText
                 jsoncontent1 = eval("(" + content + ")");
-                console.log("json" + jsoncontent1.file_id)
-                file_id = jsoncontent1.file_id
             }
 
             var jsoncontent

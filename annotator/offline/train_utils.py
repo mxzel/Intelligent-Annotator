@@ -78,9 +78,9 @@ def iter_predict(X, model, device, batch_size, compute_probs=False):
 
 
 def predict(X, model, device, batch_size, compute_probs=False):
-    pred_fn = lambda x: np.argmax(x, 1)
     logits, probs = iter_predict(X, model, device, batch_size, compute_probs=compute_probs)
-    predictions = pred_fn(logits)
+    predictions = np.argmax(logits, 1)
+    probs = np.max(probs, 1)
 
     return predictions, probs
 

@@ -272,23 +272,25 @@ function  changeproject(cp) {
                 }
             }
 
-            if (unlabeledDatas[i].predicted_e1_start==0){
-                    document.getElementById(i+"text"+0).click()
-                }
-                if (unlabeledDatas[i].predicted_e2_start==0){
-                    document.getElementById(i+"text"+0).click()
-                }
-             len =unlabeledDatas[i].text2String[0].length
-            for (var j=1;j<unlabeledDatas[i].text2String.length;j++) {
-
-                if (len==unlabeledDatas[i].predicted_e1_start){
-                    document.getElementById(i+"text"+j).click()
-                }
-                if (len==unlabeledDatas[i].predicted_e2_start){
-                    document.getElementById(i+"text"+j).click()
-                }
-                len +=unlabeledDatas[i].text2String[j].length
-            }
+            document.getElementById(i+"text"+unlabeledDatas[i].predicted_e1_start).click()
+            document.getElementById(i+"text"+unlabeledDatas[i].predicted_e2_start).click()
+            // if (unlabeledDatas[i].predicted_e1_start==0){
+            //         document.getElementById(i+"text"+0).click()
+            //     }
+            //     if (unlabeledDatas[i].predicted_e2_start==0){
+            //         document.getElementById(i+"text"+0).click()
+            //     }
+            // len =unlabeledDatas[i].text2String[0].length
+            // for (var j=1;j<unlabeledDatas[i].text2String.length;j++) {
+            //
+            //     if (len==unlabeledDatas[i].predicted_e1_start){
+            //         document.getElementById(i+"text"+j).click()
+            //     }
+            //     if (len==unlabeledDatas[i].predicted_e2_start){
+            //         document.getElementById(i+"text"+j).click()
+            //     }
+            //     len +=unlabeledDatas[i].text2String[j].length
+            // }
         }
         setButtonState(true)
         }
@@ -351,23 +353,25 @@ function  changeproject(cp) {
                 }
             }
 
-            if (unlabeledDatas[i].predicted_e1_start==0){
-                    document.getElementById(i+"text"+0).click()
-                }
-                if (unlabeledDatas[i].predicted_e2_start==0){
-                    document.getElementById(i+"text"+0).click()
-                }
-            len =unlabeledDatas[i].text2String[0].length
-            for (var j=1;j<unlabeledDatas[i].text2String.length;j++) {
-
-                if (len==unlabeledDatas[i].predicted_e1_start){
-                    document.getElementById(i+"text"+j).click()
-                }
-                if (len==unlabeledDatas[i].predicted_e2_start){
-                    document.getElementById(i+"text"+j).click()
-                }
-                len +=unlabeledDatas[i].text2String[j].length
-            }
+            document.getElementById(i+"text"+unlabeledDatas[i].predicted_e1_start).click()
+            document.getElementById(i+"text"+unlabeledDatas[i].predicted_e2_start).click()
+            // if (unlabeledDatas[i].predicted_e1_start==0){
+            //         document.getElementById(i+"text"+0).click()
+            //     }
+            //     if (unlabeledDatas[i].predicted_e2_start==0){
+            //         document.getElementById(i+"text"+0).click()
+            //     }
+            // len =unlabeledDatas[i].text2String[0].length
+            // for (var j=1;j<unlabeledDatas[i].text2String.length;j++) {
+            //
+            //     if (len==unlabeledDatas[i].predicted_e1_start){
+            //         document.getElementById(i+"text"+j).click()
+            //     }
+            //     if (len==unlabeledDatas[i].predicted_e2_start){
+            //         document.getElementById(i+"text"+j).click()
+            //     }
+            //     len +=unlabeledDatas[i].text2String[j].length
+            // }
         }
         setButtonState(true)
     }
@@ -685,23 +689,25 @@ function fileImport() {
                     }
                 }
 
-                if (unlabeledDatas[i].predicted_e1_start==0){
-                    document.getElementById(i+"text"+0).click()
-                }
-                if (unlabeledDatas[i].predicted_e2_start==0){
-                    document.getElementById(i+"text"+0).click()
-                }
-             len =unlabeledDatas[i].text2String[0].length
-            for (var j=1;j<unlabeledDatas[i].text2String.length;j++) {
-
-                if (len==unlabeledDatas[i].predicted_e1_start){
-                    document.getElementById(i+"text"+j).click()
-                }
-                if (len==unlabeledDatas[i].predicted_e2_start){
-                    document.getElementById(i+"text"+j).click()
-                }
-                len +=unlabeledDatas[i].text2String[j].length
-            }
+                document.getElementById(i+"text"+unlabeledDatas[i].predicted_e1_start).click()
+            document.getElementById(i+"text"+unlabeledDatas[i].predicted_e2_start).click()
+            // if (unlabeledDatas[i].predicted_e1_start==0){
+            //         document.getElementById(i+"text"+0).click()
+            //     }
+            //     if (unlabeledDatas[i].predicted_e2_start==0){
+            //         document.getElementById(i+"text"+0).click()
+            //     }
+            // len =unlabeledDatas[i].text2String[0].length
+            // for (var j=1;j<unlabeledDatas[i].text2String.length;j++) {
+            //
+            //     if (len==unlabeledDatas[i].predicted_e1_start){
+            //         document.getElementById(i+"text"+j).click()
+            //     }
+            //     if (len==unlabeledDatas[i].predicted_e2_start){
+            //         document.getElementById(i+"text"+j).click()
+            //     }
+            //     len +=unlabeledDatas[i].text2String[j].length
+            // }
             }
             setButtonState(true)
         }
@@ -993,8 +999,8 @@ function initButton() {
                             len += color.innerText.length
                         if (color.style.backgroundColor == 'orange') {
                             labeled_e1 = document.getElementById(i+"text" + j).innerText
-                            labeled_e1_start = len-color.innerText.length
-                            labeled_e1_end = labeled_e1_start + labeled_e1.length-2
+                            labeled_e1_start = j
+                            labeled_e1_end = j
                             pos = j++
                             break
                         }
@@ -1004,8 +1010,8 @@ function initButton() {
                             len += color.innerText.length
                         if (color.style.backgroundColor == 'orange') {
                             labeled_e2 = document.getElementById(i+"text" + j).innerText
-                            labeled_e2_start = len-color.innerText.length
-                            labeled_e2_end = labeled_e2_start + labeled_e2.length-2
+                            labeled_e2_start = j
+                            labeled_e2_end = j
                             break
                         }
                     }
@@ -1018,7 +1024,19 @@ function initButton() {
                     xml2 = createXMLHttpRequest()
                     xml2.open('POST', 'commit_label_data', false);
                     xml2.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                    xml2.send("project_id=" + id + "&predicted_relation=" + commitDataList[i].)
+                    xml2.send("project_id=" + id +"&text0="+commitDataList[0].text+ "&predicted_relation0=" + commitDataList[0].predicted_relation+"&predicted0_e1="+commitDataList[0].predicted_e1+"&predicted0_e2="+commitDataList[0].predicted_e2
+                    +"&predicted_e1_start0=" + commitDataList[0].predicted_e1_start+"&predicted_e1_end0=" + commitDataList[0].predicted_e1_end+"&predicted_e2_start0=" + commitDataList[0].predicted_e2_start+"&predicted_e2_end0=" + commitDataList[0].predicted_e2_end
+                    +"&text1="+commitDataList[1].text+ "&predicted_relation1=" + commitDataList[1].predicted_relation+"&predicted1_e1="+commitDataList[1].predicted_e1+"&predicted1_e2="+commitDataList[1].predicted_e2
+                    +"&predicted_e1_start1=" + commitDataList[1].predicted_e1_start+"&predicted_e1_end1=" + commitDataList[1].predicted_e1_end+"&predicted_e2_start1=" + commitDataList[1].predicted_e2_start+"&predicted_e2_end1=" + commitDataList[1].predicted_e2_end
+                    +"&text2="+commitDataList[2].text+ "&predicted_relation2=" + commitDataList[2].predicted_relation+"&predicted2_e1="+commitDataList[2].predicted_e1+"&predicted2_e2="+commitDataList[2].predicted_e2
+                    +"&predicted_e1_start2=" + commitDataList[2].predicted_e1_start+"&predicted_e1_end2=" + commitDataList[2].predicted_e1_end+"&predicted_e2_start2=" + commitDataList[2].predicted_e2_start+"&predicted_e2_end2=" + commitDataList[2].predicted_e2_end
+                    +"&text3="+commitDataList[3].text+ "&predicted_relation3=" + commitDataList[3].predicted_relation+"&predicted3_e1="+commitDataList[3].predicted_e1+"&predicted3_e2="+commitDataList[3].predicted_e2
+                    +"&predicted_e1_start3=" + commitDataList[3].predicted_e1_start+"&predicted_e1_end3=" + commitDataList[3].predicted_e1_end+"&predicted_e2_start3=" + commitDataList[3].predicted_e2_start+"&predicted_e2_end3=" + commitDataList[3].predicted_e2_end
+                    +"&text4="+commitDataList[4].text+ "&predicted_relation4=" + commitDataList[4].predicted_relation+"&predicted4_e1="+commitDataList[4].predicted_e1+"&predicted4_e2="+commitDataList[4].predicted_e2
+                    +"&predicted_e1_start4=" + commitDataList[4].predicted_e1_start+"&predicted_e1_end4=" + commitDataList[4].predicted_e1_end+"&predicted_e2_start4=" + commitDataList[4].predicted_e2_start+"&predicted_e2_end4=" + commitDataList[4].predicted_e2_end
+                    +"&text5="+commitDataList[5].text+ "&predicted_relation5=" + commitDataList[5].predicted_relation+"&predicted5_e1="+commitDataList[5].predicted_e1+"&predicted5_e2="+commitDataList[5].predicted_e2
+                    +"&predicted_e1_start5=" + commitDataList[5].predicted_e1_start+"&predicted_e1_end5=" + commitDataList[5].predicted_e1_end+"&predicted_e2_start5=" + commitDataList[5].predicted_e2_start+"&predicted_e2_end5=" + commitDataList[5].predicted_e2_end
+                    )
                         if(xml2.readyState == 4 && xml2.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
                             console.log("content: "+content)
                          }
@@ -1085,24 +1103,25 @@ function initButton() {
                     document.getElementById(childNodes[k].id).click()
                 }
             }
-
-            if (unlabeledDatas[i].predicted_e1_start==0){
-                    document.getElementById(i+"text"+0).click()
-                }
-                if (unlabeledDatas[i].predicted_e2_start==0){
-                    document.getElementById(i+"text"+0).click()
-                }
-            len =unlabeledDatas[i].text2String[0].length
-            for (var j=1;j<unlabeledDatas[i].text2String.length;j++) {
-
-                if (len==unlabeledDatas[i].predicted_e1_start){
-                    document.getElementById(i+"text"+j).click()
-                }
-                if (len==unlabeledDatas[i].predicted_e2_start){
-                    document.getElementById(i+"text"+j).click()
-                }
-                len +=unlabeledDatas[i].text2String[j].length
-            }
+            document.getElementById(i+"text"+unlabeledDatas[i].predicted_e1_start).click()
+            document.getElementById(i+"text"+unlabeledDatas[i].predicted_e2_start).click()
+            // if (unlabeledDatas[i].predicted_e1_start==0){
+            //         document.getElementById(i+"text"+0).click()
+            //     }
+            //     if (unlabeledDatas[i].predicted_e2_start==0){
+            //         document.getElementById(i+"text"+0).click()
+            //     }
+            // len =unlabeledDatas[i].text2String[0].length
+            // for (var j=1;j<unlabeledDatas[i].text2String.length;j++) {
+            //
+            //     if (len==unlabeledDatas[i].predicted_e1_start){
+            //         document.getElementById(i+"text"+j).click()
+            //     }
+            //     if (len==unlabeledDatas[i].predicted_e2_start){
+            //         document.getElementById(i+"text"+j).click()
+            //     }
+            //     len +=unlabeledDatas[i].text2String[j].length
+            // }
         }
         setButtonState(true)
 

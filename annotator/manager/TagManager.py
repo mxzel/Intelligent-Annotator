@@ -1,5 +1,5 @@
 import json
-from sqlite3 import IntegrityError
+from django.db import IntegrityError
 from annotator.models import *
 
 """

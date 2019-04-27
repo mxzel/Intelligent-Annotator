@@ -1,6 +1,8 @@
 import json
+
+from django.db import IntegrityError
 from django.utils import timezone as datetime
-from sqlite3 import IntegrityError
+# from sqlite3 import IntegrityError
 from annotator.models import *
 
 """
@@ -43,6 +45,7 @@ class ProjectManager:
                 "message": u"Successfully create project!"
             }
             print("Successfully create project!")
+
         except IntegrityError as e:
             ret_data = {
                 "status": False,
@@ -198,7 +201,6 @@ class ProjectManager:
         :return:
             {
                 "status": True,
-                "file_id": 123,
                 "code": 200,
                 "message": "上传成功"
             }
@@ -218,19 +220,18 @@ class ProjectManager:
         # 文件格式正确，尝试写入数据库
         try:
             project = Project.objects.get(pk=project_id)
-            file = File(project_id=project)
-            file.save()
             for sentence in file_contents:
+
                 unlabeled_data = UnlabeledData(
-                    file_id=file, data_content=sentence,
+                    data_content=sentence,
                     upload_time=datetime.now(), project_id=project
                 )
+
                 unlabeled_data.save()
                 project.sentence_unlabeled += 1
             project.save()
             ret_data = {
                 "status": True,
-                "file_id": file.file_id,
                 "code": 200,
                 "message": u"Successfully upload file."
             }

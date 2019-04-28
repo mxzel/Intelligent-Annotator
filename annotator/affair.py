@@ -20,6 +20,10 @@ def get_projects(request):
     """获取数据库中所有项目的名字"""
     return JsonResponse(manager.get_projects())
 
+def get_label_progress(request):
+    """获取标注进度"""
+    project_id = int(request.POST.get("project_id", -1))
+    return JsonResponse(manager.get_label_progress(project_id))
 
 def create_project(request):
     """创建项目"""
@@ -101,7 +105,7 @@ def fetch_unlabeled_data(request):
 def commit_labeld_data(request):
     """提交已标注的数据"""
 
-    pudb.set_trace()
+    # pudb.set_trace()
     if request.method == "POST":
         project_id = int(request.POST.get("project_id", -1))
         labeled_data = []

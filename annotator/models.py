@@ -88,13 +88,13 @@ class LabeledData(models.Model):
     # FIXME: 区间由左右闭合改成了左闭右开，前端需要做一定的更改
     # FIXME: 标注过程的妥协导致一些变量的意义被改变，需要因此修改变量名字
     # 11
-    e1_start = models.IntegerField(default=-1)
+    predicted_e1_start = models.IntegerField(default=-1)
     # 13
-    e1_end = models.IntegerField(default=-1)
+    predicted_e1_end = models.IntegerField(default=-1)
     # 16
-    e2_start = models.IntegerField(default=-1)
+    predicted_e2_start = models.IntegerField(default=-1)
     # 18
-    e2_end = models.IntegerField(default=-1)
+    predicted_e2_end = models.IntegerField(default=-1)
 
     labeled_relation = models.CharField(max_length=RELATION_MAX_LENGTH, unique=False)
     # labeled_e1 = models.CharField(max_length=ENTITY_MAX_LENGTH, unique=False)

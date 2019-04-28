@@ -64,10 +64,10 @@ class DataManager:
                             # 1993年2月15日，李彤出生在吉林某城市。
                             "text": ['This', 'is', 'a', 'test', 'file.'],
                             "predicted_relation": "人-出生地",
-                            "e1_start": 11,
-                            "e1_end": 13,
-                            "e2_start": 16,
-                            "e2_end": 18,
+                            "predicted_e1_start": 11,
+                            "predicted_e1_end": 13,
+                            "predicted_e2_start": 16,
+                            "predicted_e2_end": 18,
                         },
                         ...
                     ]
@@ -102,10 +102,10 @@ class DataManager:
                     "id": o.unlabeled_id,
                     "text": tokens,
                     "predicted_relation": predicted_relations[idx],
-                    "e1_start": first_args[0],
-                    "e1_end": first_args[1],
-                    "e2_start": second_args[0],
-                    "e2_end": second_args[1],
+                    "predicted_e1_start": first_args[0],
+                    "predicted_e1_end": first_args[1],
+                    "predicted_e2_start": second_args[0],
+                    "predicted_e2_end": second_args[1],
                 })
 
             ret_dict = {
@@ -187,10 +187,10 @@ class DataManager:
                     labeled_content=sentence,
 
                     predicted_relation=meta_data["predicted_relation"],
-                    e1_start=meta_data["e1_start"],
-                    e1_end=meta_data["e1_end"],
-                    e2_start=meta_data["e2_start"],
-                    e2_end=meta_data["e2_end"],
+                    predicted_e1_start=meta_data["predicted_e1_start"],
+                    predicted_e1_end=meta_data["predicted_e1_end"],
+                    predicted_e2_start=meta_data["predicted_e2_start"],
+                    predicted_e2_end=meta_data["predicted_e2_end"],
 
                     labeled_relation=meta_data["labeled_relation"],
                     labeled_e1=meta_data["labeled_e1"],

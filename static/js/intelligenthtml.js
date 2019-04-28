@@ -163,8 +163,10 @@ function deleteTag_change(i) {
 //点击导入
 function importClick()
 {
+    if (clickcount>0)
     $("#files").click();
-
+    else
+        alert("请先创建或选择项目")
 }
 
 function setTextArea() {
@@ -228,6 +230,7 @@ function  changeproject(cp) {
                 content=xml1.responseText
                 jsoncontent=eval("("+content+")");
                 console.log("json: "+jsoncontent.data[0].text)
+                hasData=0
             }else{
                 hasData=0
             }
@@ -292,6 +295,7 @@ function  changeproject(cp) {
     }else{
             var jsoncontent
         var content
+        document.getElementById("dropdown").innerHTML="当前项目："+vs;
         setTextArea();
             id=projectName2id.get(vs)
         xml1=createXMLHttpRequest()
@@ -304,6 +308,7 @@ function  changeproject(cp) {
                 content=xml1.responseText
                 jsoncontent=eval("("+content+")");
                 console.log("json: "+jsoncontent.data[0].text)
+                hasData=0
             }else{
                 hasData=0
             }
@@ -597,7 +602,6 @@ var id
 var hasData=0;
 //文件读取
 function fileImport() {
-    if(clickcount>0) {
         var selectedFile = document.getElementById("files").files[0];//获取读取的File对象
         var name = selectedFile.name;//读取选中文件的文件名
         var size = selectedFile.size;//读取选中文件的大小
@@ -635,6 +639,7 @@ function fileImport() {
                 content = xml1.responseText
                 jsoncontent = eval("(" + content + ")");
                 console.log("json: " + jsoncontent.data[0].text)
+                hasData=0
             } else {
                 hasData = 0
             }
@@ -696,9 +701,6 @@ function fileImport() {
             }
             setButtonState(true)
         }
-    }else {
-        alert("请先创建或选择项目")
-    }
 }
 
 
@@ -714,24 +716,26 @@ function getdetail(column){
 
 //文件导出
 function fileexport(){
-
-    xml2=createXMLHttpRequest()
-        xml2.open('POST','export_project',false);   //这边如果是get请求,可以不填,如果是异步提交也可以不填
-        xml2.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-        xml2.send("project_id="+id);                         //这里是请求体,如果是get请求,那么里面设为null.
+    if (clickcount>0) {
+        xml2 = createXMLHttpRequest()
+        xml2.open('POST', 'export_project', false);   //这边如果是get请求,可以不填,如果是异步提交也可以不填
+        xml2.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xml2.send("project_id=" + id);                         //这里是请求体,如果是get请求,那么里面设为null.
         //xml.onreadystatechange=function () {     //如果是post,那么里面就设置值
-            if(xml2.readyState == 4 && xml2.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
-                content=xml2.responseText
-                jsoncontent2=eval("("+content+")");
-            }
-            var tempcon=" ";
-            for(var i=0;i<jsoncontent2.data.length;i++){
-            tempcon=tempcon+"labeled_content:"+jsoncontent2.data[i].labeled_content+",labeled_relation:"+jsoncontent2.data[i].labeled_relation+"additional_info:"+jsoncontent2.data[i].additional_info+"\r\n"
-    }
-    print("save")
+        if (xml2.readyState == 4 && xml2.status == 200) {     //当xml.readyState == 4的时候,相当于jquery的success页面
+            content = xml2.responseText
+            jsoncontent2 = eval("(" + content + ")");
+        }
+        var tempcon = " ";
+        for (var i = 0; i < jsoncontent2.data.length; i++) {
+            tempcon = tempcon + "labeled_content:" + jsoncontent2.data[i].labeled_content + ",labeled_relation:" + jsoncontent2.data[i].labeled_relation + "additional_info:" + jsoncontent2.data[i].additional_info + "\r\n"
+        }
+        print("save")
 
-    var file = new File([tempcon], "data.txt", { type: "text/plain;charset=utf-8" });
-    saveAs(file);
+        var file = new File([tempcon], "data.txt", {type: "text/plain;charset=utf-8"});
+        saveAs(file);
+    }else
+        alert("请先创建或选择项目")
 }
 
 
@@ -821,6 +825,7 @@ function initButton() {
                 content=xml1.responseText
                 jsoncontent=eval("("+content+")");
                 console.log("json"+jsoncontent.data[0].text)
+                hasData=0
             }
 
         var unlabeledDatas = [];
@@ -966,7 +971,7 @@ function initButton() {
                             break
                         }
                     }
-                        var labeled_data=new LabeledData(predicted_data[i].text,predicted_data[i].predicted_relation,predicted_data[i].predicted_e1,predicted_data[i].predicted_e2,
+                        var labeled_data=new LabeledData(predicted_data[i].text2String,predicted_data[i].predicted_relation,predicted_data[i].predicted_e1,predicted_data[i].predicted_e2,
                            predicted_data[i].predicted_e1_start,predicted_data[i].predicted_e1_end,predicted_data[i].predicted_e2_start,predicted_data[i].predicted_e2_end,
                            labeled_relation,labeled_e1,labeled_e2,labeled_e1_start,labeled_e1_end,labeled_e2_start,labeled_e2_end,"")
                         commitDataList.push(labeled_data)
@@ -1014,7 +1019,7 @@ function initButton() {
                             break
                         }
                     }
-                        var labeled_data=new LabeledData(predicted_data[i].text,predicted_data[i].predicted_relation,predicted_data[i].predicted_e1,predicted_data[i].predicted_e2,
+                        var labeled_data=new LabeledData(predicted_data[i].text2String,predicted_data[i].predicted_relation,predicted_data[i].predicted_e1,predicted_data[i].predicted_e2,
                            predicted_data[i].predicted_e1_start,predicted_data[i].predicted_e1_end,predicted_data[i].predicted_e2_start,predicted_data[i].predicted_e2_end,
                            labeled_relation,labeled_e1,labeled_e2,labeled_e1_start,labeled_e1_end,labeled_e2_start,labeled_e2_end,"")
                         commitDataList.push(labeled_data)
@@ -1023,27 +1028,27 @@ function initButton() {
                     xml2 = createXMLHttpRequest()
                     xml2.open('POST', 'commit_label_data', false);
                     xml2.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                    xml2.send("project_id=" + id +"&text0="+commitDataList[0].text+ "&predicted_relation0=" + commitDataList[0].predicted_relation+"&predicted0_e1="+commitDataList[0].predicted_e1+"&predicted0_e2="+commitDataList[0].predicted_e2
+                    xml2.send("project_id=" + id +"&text0="+JSON.stringify( commitDataList[0].text )+ "&predicted_relation0=" + commitDataList[0].predicted_relation+"&predicted0_e1="+commitDataList[0].predicted_e1+"&predicted0_e2="+commitDataList[0].predicted_e2
                     +"&predicted_e1_start0=" + commitDataList[0].predicted_e1_start+"&predicted_e1_end0=" + commitDataList[0].predicted_e1_end+"&predicted_e2_start0=" + commitDataList[0].predicted_e2_start+"&predicted_e2_end0=" + commitDataList[0].predicted_e2_end
                         +"&labeled_relation0=" + commitDataList[0].labeled_relation+"&labeled0_e1="+commitDataList[0].labeled_e1+"&labeled0_e2="+commitDataList[0].labeled_e2
                     +"&labeled_e1_start0=" + commitDataList[0].labeled_e1_start+"&labeled_e1_end0=" + commitDataList[0].labeled_e1_end+"&labeled_e2_start0=" + commitDataList[0].labeled_e2_start+"&labeled_e2_end0=" + commitDataList[0].labeled_e2_end
-                    +"&text1="+commitDataList[1].text+ "&predicted_relation1=" + commitDataList[1].predicted_relation+"&predicted1_e1="+commitDataList[1].predicted_e1+"&predicted1_e2="+commitDataList[1].predicted_e2
+                    +"&text1="+JSON.stringify( commitDataList[1].text )+ "&predicted_relation1=" + commitDataList[1].predicted_relation+"&predicted1_e1="+commitDataList[1].predicted_e1+"&predicted1_e2="+commitDataList[1].predicted_e2
                     +"&predicted_e1_start1=" + commitDataList[1].predicted_e1_start+"&predicted_e1_end1=" + commitDataList[1].predicted_e1_end+"&predicted_e2_start1=" + commitDataList[1].predicted_e2_start+"&predicted_e2_end1=" + commitDataList[1].predicted_e2_end
                     +"&labeled_relation1=" + commitDataList[1].labeled_relation+"&labeled1_e1="+commitDataList[1].labeled_e1+"&labeled1_e2="+commitDataList[1].labeled_e2
                     +"&labeled_e1_start1=" + commitDataList[1].labeled_e1_start+"&labeled_e1_end1=" + commitDataList[1].labeled_e1_end+"&labeled_e2_start1=" + commitDataList[1].labeled_e2_start+"&labeled_e2_end1=" + commitDataList[1].labeled_e2_end
-                        +"&text2="+commitDataList[2].text+ "&predicted_relation2=" + commitDataList[2].predicted_relation+"&predicted2_e1="+commitDataList[2].predicted_e1+"&predicted2_e2="+commitDataList[2].predicted_e2
+                        +"&text2="+JSON.stringify( commitDataList[2].text )+ "&predicted_relation2=" + commitDataList[2].predicted_relation+"&predicted2_e1="+commitDataList[2].predicted_e1+"&predicted2_e2="+commitDataList[2].predicted_e2
                     +"&predicted_e1_start2=" + commitDataList[2].predicted_e1_start+"&predicted_e1_end2=" + commitDataList[2].predicted_e1_end+"&predicted_e2_start2=" + commitDataList[2].predicted_e2_start+"&predicted_e2_end2=" + commitDataList[2].predicted_e2_end
                     +"&labeled_relation2=" + commitDataList[2].labeled_relation+"&labeled2_e1="+commitDataList[2].labeled_e1+"&labeled2_e2="+commitDataList[2].labeled_e2
                     +"&labeled_e1_start2=" + commitDataList[2].labeled_e1_start+"&labeled_e1_end2=" + commitDataList[2].labeled_e1_end+"&labeled_e2_start2=" + commitDataList[2].labeled_e2_start+"&labeled_e2_end2=" + commitDataList[2].labeled_e2_end
-                        +"&text3="+commitDataList[3].text+ "&predicted_relation3=" + commitDataList[3].predicted_relation+"&predicted3_e1="+commitDataList[3].predicted_e1+"&predicted3_e2="+commitDataList[3].predicted_e2
+                        +"&text3="+JSON.stringify( commitDataList[3].text )+ "&predicted_relation3=" + commitDataList[3].predicted_relation+"&predicted3_e1="+commitDataList[3].predicted_e1+"&predicted3_e2="+commitDataList[3].predicted_e2
                     +"&predicted_e1_start3=" + commitDataList[3].predicted_e1_start+"&predicted_e1_end3=" + commitDataList[3].predicted_e1_end+"&predicted_e2_start3=" + commitDataList[3].predicted_e2_start+"&predicted_e2_end3=" + commitDataList[3].predicted_e2_end
                     +"&labeled_relation3=" + commitDataList[3].labeled_relation+"&labeled3_e1="+commitDataList[3].labeled_e1+"&labeled3_e2="+commitDataList[3].labeled_e2
                     +"&labeled_e1_start3=" + commitDataList[3].labeled_e1_start+"&labeled_e1_end3=" + commitDataList[3].labeled_e1_end+"&labeled_e2_start3=" + commitDataList[3].labeled_e2_start+"&labeled_e2_end3=" + commitDataList[3].labeled_e2_end
-                        +"&text4="+commitDataList[4].text+ "&predicted_relation4=" + commitDataList[4].predicted_relation+"&predicted4_e1="+commitDataList[4].predicted_e1+"&predicted4_e2="+commitDataList[4].predicted_e2
+                        +"&text4="+JSON.stringify( commitDataList[4].text )+ "&predicted_relation4=" + commitDataList[4].predicted_relation+"&predicted4_e1="+commitDataList[4].predicted_e1+"&predicted4_e2="+commitDataList[4].predicted_e2
                     +"&predicted_e1_start4=" + commitDataList[4].predicted_e1_start+"&predicted_e1_end4=" + commitDataList[4].predicted_e1_end+"&predicted_e2_start4=" + commitDataList[4].predicted_e2_start+"&predicted_e2_end4=" + commitDataList[4].predicted_e2_end
                     +"&labeled_relation4=" + commitDataList[4].labeled_relation+"&labeled4_e1="+commitDataList[4].labeled_e1+"&labeled4_e2="+commitDataList[4].labeled_e2
                     +"&labeled_e1_start4=" + commitDataList[4].labeled_e1_start+"&labeled_e1_end4=" + commitDataList[4].labeled_e1_end+"&labeled_e2_start4=" + commitDataList[4].labeled_e2_start+"&labeled_e2_end4=" + commitDataList[4].labeled_e2_end
-                        +"&text5="+commitDataList[5].text+ "&predicted_relation5=" + commitDataList[5].predicted_relation+"&predicted5_e1="+commitDataList[5].predicted_e1+"&predicted5_e2="+commitDataList[5].predicted_e2
+                        +"&text5="+JSON.stringify( commitDataList[5].text )+ "&predicted_relation5=" + commitDataList[5].predicted_relation+"&predicted5_e1="+commitDataList[5].predicted_e1+"&predicted5_e2="+commitDataList[5].predicted_e2
                     +"&predicted_e1_start5=" + commitDataList[5].predicted_e1_start+"&predicted_e1_end5=" + commitDataList[5].predicted_e1_end+"&predicted_e2_start5=" + commitDataList[5].predicted_e2_start+"&predicted_e2_end5=" + commitDataList[5].predicted_e2_end
                     +"&labeled_relation5=" + commitDataList[5].labeled_relation+"&labeled5_e1="+commitDataList[5].labeled_e1+"&labeled5_e2="+commitDataList[5].labeled_e2
                     +"&labeled_e1_start5=" + commitDataList[5].labeled_e1_start+"&labeled_e1_end5=" + commitDataList[5].labeled_e1_end+"&labeled_e2_start5=" + commitDataList[5].labeled_e2_start+"&labeled_e2_end5=" + commitDataList[5].labeled_e2_end
@@ -1071,6 +1076,7 @@ function initButton() {
                 content=xml1.responseText
                 jsoncontent=eval("("+content+")");
                 console.log("json: "+jsoncontent.data[0].text)
+                hasData=0
             }else{
                 hasData=0
             }

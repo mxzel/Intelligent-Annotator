@@ -65,7 +65,7 @@ class DataManager:
                         {
                             "id": meta_data["unlabeled_id"],
                             "text": meta_data["data_content"].split(' '),
-                            "predicted_relation": "relation",
+                            "predicted_relation": "Instrument-Agency(e1,e2)",
                             "predicted_e1": "e1",
                             "predicted_e2": "e2",
                             "predicted_e1_start": 0,
@@ -105,7 +105,7 @@ class DataManager:
                 {
                     "text": ['This', 'is', 'a', 'test', 'file.'],
 
-                    "predicted_relation": "人-出生地",
+                    "predicted_relation": "Instrument-Agency(e1,e2)",
                     "predicted_e1": "李彤",
                     "predicted_e2": "吉林",
                     "predicted_e1_start": 11,
@@ -113,7 +113,7 @@ class DataManager:
                     "predicted_e2_start": 16,
                     "predicted_e2_end": 17,
 
-                    "labeled_relation": "人-出生地",
+                    "labeled_relation": "Instrument-Agency(e1,e2)",
                     "labeled_e1": "李彤",
                     "labeled_e2": "吉林",
                     "labeled_e1_start": 11,

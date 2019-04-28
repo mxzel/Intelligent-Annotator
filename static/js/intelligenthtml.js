@@ -1,7 +1,10 @@
 var state=new Array();
-var tags=['Other', 'Cause-Effect', 'Component-Whole', 'Entity-Destination',
-                 'Product-Producer', 'Entity-Origin', 'Member-Collection',
-                 'Message-Topic', 'Content-Container', 'Instrument-Agency'];//存储标签tag
+var tags=['Other', 'Cause-Effect(e1,e2)', 'Component-Whole(e1,e2)', 'Entity-Destination(e1,e2)',
+                 'Product-Producer(e1,e2)', 'Entity-Origin(e1,e2)', 'Member-Collection(e1,e2)',
+                 'Message-Topic(e1,e2)', 'Content-Container(e1,e2)', 'Instrument-Agency(e1,e2)',
+                    'Cause-Effect(e2,e1)', 'Component-Whole(e2,e1)', 'Entity-Destination(e2,e1)',
+                 'Product-Producer(e2,e1)', 'Entity-Origin(e2,e1)', 'Member-Collection(e2,e1)',
+                 'Message-Topic(e2,e1)', 'Content-Container(e2,e1)', 'Instrument-Agency(e2,e1)'];//存储标签tag
 var textshow="";
 var predicted_data=new Array()
 var projectName2id = new Map()
@@ -39,7 +42,7 @@ window.onload=function(){
             a2.id="changecolor"+(j*tags.length+i);
             a2.innerText=tags[i];
             a2.className="btn";
-            a2.setAttribute("style","margin-left: 8px;margin-bottom:12px;height: 30px;line-height: 10px;");
+            a2.setAttribute("style","margin-left: 5px;margin-bottom:10px;height: 22px;line-height: 10px;font-size:13px;");
             a2.onclick=function(){
                 changecolor(this);
                 defaultcheck(this.parentElement.id);
@@ -260,8 +263,11 @@ function  changeproject(cp) {
                 a2.onclick = function () {
                         getdetail(this);
                 };
-                a2.innerText = unlabeledDatas[m].text2String[i]+" ";
+                a2.innerText = unlabeledDatas[m].text2String[i]+"";
                 a1.appendChild(a2);
+                var a3 = document.createElement("span")
+                a3.innerText = " ";
+                a1.appendChild(a3);
             }
             a0.appendChild(a1);
             hasData++
@@ -292,7 +298,7 @@ function  changeproject(cp) {
                 }
             }
         }
-        setButtonState(true);
+        setButtonState(false);
         updata_progress();
 
         }
@@ -342,8 +348,11 @@ function  changeproject(cp) {
                 a2.onclick = function () {
                         getdetail(this);
                 };
-                a2.innerText = unlabeledDatas[m].text2String[i]+" ";
+                a2.innerText = unlabeledDatas[m].text2String[i]+"";
                 a1.appendChild(a2);
+                var a3 = document.createElement("span")
+                a3.innerText = " ";
+                a1.appendChild(a3);
             }
             a0.appendChild(a1);
             hasData++
@@ -374,7 +383,7 @@ function  changeproject(cp) {
                 }
             }
         }
-        setButtonState(true)
+        setButtonState(false)
     }
 
 }
@@ -478,7 +487,7 @@ function confirmChangeTags() {
     $('#myModal1').modal('hide');
     if(temp==true){
         setButton();
-        setButtonState(true);
+        setButtonState(false);
     }
     var projectName = document.getElementById("dropdown").innerHTML
     projectName=projectName.substr(5,projectName.length-1)
@@ -531,7 +540,7 @@ function setButton(){
             a2.id="changecolor"+(j*tags.length+i);
             a2.innerText=tags[i];
             a2.className="btn";
-            a2.setAttribute("style","margin-left: 8px;margin-bottom:12px;height: 30px;line-height: 10px;");
+            a2.setAttribute("style","margin-left: 5px;margin-bottom:10px;height: 22px;line-height: 10px;font-size:12px;");
             a2.onclick=function(){
                 changecolor(this);
                 defaultcheck(this.parentElement.id);
@@ -703,7 +712,7 @@ function fileImport() {
                 }
             }
             }
-            setButtonState(true)
+            setButtonState(false)
         }
 }
 
@@ -734,7 +743,6 @@ function fileexport(){
         for (var i = 0; i < jsoncontent2.data.length; i++) {
             tempcon = tempcon  + jsoncontent2.data[i]+ "\r\n"
         }
-        print("save")
 
         var file = new File([tempcon], "data.txt", {type: "text/plain;charset=utf-8"});
         saveAs(file);
@@ -903,6 +911,8 @@ function initButton() {
                         commitDataList.push(labeled_data)
                     }
                 }
+            }else{
+                return
             }
         }else{
            for (var i=0;i<hasData;i++) {
@@ -1029,8 +1039,11 @@ function initButton() {
                 a2.onclick = function () {
                         getdetail(this);
                 };
-                a2.innerText = unlabeledDatas[m].text2String[i]+" ";
+                a2.innerText = unlabeledDatas[m].text2String[i]+"";
                 a1.appendChild(a2);
+                var a3 = document.createElement("span")
+                a3.innerText = " ";
+                a1.appendChild(a3);
             }
             a0.appendChild(a1);
             hasData++
@@ -1060,7 +1073,7 @@ function initButton() {
                 }
             }
         }
-        setButtonState(true)
+        setButtonState(false)
 
     }
 

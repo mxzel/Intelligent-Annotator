@@ -2,9 +2,14 @@ from django.shortcuts import render
 from django.shortcuts import HttpResponse
 from django.http import JsonResponse
 import annotator.manager as manager
+
 import pdb, os
 import annotator.offline as offline
 from annotator.manager.DataManager import test
+
+import pudb
+
+
 from annotator.models import BaseTags
 from annotator.utils import random_generate_string
 
@@ -82,6 +87,7 @@ def override_tags(request):
 
 def fetch_unlabeled_data(request):
     """获取未标注数据"""
+    pudb.set_trace()
     if request.method == "POST":
 
         project_id = int(request.POST.get("project_id", -1))
@@ -93,19 +99,21 @@ def fetch_unlabeled_data(request):
 
 def commit_labeld_data(request):
     """提交已标注的数据"""
+
+    # pudb.set_trace()
     if request.method == "POST":
         project_id = int(request.POST.get("project_id", -1))
         labeled_data = []
 
         for i in range(6):
-            idx = str(i + 1)
+            idx = str(i)
             text = request.POST.get("text" + idx, None)
 
             predicted_relation = request.POST.get("predicted_relation" + idx, None)
-            e1_start = int(request.POST.get("e1_start" + idx, -1))
-            e1_end = int(request.POST.get("e1_end" + idx, -1))
-            e2_start = int(request.POST.get("e2_start" + idx, -1))
-            e2_end = int(request.POST.get("e2_end" + idx, -1))
+            e1_start = int(request.POST.get("predicted_e1_start" + idx, -1))
+            e1_end = int(request.POST.get("predicted_e1_end" + idx, -1))
+            e2_start = int(request.POST.get("predicted_e2_start" + idx, -1))
+            e2_end = int(request.POST.get("predicted_e2_end" + idx, -1))
 
             labeled_relation = request.POST.get("labeled_relation" + idx, None)
             labeled_e1 = request.POST.get("labeled" + idx + "_e1", None)
@@ -113,7 +121,7 @@ def commit_labeld_data(request):
             labeled_e1_start = int(request.POST.get("labeled_e1_start" + idx, -1))
             labeled_e1_end = int(request.POST.get("labeled_e1_end" + idx, -1))
             labeled_e2_start = int(request.POST.get("labeled_e2_start" + idx, -1))
-            labeled_e2_end = int(request.POST.get("labeled_e2_end", -1))
+            labeled_e2_end = int(request.POST.get("labeled_e2_end" + idx, -1))
 
             additional_info = request.POST.get("additional_info" + idx, None)
 
@@ -121,10 +129,10 @@ def commit_labeld_data(request):
                 "text": text,
 
                 "predicted_relation": predicted_relation,
-                "e1_start": e1_start,
-                "e1_end": e1_end,
-                "e2_start": e2_start,
-                "e2_end": e2_end,
+                "predicted_e1_start": e1_start,
+                "predicted_e1_end": e1_end,
+                "predicted_e2_start": e2_start,
+                "predicted_e2_end": e2_end,
 
                 "labeled_relation": labeled_relation,
                 "labeled_e1": labeled_e1,
@@ -153,7 +161,7 @@ def get_label_progress(request):
 
 def export_project(request):
     """导出项目"""
-    if request.method == "POST":
-        project_id = int(request.POST.get("project_id", -1))
+    # pudb.set_trace()
+    project_id = int(request.POST.get("project_id", -1))
 
-        return JsonResponse(manager.export_project(project_id=project_id))
+    return JsonResponse(manager.export_project(project_id=project_id))

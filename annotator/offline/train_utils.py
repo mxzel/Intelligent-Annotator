@@ -77,13 +77,16 @@ def iter_predict(X, model, device, batch_size, compute_probs=False):
         return logits, None
 
 
-def predict(X, model, device, batch_size, compute_probs=False):
+def predict(X, model, device, batch_size, compute_probs=False, compute_entropy=False):
     logits, probs = iter_predict(X, model, device, batch_size, compute_probs=compute_probs)
     predictions = np.argmax(logits, 1)
-    probs = np.max(probs, 1)
-
-    return predictions, probs
-
+    if compute_entropy:
+        entropies = np.sum(-probs * np.log(probs), 1)
+        probs = np.max(probs, 1)
+        return predictions, probs, entropies
+    else:
+        probs = np.max(probs, 1)
+        return predictions, probs
 
 def persist_model(save_dir, model, text_encoder, label_encoder, model_name='model.pt'):
     model.module.save_to_file(make_path(join(save_dir, model_name)))

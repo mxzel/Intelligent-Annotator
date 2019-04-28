@@ -18,8 +18,7 @@ from model_preloader import text_encoder, label_encoder, max_len, n_ctx, model, 
 
 
 def predict_data(test_file, batch_size=8, masking_mode=None):
-    import pudb
-    # pudb.set_trace()
+
     test = SemEval2010Task8._load_from_jsonl(test_file, is_test=True, masking_mode=masking_mode)
     test = SemEval2010Task8.encode(
         test, text_encoder=text_encoder, label_encoder=label_encoder)
@@ -28,8 +27,9 @@ def predict_data(test_file, batch_size=8, masking_mode=None):
 
     indices_test, _, _, _, _ = test
 
-    label_idxs_pred, probs_test = predict(
-        indices_test, model, device, batch_size, compute_probs=True)
+    # pudb.set_trace()
+    label_idxs_pred, probs_test, entropies = predict(
+        indices_test, model, device, batch_size, compute_probs=True, compute_entropy=True)
     labels_pred_test = [label_encoder.get_item_for_index(label_index)
                         for label_index in label_idxs_pred]
 

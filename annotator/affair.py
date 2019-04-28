@@ -88,7 +88,7 @@ def override_tags(request):
 
 def fetch_unlabeled_data(request):
     """获取未标注数据"""
-    pudb.set_trace()
+    # pudb.set_trace()
     if request.method == "POST":
 
         project_id = int(request.POST.get("project_id", -1))

@@ -3,6 +3,7 @@ from django.shortcuts import HttpResponse
 from django.http import JsonResponse
 import annotator.manager as manager
 import pudb
+import json
 
 from annotator.models import BaseTags
 
@@ -59,14 +60,15 @@ def fetch_unlabeled_data(request):
 def commit_label_data(request):
     """提交已标注的数据"""
 
-    # pudb.set_trace()
+    pudb.set_trace()
     if request.method == "POST":
         project_id = int(request.POST.get("project_id", -1))
         labeled_data = []
 
         for i in range(6):
             idx = str(i)
-            text = request.POST.get("text" + idx, None)
+            unlabeled_id = request.POST.get("id" + idx, -1)
+            text = json.loads(request.POST.get("text" + idx, ""))
 
             predicted_relation = request.POST.get("predicted_relation" + idx, None)
             predicted_e1 = request.POST.get("predicted" + idx + "_e1", None)
@@ -84,9 +86,10 @@ def commit_label_data(request):
             labeled_e2_start = int(request.POST.get("labeled_e2_start" + idx, -1))
             labeled_e2_end = int(request.POST.get("labeled_e2_end" + idx, -1))
 
-            additional_info = request.POST.get("additional_info" + idx, None)
+            additional_info = request.POST.get("additional_info" + idx, '')
 
             data = {
+                "unlabeled_id": unlabeled_id,
                 "text": text,
 
                 "predicted_relation": predicted_relation,

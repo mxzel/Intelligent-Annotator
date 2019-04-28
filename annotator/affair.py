@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import HttpResponse
 from django.http import JsonResponse
 import annotator.manager as manager
-import pdb
+import pudb
 
 from annotator.models import BaseTags
 
@@ -49,8 +49,6 @@ def override_tags(request):
 def fetch_unlabeled_data(request):
     """获取未标注数据"""
     if request.method == "POST":
-        # import pudb
-        # pudb.set_trace()
         project_id = int(request.POST.get("project_id", -1))
         num = int(request.POST.get("num", -1))
 
@@ -60,12 +58,14 @@ def fetch_unlabeled_data(request):
 
 def commit_label_data(request):
     """提交已标注的数据"""
+
+    # pudb.set_trace()
     if request.method == "POST":
         project_id = int(request.POST.get("project_id", -1))
         labeled_data = []
 
         for i in range(6):
-            idx = str(i + 1)
+            idx = str(i)
             text = request.POST.get("text" + idx, None)
 
             predicted_relation = request.POST.get("predicted_relation" + idx, None)
@@ -82,7 +82,7 @@ def commit_label_data(request):
             labeled_e1_start = int(request.POST.get("labeled_e1_start" + idx, -1))
             labeled_e1_end = int(request.POST.get("labeled_e1_end" + idx, -1))
             labeled_e2_start = int(request.POST.get("labeled_e2_start" + idx, -1))
-            labeled_e2_end = int(request.POST.get("labeled_e2_end", -1))
+            labeled_e2_end = int(request.POST.get("labeled_e2_end" + idx, -1))
 
             additional_info = request.POST.get("additional_info" + idx, None)
 
@@ -118,7 +118,7 @@ def commit_label_data(request):
 
 def export_project(request):
     """导出项目"""
-    if request.method == "POST":
-        project_id = int(request.POST.get("project_id", -1))
+    # pudb.set_trace()
+    project_id = int(request.POST.get("project_id", -1))
 
-        return JsonResponse(manager.export_project(project_id=project_id))
+    return JsonResponse(manager.export_project(project_id=project_id))

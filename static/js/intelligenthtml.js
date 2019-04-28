@@ -569,9 +569,7 @@ function changecolor(self) {
     for(var k=parseInt(i)+1;k<(Math.floor(i/tags.length)+1)*tags.length;k++){
             state[k]=false;
     }
-        console.log(Math.floor(i/tags.length))
         var changecolors = changecolor_parent.childNodes;
-        console.log(changecolors);
         for (var j=0;j<changecolors.length;j++){
             changecolors[j].style.backgroundColor = "rgb(221,221,221)";
 

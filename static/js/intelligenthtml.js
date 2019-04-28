@@ -1019,7 +1019,7 @@ function initButton() {
                             break
                         }
                     }
-                        var labeled_data=new LabeledData(predicted_data[i].text2String,predicted_data[i].predicted_relation,predicted_data[i].predicted_e1,predicted_data[i].predicted_e2,
+                        var labeled_data=new LabeledData(predicted_data[i].text2String,predicted_data[i].pre_id,predicted_data[i].predicted_relation,predicted_data[i].predicted_e1,predicted_data[i].predicted_e2,
                            predicted_data[i].predicted_e1_start,predicted_data[i].predicted_e1_end,predicted_data[i].predicted_e2_start,predicted_data[i].predicted_e2_end,
                            labeled_relation,labeled_e1,labeled_e2,labeled_e1_start,labeled_e1_end,labeled_e2_start,labeled_e2_end,"")
                         commitDataList.push(labeled_data)
@@ -1028,27 +1028,27 @@ function initButton() {
                     xml2 = createXMLHttpRequest()
                     xml2.open('POST', 'commit_label_data', false);
                     xml2.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                    xml2.send("project_id=" + id +"&text0="+JSON.stringify( commitDataList[0].text )+ "&predicted_relation0=" + commitDataList[0].predicted_relation+"&predicted0_e1="+commitDataList[0].predicted_e1+"&predicted0_e2="+commitDataList[0].predicted_e2
+                    xml2.send("project_id=" + id +"&text0="+JSON.stringify( commitDataList[0].text )+ "&id0="+commitDataList[0].pre_id+"&predicted_relation0=" + commitDataList[0].predicted_relation+"&predicted0_e1="+commitDataList[0].predicted_e1+"&predicted0_e2="+commitDataList[0].predicted_e2
                     +"&predicted_e1_start0=" + commitDataList[0].predicted_e1_start+"&predicted_e1_end0=" + commitDataList[0].predicted_e1_end+"&predicted_e2_start0=" + commitDataList[0].predicted_e2_start+"&predicted_e2_end0=" + commitDataList[0].predicted_e2_end
                         +"&labeled_relation0=" + commitDataList[0].labeled_relation+"&labeled0_e1="+commitDataList[0].labeled_e1+"&labeled0_e2="+commitDataList[0].labeled_e2
                     +"&labeled_e1_start0=" + commitDataList[0].labeled_e1_start+"&labeled_e1_end0=" + commitDataList[0].labeled_e1_end+"&labeled_e2_start0=" + commitDataList[0].labeled_e2_start+"&labeled_e2_end0=" + commitDataList[0].labeled_e2_end
-                    +"&text1="+JSON.stringify( commitDataList[1].text )+ "&predicted_relation1=" + commitDataList[1].predicted_relation+"&predicted1_e1="+commitDataList[1].predicted_e1+"&predicted1_e2="+commitDataList[1].predicted_e2
+                    +"&text1="+JSON.stringify( commitDataList[1].text )+ "&id1="+commitDataList[1].pre_id+ "&predicted_relation1=" + commitDataList[1].predicted_relation+"&predicted1_e1="+commitDataList[1].predicted_e1+"&predicted1_e2="+commitDataList[1].predicted_e2
                     +"&predicted_e1_start1=" + commitDataList[1].predicted_e1_start+"&predicted_e1_end1=" + commitDataList[1].predicted_e1_end+"&predicted_e2_start1=" + commitDataList[1].predicted_e2_start+"&predicted_e2_end1=" + commitDataList[1].predicted_e2_end
                     +"&labeled_relation1=" + commitDataList[1].labeled_relation+"&labeled1_e1="+commitDataList[1].labeled_e1+"&labeled1_e2="+commitDataList[1].labeled_e2
                     +"&labeled_e1_start1=" + commitDataList[1].labeled_e1_start+"&labeled_e1_end1=" + commitDataList[1].labeled_e1_end+"&labeled_e2_start1=" + commitDataList[1].labeled_e2_start+"&labeled_e2_end1=" + commitDataList[1].labeled_e2_end
-                        +"&text2="+JSON.stringify( commitDataList[2].text )+ "&predicted_relation2=" + commitDataList[2].predicted_relation+"&predicted2_e1="+commitDataList[2].predicted_e1+"&predicted2_e2="+commitDataList[2].predicted_e2
+                        +"&text2="+JSON.stringify( commitDataList[2].text )+ "&id2="+commitDataList[2].pre_id+ "&predicted_relation2=" + commitDataList[2].predicted_relation+"&predicted2_e1="+commitDataList[2].predicted_e1+"&predicted2_e2="+commitDataList[2].predicted_e2
                     +"&predicted_e1_start2=" + commitDataList[2].predicted_e1_start+"&predicted_e1_end2=" + commitDataList[2].predicted_e1_end+"&predicted_e2_start2=" + commitDataList[2].predicted_e2_start+"&predicted_e2_end2=" + commitDataList[2].predicted_e2_end
                     +"&labeled_relation2=" + commitDataList[2].labeled_relation+"&labeled2_e1="+commitDataList[2].labeled_e1+"&labeled2_e2="+commitDataList[2].labeled_e2
                     +"&labeled_e1_start2=" + commitDataList[2].labeled_e1_start+"&labeled_e1_end2=" + commitDataList[2].labeled_e1_end+"&labeled_e2_start2=" + commitDataList[2].labeled_e2_start+"&labeled_e2_end2=" + commitDataList[2].labeled_e2_end
-                        +"&text3="+JSON.stringify( commitDataList[3].text )+ "&predicted_relation3=" + commitDataList[3].predicted_relation+"&predicted3_e1="+commitDataList[3].predicted_e1+"&predicted3_e2="+commitDataList[3].predicted_e2
+                        +"&text3="+JSON.stringify( commitDataList[3].text )+ "&id3="+commitDataList[3].pre_id+ "&predicted_relation3=" + commitDataList[3].predicted_relation+"&predicted3_e1="+commitDataList[3].predicted_e1+"&predicted3_e2="+commitDataList[3].predicted_e2
                     +"&predicted_e1_start3=" + commitDataList[3].predicted_e1_start+"&predicted_e1_end3=" + commitDataList[3].predicted_e1_end+"&predicted_e2_start3=" + commitDataList[3].predicted_e2_start+"&predicted_e2_end3=" + commitDataList[3].predicted_e2_end
                     +"&labeled_relation3=" + commitDataList[3].labeled_relation+"&labeled3_e1="+commitDataList[3].labeled_e1+"&labeled3_e2="+commitDataList[3].labeled_e2
                     +"&labeled_e1_start3=" + commitDataList[3].labeled_e1_start+"&labeled_e1_end3=" + commitDataList[3].labeled_e1_end+"&labeled_e2_start3=" + commitDataList[3].labeled_e2_start+"&labeled_e2_end3=" + commitDataList[3].labeled_e2_end
-                        +"&text4="+JSON.stringify( commitDataList[4].text )+ "&predicted_relation4=" + commitDataList[4].predicted_relation+"&predicted4_e1="+commitDataList[4].predicted_e1+"&predicted4_e2="+commitDataList[4].predicted_e2
+                        +"&text4="+JSON.stringify( commitDataList[4].text )+ "&id4="+commitDataList[4].pre_id+ "&predicted_relation4=" + commitDataList[4].predicted_relation+"&predicted4_e1="+commitDataList[4].predicted_e1+"&predicted4_e2="+commitDataList[4].predicted_e2
                     +"&predicted_e1_start4=" + commitDataList[4].predicted_e1_start+"&predicted_e1_end4=" + commitDataList[4].predicted_e1_end+"&predicted_e2_start4=" + commitDataList[4].predicted_e2_start+"&predicted_e2_end4=" + commitDataList[4].predicted_e2_end
                     +"&labeled_relation4=" + commitDataList[4].labeled_relation+"&labeled4_e1="+commitDataList[4].labeled_e1+"&labeled4_e2="+commitDataList[4].labeled_e2
                     +"&labeled_e1_start4=" + commitDataList[4].labeled_e1_start+"&labeled_e1_end4=" + commitDataList[4].labeled_e1_end+"&labeled_e2_start4=" + commitDataList[4].labeled_e2_start+"&labeled_e2_end4=" + commitDataList[4].labeled_e2_end
-                        +"&text5="+JSON.stringify( commitDataList[5].text )+ "&predicted_relation5=" + commitDataList[5].predicted_relation+"&predicted5_e1="+commitDataList[5].predicted_e1+"&predicted5_e2="+commitDataList[5].predicted_e2
+                        +"&text5="+JSON.stringify( commitDataList[5].text )+ "&id5="+commitDataList[5].pre_id+ "&predicted_relation5=" + commitDataList[5].predicted_relation+"&predicted5_e1="+commitDataList[5].predicted_e1+"&predicted5_e2="+commitDataList[5].predicted_e2
                     +"&predicted_e1_start5=" + commitDataList[5].predicted_e1_start+"&predicted_e1_end5=" + commitDataList[5].predicted_e1_end+"&predicted_e2_start5=" + commitDataList[5].predicted_e2_start+"&predicted_e2_end5=" + commitDataList[5].predicted_e2_end
                     +"&labeled_relation5=" + commitDataList[5].labeled_relation+"&labeled5_e1="+commitDataList[5].labeled_e1+"&labeled5_e2="+commitDataList[5].labeled_e2
                     +"&labeled_e1_start5=" + commitDataList[5].labeled_e1_start+"&labeled_e1_end5=" + commitDataList[5].labeled_e1_end+"&labeled_e2_start5=" + commitDataList[5].labeled_e2_start+"&labeled_e2_end5=" + commitDataList[5].labeled_e2_end
@@ -1139,9 +1139,10 @@ function initButton() {
 
     }
 
-    function LabeledData(text,predicted_relation,predicted_e1,predicted_e2,predicted_e1_start,predicted_e1_end,predicted_e2_start,predicted_e2_end,
+    function LabeledData(text,pre_id,predicted_relation,predicted_e1,predicted_e2,predicted_e1_start,predicted_e1_end,predicted_e2_start,predicted_e2_end,
                          labeled_relation,labeled_e1,labeled_e2,labeled_e1_start,labeled_e1_end,labeled_e2_start,labeled_e2_end,additional_info){
    var labeledData = new Object;
+   labeledData.pre_id = pre_id;
    labeledData.predicted_e1 = predicted_e1;
    labeledData.predicted_e1_end = predicted_e1_end;
    labeledData.predicted_e1_start = predicted_e1_start;

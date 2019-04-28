@@ -174,11 +174,11 @@ class DataManager:
             for meta_data in labeled_data:
                 e1_start, e1_end = meta_data["labeled_e1_start"], meta_data["labeled_e1_end"]
                 e2_start, e2_end = meta_data["labeled_e2_start"], meta_data["labeled_e2_end"]
-                meta_data['text'].insert(e1_start, '<e1>')
-                meta_data['text'].insert(e1_end, '</e1>')
-                meta_data['text'].insert(e2_start, '<e2>')
-                meta_data['text'].insert(e2_end, '</e2>')
-                sentence = ''.join(meta_data['text'])
+                meta_data['text'][e1_start] = '<e1>' + meta_data['text'][e1_start]
+                meta_data['text'][e1_end - 1] = meta_data['text'][e1_end - 1] + '</e1>'
+                meta_data['text'][e2_start] = '<e2>' + meta_data['text'][e2_start]
+                meta_data['text'][e2_end - 1] = meta_data['text'][e2_end - 1] + '</e2>'
+                sentence = ' '.join(meta_data['text'])
 
                 data = LabeledData(
                     project_id=Project.objects.get(pk=project_id),

@@ -23,6 +23,7 @@ urlpatterns = [
 
     path('get_projects', affair.get_projects),
     path('create_project', affair.create_project),
+    path('get_label_progress', affair.get_label_progress),
 
     path('upload_file', affair.upload_file),
     path('add_tags_to_project', affair.override_tags),

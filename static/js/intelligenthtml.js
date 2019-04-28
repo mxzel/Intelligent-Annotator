@@ -215,6 +215,7 @@ function  changeproject(cp) {
     if(submit<hasData){
         var con=confirm("您还有"+a+"条记录没有标注，确定更换吗？");
         if(con==true){
+            clickcount++
             setTextArea();
             document.getElementById("dropdown").innerHTML="当前项目："+vs;
             var jsoncontent
@@ -296,6 +297,7 @@ function  changeproject(cp) {
             var jsoncontent
         var content
         document.getElementById("dropdown").innerHTML="当前项目："+vs;
+            clickcount++
         setTextArea();
             id=projectName2id.get(vs)
         xml1=createXMLHttpRequest()
@@ -728,7 +730,7 @@ function fileexport(){
         }
         var tempcon = " ";
         for (var i = 0; i < jsoncontent2.data.length; i++) {
-            tempcon = tempcon + "labeled_content:" + jsoncontent2.data[i].labeled_content + ",labeled_relation:" + jsoncontent2.data[i].labeled_relation + "additional_info:" + jsoncontent2.data[i].additional_info + "\r\n"
+            tempcon = tempcon + "labeled_content:" + jsoncontent2.data[i]+ "\r\n"
         }
         print("save")
 

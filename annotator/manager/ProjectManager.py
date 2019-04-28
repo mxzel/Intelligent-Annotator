@@ -250,14 +250,14 @@ class ProjectManager:
                 "status": True,
                 "code": 200,
                 "progress": ret,
-                "message": u"Successfully fetch labeling process!"
+                "message": u"Successfully fetch labeling progress!"
             }
-            print("获取标注进度成功！标注进度为: " + "%.2f" % ret)
+            print("Successfully fetch labeling progress! " + "%.2f" % ret)
         except IntegrityError as e:
             ret_data = {
                 "status": False,
                 "code": -1,
                 "message": str(e)
             }
-            print("获取标注进度失败！" + str(e))
+            print("Failed to fetch labeling progress! " + str(e))
         return ret_data

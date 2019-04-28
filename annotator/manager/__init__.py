@@ -63,3 +63,6 @@ def fetch_unlabeled_data(project_id: int, num: int = -1):
 
 def commit_labeled_data(labeled_data: list, project_id: int):
     return DataManager.commit_labeled_data(labeled_data, project_id)
+
+def get_label_progress(project_id: int):
+    return ProjectManager.get_label_progress(project_id)

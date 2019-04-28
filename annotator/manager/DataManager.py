@@ -103,8 +103,7 @@ class DataManager:
         :param labeled_data: 已标注的数据
             [
                 {
-                    "text": ['1', '9', '9', '3', '年', '2', '月', '1', '5', '日', '，',
-                     '李', '彤', '出', '生', '在', '吉', '林', '某', '城', '市', '。'],
+                    "text": ['This', 'is', 'a', 'test', 'file.'],
 
                     "predicted_relation": "人-出生地",
                     "predicted_e1": "李彤",

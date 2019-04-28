@@ -157,7 +157,7 @@ class ProjectManager:
             data = []
             for index, labeled_data in enumerate(labeled_dataset):
                 line1 = str(index + 1) + '\t' + '"' + labeled_data.labeled_content + '"\n'
-                line2 = "Relation: " + labeled_data.labeled_relation + '\n'
+                line2 = labeled_data.labeled_relation + '\n'
                 line3 = "AdditionalInfo: " + labeled_data.additional_info + '\n'
                 line4 = '\n'
                 line = line1 + line2 + line3 + line4

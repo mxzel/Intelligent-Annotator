@@ -80,16 +80,15 @@ function updata_progress() {
     xml.open('POST', 'get_label_progress', false);   //这边如果是get请求,可以不填,如果是异步提交也可以不填
     xml.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     xml.send("project_id=" + id);                         //这里是请求体,如果是get请求,那么里面设为null.
-    xml.onreadystatechange = function () {     //如果是post,那么里面就设置值
+    // xml.onreadystatechange = function () {     //如果是post,那么里面就设置值
         if (xml.readyState == 4 && xml.status == 200) {     //当xml.readyState == 4的时候,相当于jquery的success页面
             var content = xml.responseText
             var progress = eval("(" + content + ")");
             console.log("json" + progress.progress)
             var progressbar = document.getElementById('progress')
-            progressbar.style.width = progress.progress
-
+            progressbar.style.width = progress.progress*100+"%"
         }
-    }
+    // }
 
     }
 
@@ -572,7 +571,6 @@ function changecolor(self) {
         var changecolors = changecolor_parent.childNodes;
         for (var j=0;j<changecolors.length;j++){
             changecolors[j].style.backgroundColor = "rgb(221,221,221)";
-
         }
         document.getElementById("choose" + (Math.floor(i / tags.length) + 1)).innerText="选中标签为："
 
@@ -806,95 +804,16 @@ function initButton() {
         var mycontent11 = document.getElementById("choose5");
         var mycontent12 = document.getElementById("choose6");
 
-        var con1 = new Array(mycontent1, mycontent2, mycontent3, mycontent4, mycontent5,mycontent6);
-        var con2 = new Array(mycontent7, mycontent8, mycontent9, mycontent10,mycontent11,mycontent12);
+        var con1 = new Array(mycontent1, mycontent2, mycontent3, mycontent4, mycontent5, mycontent6);
+        var con2 = new Array(mycontent7, mycontent8, mycontent9, mycontent10, mycontent11, mycontent12);
         mydata[mydata.length] = con1[i].innerText + con2[i].innerText;
         con1[i].innerHTML = "";
         con2[i].innerText = "选中标签为：";
+        text_id = []
     }
-        var jsoncontent
-        var content
-        setTextArea();
-        xml1=createXMLHttpRequest()
-        xml1.open('POST','fetch_unlabeled_data',false);
-        xml1.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-        xml1.send("project_id="+id+"&num="+Number(6))
-        //xml1.onreadystatechange=function () {     //如果是post,那么里面就设置值
-            if(xml1.readyState == 4 && xml1.status==200){     //当xml.readyState == 4的时候,相当于jquery的success页面
-                console.log("content"+content)
-                content=xml1.responseText
-                jsoncontent=eval("("+content+")");
-                console.log("json"+jsoncontent.data[0].text)
-                hasData=0
-            }
-
-        var unlabeledDatas = [];
-        for (var i=0;i<jsoncontent.data.length;i++) {
-            var unlabeledData  = new UnlabeledData(jsoncontent.data[i].id,jsoncontent.data[i].predicted_e1, jsoncontent.data[i].predicted_e1_end,
-            jsoncontent.data[i].predicted_e1_start,jsoncontent.data[i].predicted_e2,jsoncontent.data[i].predicted_e2_end,
-            jsoncontent.data[i].predicted_e2_start,jsoncontent.data[i].predicted_relation,jsoncontent.data[i].text)
-        unlabeledDatas.push(unlabeledData)
-    }
-        predicted_data = unlabeledDatas
-
-        for (var m = 0; m < jsoncontent.data.length; m++) {
-            var a0 = document.getElementById("index" + (m + 1));
-            var a1 = document.createElement("div");
-            for (var i = 0; i < unlabeledDatas[m].text2String.length;i++) {
-                var a2 = document.createElement("span")
-                a2.id=m+"text"+i
-                a2.onclick = function () {
-                        getdetail(this);
-                };
-                a2.innerText = unlabeledDatas[m].text2String[i]+" ";
-                a1.appendChild(a2);
-            }
-            a0.appendChild(a1);
-            hasData++
+    for (var j = 0; j < tags.length*6; j++) {
+            document.getElementById("changecolor"+j).style.backgroundColor = "rgb(221,221,221)";
         }
-
-        for (var i=0;i<hasData;i++) {
-            var buttonNode = document.getElementById("buttons"+i.toString())
-            var childNodes = buttonNode.childNodes
-            for (var k=0;k<childNodes.length;k++){
-                if (childNodes[k].innerText==unlabeledDatas[i].predicted_relation) {
-                    document.getElementById(childNodes[k].id).click()
-                }
-            }
-
-            if(unlabeledDatas[i].predicted_e1_start==unlabeledDatas[i].predicted_e1_end)
-                document.getElementById(i+"text"+unlabeledDatas[i].predicted_e1_start).click()
-            else {
-                for (var j=parseInt(unlabeledDatas[i].predicted_e1_start);j<parseInt(unlabeledDatas[i].predicted_e1_end);j++) {
-                    document.getElementById(i+"text"+j).click()
-                }
-            }
-            if(unlabeledDatas[i].predicted_e2_start==unlabeledDatas[i].predicted_e2_end)
-                document.getElementById(i+"text"+unlabeledDatas[i].predicted_e2_start).click()
-            else {
-                for (var j=parseInt(unlabeledDatas[i].predicted_e2_start);j<parseInt(unlabeledDatas[i].predicted_e2_end);j++) {
-                    document.getElementById(i+"text"+j).click()
-                }
-            }
-            if (unlabeledDatas[i].predicted_e1_start==0){
-                    document.getElementById(i+"text"+0).click()
-                }
-                if (unlabeledDatas[i].predicted_e2_start==0){
-                    document.getElementById(i+"text"+0).click()
-                }
-            var len =unlabeledDatas[i].text2String[0].length
-            for (var j=1;j<unlabeledDatas[i].text2String.length;j++) {
-
-                if (len==unlabeledDatas[i].predicted_e1_start){
-                    document.getElementById(i+"text"+j).click()
-                }
-                if (len==unlabeledDatas[i].predicted_e2_start){
-                    document.getElementById(i+"text"+j).click()
-                }
-                 len +=unlabeledDatas[i].text2String[j].length
-            }
-        }
-        text_id=[]
 }
 
 
@@ -1058,9 +977,7 @@ function initButton() {
                          }
                     hasData=0
                     initButton()
-                    setButtonState(true);
                     updata_progress();
-                    console.log("commit_label_data");
         submit = 0;
 
         var jsoncontent

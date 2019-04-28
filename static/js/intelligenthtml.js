@@ -87,6 +87,8 @@ function updata_progress() {
             console.log("json" + progress.progress)
             var progressbar = document.getElementById('progress')
             progressbar.style.width = progress.progress*100+"%"
+            if (progress.progress>=1)
+                alert("标注完成")
         }
     // }
 
@@ -219,7 +221,7 @@ function  changeproject(cp) {
             document.getElementById("dropdown").innerHTML="当前项目："+vs;
             var jsoncontent
         var content
-        id=projectName2id.get(vs)
+        id=projectName2id.get(vs);
         xml1=createXMLHttpRequest()
         xml1.open('POST','fetch_unlabeled_data',false);
         xml1.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
@@ -290,7 +292,9 @@ function  changeproject(cp) {
                 }
             }
         }
-        setButtonState(true)
+        setButtonState(true);
+        updata_progress();
+
         }
     }else{
             var jsoncontent
@@ -298,7 +302,8 @@ function  changeproject(cp) {
         document.getElementById("dropdown").innerHTML="当前项目："+vs;
             clickcount++
         setTextArea();
-            id=projectName2id.get(vs)
+            id=projectName2id.get(vs);
+            updata_progress();
         xml1=createXMLHttpRequest()
         xml1.open('POST','fetch_unlabeled_data',false);
         xml1.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
@@ -437,7 +442,8 @@ function confirmCreateProject() {
     $("div[name='projectname']").val(project_name);
     $('#myModal').modal('hide');
     if(temp==true){
-        // setButton();
+        setTextArea();
+        initButton()
         setButtonState(false);
     }
     // var tags_string = tags.join(",")
@@ -678,7 +684,7 @@ function fileImport() {
                 var childNodes = buttonNode.childNodes
                 for (var k = 0; k < childNodes.length; k++) {
                     if (childNodes[k].innerText == unlabeledDatas[i].predicted_relation) {
-                        document.getElementById(childNodes[k].id).click()
+                        childNodes[k].click()
                     }
                 }
 
@@ -726,7 +732,7 @@ function fileexport(){
         }
         var tempcon = " ";
         for (var i = 0; i < jsoncontent2.data.length; i++) {
-            tempcon = tempcon + "labeled_content:" + jsoncontent2.data[i]+ "\r\n"
+            tempcon = tempcon  + jsoncontent2.data[i]+ "\r\n"
         }
         print("save")
 
@@ -787,7 +793,7 @@ function setButtonState(checkState) {
 //初始化button
 function initButton() {
     for (var i = 0; i < tags.length*6; i++) {
-        state[i] == false;
+        state[i] = false;
     }
 
     for (var i = 0; i < 6; i++) {
@@ -852,7 +858,8 @@ function initButton() {
                 if (temp == true) {
                     for (var i=0;i<hasData;i++) {
                         var labeled_relation1 = document.getElementById("choose" +(i+1).toString()).innerText.split("：")
-                        var labeled_relation = labeled_relation1[1].replace(/\([^\)]*\)/g,"")
+                        var s = labeled_relation1[1].replace("(","");
+                        var labeled_relation = s.replace(")","")
                         var labeled_e1,labeled_e2,labeled_e1_start,labeled_e1_end,labeled_e2_start,labeled_e2_end
                         var len=0
                         var pos = 0
@@ -900,7 +907,8 @@ function initButton() {
         }else{
            for (var i=0;i<hasData;i++) {
                         var labeled_relation1 = document.getElementById("choose" +(i+1).toString()).innerText.split("：")
-                        var labeled_relation = labeled_relation1[1].replace(/\([^\)]*\)/g,"")
+                        var s = labeled_relation1[1].replace("(","");
+                        var labeled_relation = s.replace(")","")
                         var labeled_e1,labeled_e2,labeled_e1_start,labeled_e1_end,labeled_e2_start,labeled_e2_end
                         var len=0
                         var pos = 0
@@ -1034,7 +1042,7 @@ function initButton() {
             var childNodes = buttonNode.childNodes
             for (var k=0;k<childNodes.length;k++){
                 if (childNodes[k].innerText==unlabeledDatas[i].predicted_relation) {
-                    document.getElementById(childNodes[k].id).click()
+                    childNodes[k].click()
                 }
             }
             if(unlabeledDatas[i].predicted_e1_start==unlabeledDatas[i].predicted_e1_end)

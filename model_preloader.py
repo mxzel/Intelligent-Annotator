@@ -11,6 +11,7 @@ model, text_encoder, label_encoder = None, None, None
 n_ctx = None
 max_len = 512 // 3
 
+
 def preload_model():
     global device, model, text_encoder, label_encoder, n_ctx
 
@@ -22,3 +23,5 @@ def preload_model():
     n_ctx = model.n_ctx
 
     print("Complete.")
+
+preload_model()

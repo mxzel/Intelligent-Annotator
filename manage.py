@@ -6,12 +6,10 @@ import warnings
 warnings.filterwarnings('ignore')
 
 import pudb
-from model_preloader import *
 
 if __name__ == '__main__':
     # pudb.set_trace()
-    if sys.argv[1] is 'runserver':
-        preload_model()
+
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'IntelligentAnnotator.settings')
     try:
         from django.core.management import execute_from_command_line

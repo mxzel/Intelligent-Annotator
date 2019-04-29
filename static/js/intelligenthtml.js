@@ -420,13 +420,16 @@ function newproject() {
         if (submit < hasData) {
             var con = confirm("您还有" + a + "条记录没有标注，确定更换吗？");
             if (con == true) {
-            confirm("该页数据已提交")
+            var progressbar = document.getElementById('progress')
+            progressbar.style.width = 0+"%"
             $('#myModal').modal('show')
             }else{
             $('#myModal').modal('hide')
             }
 
         }else{
+            var progressbar = document.getElementById('progress')
+            progressbar.style.width = 0+"%"
         $('#myModal').modal('show')
     }
 
@@ -448,7 +451,6 @@ function confirmCreateProject() {
         var Text = document.getElementById("selectproject").innerHTML
         document.getElementById("selectproject").innerHTML=Text+aText;
     }
-    var temp=confirm("你已经提交成功！");
     $("div[name='projectname']").val(project_name);
     $('#myModal').modal('hide');
     if(temp==true){
@@ -681,8 +683,11 @@ function fileImport() {
                     a2.onclick = function () {
                         getdetail(this);
                     };
-                    a2.innerText = unlabeledDatas[m].text2String[i] + " ";
+                    a2.innerText = unlabeledDatas[m].text2String[i] + "";
                     a1.appendChild(a2);
+                    var a3 = document.createElement("span")
+                    a3.innerText = " ";
+                     a1.appendChild(a3);
                 }
                 a0.appendChild(a1);
                 hasData++

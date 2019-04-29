@@ -451,6 +451,7 @@ function confirmCreateProject() {
         var Text = document.getElementById("selectproject").innerHTML
         document.getElementById("selectproject").innerHTML=Text+aText;
     }
+    var temp = confirm("你已经提交成功！");
     $("div[name='projectname']").val(project_name);
     $('#myModal').modal('hide');
     if(temp==true){
@@ -911,7 +912,7 @@ function initButton() {
                             break
                         }
                     }
-                        var labeled_data=new LabeledData(predicted_data[i].text2String,predicted_data[i].predicted_relation,predicted_data[i].predicted_e1,predicted_data[i].predicted_e2,
+                        var labeled_data=new LabeledData(predicted_data[i].text2String,predicted_data[i].pre_id,predicted_data[i].predicted_relation,predicted_data[i].predicted_e1,predicted_data[i].predicted_e2,
                            predicted_data[i].predicted_e1_start,predicted_data[i].predicted_e1_end,predicted_data[i].predicted_e2_start,predicted_data[i].predicted_e2_end,
                            labeled_relation,labeled_e1,labeled_e2,labeled_e1_start,labeled_e1_end,labeled_e2_start,labeled_e2_end,"")
                         commitDataList.push(labeled_data)

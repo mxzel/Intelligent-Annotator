@@ -877,7 +877,7 @@ function initButton() {
                         if (tempcolor.style.backgroundColor == 'orange') {
                             labeled_e1 = document.getElementById(i+"text0").innerText
                             labeled_e1_start = 0
-                            labeled_e1_end =predicted_data[0].predicted_e1_end
+                            labeled_e1_end =predicted_data[i].predicted_e1_end
                             isBegin = true
                         }
                         for (var j = 1; j < predicted_data[i].text2String.length; j++) {
@@ -928,7 +928,7 @@ function initButton() {
                         if (tempcolor.style.backgroundColor == 'orange') {
                             labeled_e1 = document.getElementById(i+"text0").innerText
                             labeled_e1_start = 0
-                            labeled_e1_end =predicted_data[0].predicted_e1_end
+                            labeled_e1_end =predicted_data[i].predicted_e1_end
                             isBegin = true
                         }
                         for (var j = 1; j < predicted_data[i].text2String.length; j++) {

@@ -45,12 +45,6 @@ class Project(models.Model):
         self.project_tags = self.tag_spliter.join(tags)
 
 
-class File(models.Model):
-    """上传的文件信息"""
-    file_id = models.AutoField(primary_key=True)
-    project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
-
-
 class BaseTags(models.Model):
     """基础标签"""
     # tag_name = models.CharField(max_length=TAG_MAX_LENGTH, unique=True)
@@ -63,7 +57,6 @@ class UnlabeledData(models.Model):
     """未标注数据"""
 
     unlabeled_id = models.AutoField(primary_key=True)
-    file_id = models.ForeignKey(File, on_delete=models.CASCADE)
     project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
     # 1993年2月15日，李彤出生在吉林某城市。
     data_content = models.TextField(unique=False)
@@ -73,7 +66,6 @@ class UnlabeledData(models.Model):
 class LabeledData(models.Model):
     """已标注数据"""
     labeled_id = models.AutoField(primary_key=True)
-    file_id = models.ForeignKey(File, on_delete=models.CASCADE)
     project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
 
     labeled_time = models.DateTimeField()
@@ -96,13 +88,13 @@ class LabeledData(models.Model):
     # FIXME: 区间由左右闭合改成了左闭右开，前端需要做一定的更改
     # FIXME: 标注过程的妥协导致一些变量的意义被改变，需要因此修改变量名字
     # 11
-    e1_start = models.IntegerField(default=-1)
+    predicted_e1_start = models.IntegerField(default=-1)
     # 13
-    e1_end = models.IntegerField(default=-1)
+    predicted_e1_end = models.IntegerField(default=-1)
     # 16
-    e2_start = models.IntegerField(default=-1)
+    predicted_e2_start = models.IntegerField(default=-1)
     # 18
-    e2_end = models.IntegerField(default=-1)
+    predicted_e2_end = models.IntegerField(default=-1)
 
     labeled_relation = models.CharField(max_length=RELATION_MAX_LENGTH, unique=False)
     # labeled_e1 = models.CharField(max_length=ENTITY_MAX_LENGTH, unique=False)

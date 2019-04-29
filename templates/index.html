@@ -39,16 +39,16 @@
                 项目名称
                 <input type="text" class="form-control" style="margin: 10px" id="newname" placeholder="请输入项目名称">
             </div>
-            <div class="modal-body">
-                预设标签
-                <div class="form-inline">
-                <input type="text" class="form-control" style="margin: 10px" id="tag" placeholder="请输入标签名称/将所有标签添加后再提交">
-                <button type="button" class="btn btn-default" onclick="addTag()">
-                    添加
-                </button>
-                </div>
-                <div id="tags"></div>
-            </div>
+{#            <div class="modal-body">#}
+{#                预设标签#}
+{#                <div class="form-inline">#}
+{#                <input type="text" class="form-control" style="margin: 10px" id="tag" placeholder="请输入标签名称/将所有标签添加后再提交">#}
+{#                <button type="button" class="btn btn-default" onclick="addTag()">#}
+{#                    添加#}
+{#                </button>#}
+{#                </div>#}
+{#                <div id="tags"></div>#}
+{#            </div>#}
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" id="close1" data-dismiss="modal">关闭
                 </button>
@@ -126,7 +126,7 @@
             </form>
 
             <div class="progress" style="margin-top: 15px;width: 400px">
-                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width:35%">
+                <div class="progress-bar progress-bar-striped active" id="progress" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width:0%">
                     <span class="sr-only">45% Complete</span>
                 </div>
             </div>
@@ -141,9 +141,9 @@
         </div>
         <div id="choose1" style="margin: 5px;margin-left: 30px">选中标签为：</div>
     </div>
-    <div class="panel-body" style="height: 50px;">
+    <div class="panel-body" style="height: 100px;">
         <div class="form-inline">
-        <input class="orange" type="checkbox" id="ok1" style="margin-bottom: 8px" >
+        <input class="orange" type="checkbox" id="ok1" style="margin-bottom: 11px" >
         <div id="buttons0"style="margin-left: 25px;margin-top: -32px"></div>
 </div>
     </div>
@@ -156,10 +156,10 @@
         </div>
         <div id="choose2" style="margin: 5px;margin-left: 30px">选中标签为：</div>
     </div>
-    <div class="panel-body" style="height: 50px;">
+    <div class="panel-body" style="height: 100px;">
         <div class="form-inline">
 
-        <input class="orange" type="checkbox" id="ok2"style="margin-bottom: 8px ">
+        <input class="orange" type="checkbox" id="ok2"style="margin-bottom: 11px ">
             <div id="buttons1"style="margin-left: 25px;margin-top: -32px"></div>
         </div>
     </div>
@@ -172,10 +172,10 @@
         </div>
         <div id="choose3" style="margin: 5px;margin-left: 30px">选中标签为：</div>
     </div>
-    <div class="panel-body" style="height: 50px;">
+    <div class="panel-body" style="height: 100px;">
         <div class="form-inline">
 
-        <input class="orange" type="checkbox" id="ok3" style="margin-bottom: 8px">
+        <input class="orange" type="checkbox" id="ok3" style="margin-bottom: 11px">
             <div id="buttons2"style="margin-left: 25px;margin-top: -32px;"></div>
         </div>
     </div>
@@ -188,9 +188,9 @@
         </div>
         <div id="choose4" style="margin: 5px;margin-left: 30px">选中标签为：</div>
     </div>
-    <div class="panel-body" style="height: 50px;">
+    <div class="panel-body" style="height: 100px;">
         <div class="form-inline">
-        <input class="orange" type="checkbox" id="ok4" style="margin-bottom: 8px">
+        <input class="orange" type="checkbox" id="ok4" style="margin-bottom: 11px">
             <div id="buttons3" style="margin-left: 25px;margin-top: -32px"></div>
         </div>
     </div>
@@ -203,10 +203,10 @@
         </div>
         <div id="choose5" style="margin: 5px;margin-left: 30px">选中标签为：</div>
     </div>
-    <div class="panel-body" style="height: 50px;">
+    <div class="panel-body" style="height: 100px;">
         <div class="form-inline">
 
-        <input class="orange" type="checkbox" id="ok5" style="margin-bottom: 8px">
+        <input class="orange" type="checkbox" id="ok5" style="margin-bottom: 11px">
             <div id="buttons4"style="margin-left: 25px;margin-top: -32px"></div>
         </div>
     </div>
@@ -219,10 +219,10 @@
         </div>
         <div id="choose6" style="margin: 5px;margin-left: 30px">选中标签为：</div>
     </div>
-    <div class="panel-body" style="height: 50px;">
+    <div class="panel-body" style="height: 100px;">
         <div class="form-inline">
 
-        <input class="orange" type="checkbox" id="ok6" style="margin-bottom: 8px">
+        <input class="orange" type="checkbox" id="ok6" style="margin-bottom: 11px">
             <div id="buttons5"style="margin-left: 25px;margin-top: -32px"></div>
         </div>
     </div>

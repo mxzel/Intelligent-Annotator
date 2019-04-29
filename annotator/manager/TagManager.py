@@ -1,5 +1,5 @@
 import json
-from sqlite3 import IntegrityError
+from django.db import IntegrityError
 from annotator.models import *
 
 """
@@ -28,14 +28,14 @@ class TagManager:
                 "code": 200,
                 "message": u"Successfully override tags!"
             }
-            print("标签覆盖成功！覆盖后的标签为: " + str(new_tags))
+            print("Successfully override tags! " + str(new_tags))
         except IntegrityError as e:
             ret_data = {
                 "status": False,
                 "code": -1,
                 "message": str(e)
             }
-            print("标签覆盖失败！" + str(e))
+            print("Failed to override tags! " + str(e))
         return ret_data
 
     @staticmethod

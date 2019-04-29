@@ -1,11 +1,12 @@
 import json
 from datetime import datetime
-from sqlite3 import IntegrityError
+from django.db import IntegrityError
 
 from annotator import offline
 from annotator.models import *
 from annotator.offline.datasets.dataset_converter import DatasetConverter
-from manage import project_dir
+import annotator.offline.offline_model as offline
+from model_preloader import project_dir
 
 """
 Data:
@@ -63,10 +64,10 @@ class DataManager:
                             # 1993年2月15日，李彤出生在吉林某城市。
                             "text": ['This', 'is', 'a', 'test', 'file.'],
                             "predicted_relation": "人-出生地",
-                            "e1_start": 11,
-                            "e1_end": 13,
-                            "e2_start": 16,
-                            "e2_end": 18,
+                            "predicted_e1_start": 11,
+                            "predicted_e1_end": 13,
+                            "predicted_e2_start": 16,
+                            "predicted_e2_end": 18,
                         },
                         ...
                     ]
@@ -85,12 +86,17 @@ class DataManager:
             DataManager._write_unlabeled_data_to_file(
                 objects, os.path.join(project_dir, 'temp', 'predict_data.jsonl'))
 
-            predicted_relations = offline.predict_data(
-                test_file=os.path.join(project_dir, 'temp', 'predict_data.jsonl'),
-                save_dir=os.path.join(project_dir, './annotator/offline/logs/complete/models'),
-                model_file='model_epoch-3_dev-macro-f1-0.4716132465835384_dev-loss-16.142220458984376_2019-04-23__08-51__925007.pt',
-                batch_size=8
-            )
+            predicted_relations = None
+
+            if len(objects) > 0:
+                print('Predicting...')
+
+                predicted_relations, probs = offline.predict_data(
+                    test_file=os.path.join(project_dir, 'temp', 'predict_data.jsonl'),
+                    batch_size=8
+                )
+
+                print('Complete.')
 
             data = []
             for idx, o in enumerate(objects):
@@ -99,10 +105,10 @@ class DataManager:
                     "id": o.unlabeled_id,
                     "text": tokens,
                     "predicted_relation": predicted_relations[idx],
-                    "e1_start": first_args[0],
-                    "e1_end": first_args[1],
-                    "e2_start": second_args[0],
-                    "e2_end": second_args[1],
+                    "predicted_e1_start": first_args[0],
+                    "predicted_e1_end": first_args[1],
+                    "predicted_e2_start": second_args[0],
+                    "predicted_e2_end": second_args[1],
                 })
 
             ret_dict = {
@@ -111,19 +117,19 @@ class DataManager:
                 "code": 200,
                 "message": "Successfully took out " + str(len(objects)) + " pieces of data.",
             }
-            print("成功取出" + str(len(objects)) + "条未标注数据")
+            print("Successfully took out " + str(len(objects)) + " pieces of data.")
         except IntegrityError as e:
             ret_dict = {
                 "status": False,
                 "code": -1,
                 "message": str(e),
             }
-            print("取出未标注数据失败！" + str(e))
+            print("Failed to take out unlabeled data! " + str(e))
 
         return ret_dict
 
     @staticmethod
-    def commit_labeled_data(labeled_data: list, file_id: int, project_id: int) -> dict:
+    def commit_labeled_data(labeled_data: list, project_id: int) -> dict:
         """
         将已标注的数据提交到数据库
 
@@ -136,10 +142,9 @@ class DataManager:
         :param labeled_data: 已标注的数据
             [
                 {
-                    "text": ['1', '9', '9', '3', '年', '2', '月', '1', '5', '日', '，',
-                     '李', '彤', '出', '生', '在', '吉', '林', '某', '城', '市', '。'],
+                    "text": ['This', 'is', 'a', 'test', 'file.'],
 
-                    "predicted_relation": "人-出生地",
+                    "predicted_relation": "Instrument-Agency(e1,e2)",
                     "predicted_e1": "李彤",
                     "predicted_e2": "吉林",
                     "predicted_e1_start": 11,
@@ -147,7 +152,7 @@ class DataManager:
                     "predicted_e2_start": 16,
                     "predicted_e2_end": 17,
 
-                    "labeled_relation": "人-出生地",
+                    "labeled_relation": "Instrument-Agency(e1,e2)",
                     "labeled_e1": "李彤",
                     "labeled_e2": "吉林",
                     "labeled_e1_start": 11,
@@ -170,32 +175,28 @@ class DataManager:
         try:
             project = Project.objects.get(pk=project_id)
             for meta_data in labeled_data:
+                print(meta_data['text'])
                 e1_start, e1_end = meta_data["labeled_e1_start"], meta_data["labeled_e1_end"]
                 e2_start, e2_end = meta_data["labeled_e2_start"], meta_data["labeled_e2_end"]
-                meta_data['text'].insert(e1_start, '<e1>')
-                meta_data['text'].insert(e1_end, '</e1>')
-                meta_data['text'].insert(e2_start, '<e2>')
-                meta_data['text'].insert(e2_end, '</e2>')
-                sentence = ''.join(meta_data['text'])
+                meta_data['text'][e1_start] = '<e1>' + meta_data['text'][e1_start]
+                meta_data['text'][e1_end - 1] = meta_data['text'][e1_end - 1] + '</e1>'
+                meta_data['text'][e2_start] = '<e2>' + meta_data['text'][e2_start]
+                meta_data['text'][e2_end - 1] = meta_data['text'][e2_end - 1] + '</e2>'
+                sentence = ' '.join(meta_data['text'])
 
                 data = LabeledData(
-                    file_id=File.objects.get(pk=file_id),
                     project_id=Project.objects.get(pk=project_id),
 
                     labeled_time=datetime.now(),
                     labeled_content=sentence,
 
                     predicted_relation=meta_data["predicted_relation"],
-                    predicted_e1=meta_data["predicted_e1"],
-                    predicted_e2=meta_data["predicted_e2"],
                     predicted_e1_start=meta_data["predicted_e1_start"],
                     predicted_e1_end=meta_data["predicted_e1_end"],
                     predicted_e2_start=meta_data["predicted_e2_start"],
                     predicted_e2_end=meta_data["predicted_e2_end"],
 
                     labeled_relation=meta_data["labeled_relation"],
-                    labeled_e1=meta_data["labeled_e1"],
-                    labeled_e2=meta_data["labeled_e2"],
                     labeled_e1_start=meta_data["labeled_e1_start"],
                     labeled_e1_end=meta_data["labeled_e1_end"],
                     labeled_e2_start=meta_data["labeled_e2_start"],
@@ -214,14 +215,14 @@ class DataManager:
                 "code": 200,
                 "message": "Labeled data submitted successfully."
             }
-            print("成功提交标注数据")
+            print("Labeled data submitted successfully.")
         except IntegrityError as e:
             ret_dict = {
                 "status": False,
                 "code": -1,
                 "message": str(e),
             }
-            print("提交标注数据失败！" + str(e))
+            print("Failed to commit labeled data! " + str(e))
 
         return ret_dict
 

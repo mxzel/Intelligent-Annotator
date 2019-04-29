@@ -680,8 +680,11 @@ function fileImport() {
                     a2.onclick = function () {
                         getdetail(this);
                     };
-                    a2.innerText = unlabeledDatas[m].text2String[i] + " ";
+                    a2.innerText = unlabeledDatas[m].text2String[i] + "";
                     a1.appendChild(a2);
+                    var a3 = document.createElement("span")
+                    a3.innerText = " ";
+                     a1.appendChild(a3);
                 }
                 a0.appendChild(a1);
                 hasData++

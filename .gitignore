@@ -1,9 +1,9 @@
 .DS_Store
-.idea/
-model/
 logs/
 *.zip
 temp/
+.idea/
+model/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

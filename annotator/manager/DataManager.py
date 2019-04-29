@@ -86,14 +86,17 @@ class DataManager:
             DataManager._write_unlabeled_data_to_file(
                 objects, os.path.join(project_dir, 'temp', 'predict_data.jsonl'))
 
-            print('Predicting...')
+            predicted_relations = None
 
-            predicted_relations, probs = offline.predict_data(
-                test_file=os.path.join(project_dir, 'temp', 'predict_data.jsonl'),
-                batch_size=8
-            )
+            if len(objects) > 0:
+                print('Predicting...')
 
-            print('Complete.')
+                predicted_relations, probs = offline.predict_data(
+                    test_file=os.path.join(project_dir, 'temp', 'predict_data.jsonl'),
+                    batch_size=8
+                )
+
+                print('Complete.')
 
             data = []
             for idx, o in enumerate(objects):
@@ -172,6 +175,7 @@ class DataManager:
         try:
             project = Project.objects.get(pk=project_id)
             for meta_data in labeled_data:
+                print(meta_data['text'])
                 e1_start, e1_end = meta_data["labeled_e1_start"], meta_data["labeled_e1_end"]
                 e2_start, e2_end = meta_data["labeled_e2_start"], meta_data["labeled_e2_end"]
                 meta_data['text'][e1_start] = '<e1>' + meta_data['text'][e1_start]
@@ -193,8 +197,6 @@ class DataManager:
                     predicted_e2_end=meta_data["predicted_e2_end"],
 
                     labeled_relation=meta_data["labeled_relation"],
-                    labeled_e1=meta_data["labeled_e1"],
-                    labeled_e2=meta_data["labeled_e2"],
                     labeled_e1_start=meta_data["labeled_e1_start"],
                     labeled_e1_end=meta_data["labeled_e1_end"],
                     labeled_e2_start=meta_data["labeled_e2_start"],

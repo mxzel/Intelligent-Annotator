@@ -13,7 +13,7 @@ import json
 
 from annotator.models import BaseTags
 from annotator.utils import random_generate_string
-
+from manage import debug
 
 
 def get_projects(request):
@@ -67,8 +67,7 @@ def create_project(request):
 
 def upload_file(request):
     """上传文件"""
-    import pudb
-    # pudb.set_trace()
+
     if request.method == "POST":
         file_content = request.POST.get("file_contents")
         file_contents = file_content.strip().split('\n')
@@ -92,7 +91,8 @@ def override_tags(request):
 
 def fetch_unlabeled_data(request):
     """获取未标注数据"""
-    # pudb.set_trace()
+    if debug:
+        pudb.set_trace()
     if request.method == "POST":
 
         project_id = int(request.POST.get("project_id", -1))
@@ -105,7 +105,8 @@ def fetch_unlabeled_data(request):
 def commit_labeled_data(request):
     """提交已标注的数据"""
 
-    # pudb.set_trace()
+    if debug:
+        pudb.set_trace()
     if request.method == "POST":
         project_id = int(request.POST.get("project_id", -1))
         labeled_data = []

@@ -28,7 +28,7 @@ urlpatterns = [
     path('upload_file', affair.upload_file),
     path('add_tags_to_project', affair.override_tags),
     path('fetch_unlabeled_data', affair.fetch_unlabeled_data),
-    path('commit_label_data', affair.commit_labeld_data),
+    path('commit_label_data', affair.commit_labeled_data),
     path('export_project', affair.export_project),
 
     path('test_connect', tests.test_connect),
